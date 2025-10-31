@@ -1,0 +1,60 @@
+@import '../../../style/default.less';
+
+
+.profile-card {
+  background-color: var(--primary-light);
+  padding: 20px;
+  font-family: Roboto;
+  height: 100%;
+  :global .avatar {
+    margin-bottom: 20px;
+
+    img {
+      border-radius: 20px;
+      width: 280px;
+      height: 280px;
+      object-fit: cover;
+    }
+  }
+
+  :global .profile {
+    span {
+      color: var(--text-grey);
+    }
+
+    table {
+      table-layout: fixed;
+      width: 100%;
+
+      tr {
+        vertical-align: top;
+      }
+    }
+
+    .lable {
+      font-weight: bold;
+      color: var(--text-main);
+      text-transform: capitalize;
+
+      &::after {
+        content: ':';
+      }
+    }
+
+    .text {
+      text-transform: capitalize;
+    }
+  }
+
+  :global .tags {
+    font-weight: bold;
+    color: var(--primary);
+  }
+
+  :global p {
+    font-weight: bold;
+    color: var(--text-main);
+    margin-bottom: 0;
+    margin-top: 10px;
+  }
+}

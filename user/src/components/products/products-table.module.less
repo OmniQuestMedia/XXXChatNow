@@ -1,0 +1,19 @@
+.products-table {
+  padding: 16px 24px;
+  height: 100%;
+
+  :global img {
+    height: 100px;
+    width: 100px;
+  }
+  :global .ant-table-cell {
+    max-width: 300px;
+    color: var(--black);
+    a {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+    }
+  }
+}

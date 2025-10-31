@@ -1,0 +1,116 @@
+@import '../../../style/default.less';
+
+.stream-group {
+  margin: 5px 0;
+  display: none;
+  #group-video-container {
+    width: 100%;
+  }
+}
+
+#main-group-video {
+  height: 480px !important;
+  width: 100%;
+}
+
+.group-container {
+  [class~='ant-btn-primary'] {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+}
+
+.stream-group-main {
+  position: relative;
+  :global .load-model-request {
+    background-color: #ffdcea;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    color: #333;
+    font-weight: bold;
+    height: calc(100vh - 177px);
+    img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+  }
+  :global .button-start-stream {
+
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      z-index: 10;
+      @media (max-width: @mobile-query) {
+        button {
+          padding: 4px 7px;
+          height: auto;
+        }
+      }
+  }
+  :global {
+    /* Creating the dots */
+    .stream-group {
+      height: 537px;
+      position: relative;
+      background-image: url(/bg-group.jpg);
+      background-size: cover;
+      background-position: center center;
+      border-radius: 10px;
+      @media (max-width: @mobile-query) {
+        height: 212px;
+        border-radius: 0;
+      }
+    }
+    .button-streaming {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      z-index: 10;
+      @media (max-width: @mobile-query) {
+        button {
+          padding: 4px 7px;
+          height: auto;
+        }
+      }
+    }
+  }
+}
+.streaming_group_show {
+    :global {
+    .stream-group {
+      background: none !important;
+      .price-call {
+        display: none;
+      }
+    }
+    .button-streaming {
+      bottom: 5px;
+      @media (max-width: @mobile-query) {
+        bottom: 5px;
+        button {
+          padding: 4px 7px;
+          height: auto;
+        }
+      }
+    }
+    #group-publisher {
+      display: block !important;
+    }
+  }
+}
+@media screen and (max-width: @mobile-small-query) {
+  .private-streaming-container {
+    min-height: 292px !important;
+  }
+}
+.loader{
+  display: inline-block;
+
+}

@@ -1,0 +1,192 @@
+@import '../../../style/vars.less';
+
+.register-page {
+  background-color: var(--white);
+  position: relative;
+  display: flex;
+
+  :global .form-register-container {
+    position: relative;
+    background: var(--white);
+    min-height: calc(100vh * 0.75);
+    width: 50%;
+
+    a {
+      color: var(--primary);
+    }
+
+    form.ant-form {
+      margin: 0;
+      position: relative;
+      padding: 20px 50px;
+      width: 100%;
+
+      .ant-form-item {
+        margin-bottom: 10px;
+
+        label {
+          color: var(--grey);
+        }
+
+        .ant-form-item-control {
+          .ant-form-item-control-input {
+            .ant-form-item-control-input-content {
+
+              .ant-input,
+              .ant-select-selector {
+                padding-right: 24px;
+                border-radius: unset;
+                border: unset;
+                border-bottom: 0.5px solid var(--white);
+              }
+
+              .ant-input-affix-wrapper {
+                border-radius: unset;
+                border: unset;
+                border-bottom: 0.5px solid var(--white);
+
+                .ant-input {
+                  border: unset;
+                }
+              }
+
+              .ant-input-password {
+                border-radius: unset;
+                border: unset;
+                border-bottom: 0.5px solid var(--white);
+
+                .ant-input {
+                  border: unset;
+                }
+              }
+
+              .ant-picker {
+                width: 100%;
+                border-radius: unset;
+                border: unset;
+                border-bottom: 0.5px solid var(--white);
+              }
+
+              .ant-upload {
+                span.file-name {
+                  width: 100%;
+                  display: block;
+                  padding: 10px;
+                  margin-top: 10px;
+                  border: #ccc dashed 0.5px;
+                }
+              }
+            }
+
+            .ant-form-item-children-icon {
+              color: var(--primary);
+            }
+          }
+        }
+      }
+
+      .row-button-auth {
+        margin-bottom: 30px;
+      }
+
+      .input-password {
+        label {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+
+      .ant-form-item-required {
+        &::before {
+          display: none;
+        }
+      }
+    }
+
+    .logo {
+      display: none;
+
+      @media (max-width: 567px) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+          width: 100px;
+          height: 100px;
+        }
+      }
+
+      span {
+        vertical-align: text-bottom;
+        font-size: 16px;
+        text-transform: uppercase;
+        display: inline-block;
+        font-weight: 700;
+        color: var(--primary);
+      }
+    }
+
+    button.btn-submit {
+      width: 70%;
+      background-color: var(--primary);
+
+      &:hover {
+        background-color: @secondary-color;
+      }
+    }
+
+    p {
+      color: var(--black);
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .ant-btn-primary {
+      color: var(--white);
+      border-color: var(--primary);
+      background: var(--primary);
+      text-shadow: 0 -1px 0 rgb(0 0 0 / 12%);
+      box-shadow: 0 2px 0 rgb(0 0 0 / 5%);
+      border-radius: 4px;
+    }
+  }
+
+  :global .form-register-placeholder {
+    background-image: url('/background-login.jpg');
+    width: 50%;
+    background-size: contain;
+    // background-position: center center;
+    background-position: top center;
+    background-repeat: no-repeat;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .register-page {
+
+    :global .form-register-container {
+      width: 100%;
+
+      form.ant-form {
+        padding: 20px;
+      }
+    }
+
+    :global button {
+      width: 100%;
+    }
+
+    :global h1 {
+      text-align: center;
+    }
+
+    :global .form-register-placeholder {
+      display: none;
+    }
+  }
+}

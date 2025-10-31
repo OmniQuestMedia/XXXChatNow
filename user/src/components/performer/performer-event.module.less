@@ -1,0 +1,62 @@
+@import '../../../style/default.less';
+
+.schedule-modal-wrapper {
+    :global .ant-modal-content {
+        .ant-col {
+            padding: 5px;
+            color: black;
+        }
+
+        .ant-modal-title,
+        .text-center,
+        label {
+            color: black;
+        }
+
+        .ant-btn {
+            border-color: #242424;
+        }
+
+        .anticon-ellipsis {
+            display: none;
+        }
+
+        .ant-input-number,
+        .ant-input {
+            background-color: transparent !important;
+            border: 1px solid #d9d9d9;
+            color: black;
+        }
+
+        input {
+            color: black;
+        }
+    }
+
+    .btn-mobile {
+        display: none;
+    }
+
+    @media screen and(max-width: @mobile-query) {
+        :global .ant-modal-content {
+            .ant-row {
+                .ant-col {
+                    display: block;
+
+                    .anticon-ellipsis,
+                    .anticon-more {
+                        display: block;
+                    }
+                }
+            }
+        }
+
+        .btn-desktop {
+            display: none;
+        }
+
+        .btn-mobile {
+            display: block;
+        }
+    }
+}

@@ -1,0 +1,59 @@
+@import '../../../style/default.less';
+
+.vjs-menu-button,
+.vjs-text-track-settings,
+.vjs-chapters-button,
+.vjs-descriptions-button,
+.vjs-captions-button,
+.vjs-subs-caps-button,
+.vjs-audio-button,
+.vjs-playback-rate {
+    display: none !important;
+}
+
+.video-wrapper {
+    position: relative;
+}
+
+.private-wrapper {
+    position: absolute;
+    inset: 0;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    flex-direction: column;
+}
+
+.private-title {
+    letter-spacing: 1px;
+    font-size: 24px;
+    margin-bottom: 50px;
+    text-align: center;
+}
+
+.private-status {
+    color: @primary-color;
+}
+
+.private-text {
+    opacity: .8;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.private-btn {
+    box-shadow: 0px 3px 8px #BC35FF66;
+    border-radius: 10px;
+    background: @primary-color 0% 0% no-repeat padding-box;
+    border: none;
+    color: #EEE;
+    display: flex;
+
+    &:hover,
+    &:focus {
+        background: @primary-color;
+        color: #eee;
+    }
+}

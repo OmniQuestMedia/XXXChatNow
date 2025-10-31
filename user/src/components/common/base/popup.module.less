@@ -1,0 +1,29 @@
+@import '../../../../style/default.less';
+
+.popup {
+  width: 40%;
+
+  [class~="ant-radio-wrapper"] {
+    width: 100%;
+  }
+
+  [class~="span.ant-radio+*"] {
+    width: 100%;
+  }
+
+  [class~="ant-modal-close"] {
+    color: #ffffff;
+  }
+
+  [class~="ant-modal-header"] {
+    background-color: var(--primary) !important;
+
+    :global .ant-modal-title {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      word-wrap: unset;
+      color: #fff;
+    }
+  }
+
+}

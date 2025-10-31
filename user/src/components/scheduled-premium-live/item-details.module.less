@@ -1,0 +1,28 @@
+.model-booking-modal-wrapper {
+    :global .ant-modal-content {
+        .ant-col {
+            padding: 5px;
+            color: black;
+        }
+
+        .ant-modal-title,
+        .text-center,
+        label {
+            color: black;
+        }
+
+        .ant-btn {
+            border-color: #242424;
+        }
+    }
+
+    @media (max-width: 767px) {
+        :global .ant-modal-content {
+            .ant-row {
+                .ant-col {
+                    display: block;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,80 @@
+@import '../../../style/default.less';
+
+.leaderboard-card {
+  background: #000;
+  color: #fff;
+  margin: 10px;
+  border: 2px solid @primary-color;
+  border-radius: 7px;
+
+  :global .ant-card-body {
+    padding: 0px;
+  }
+
+  :global .ant-card-head {
+    border-color: @primary-color;
+    background: rgba(249, 45, 130, 0.2);
+  }
+
+
+  :global .leaderboard-information {
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-between;
+    padding: 10px 15px 10px 15px;
+
+
+    &.odd {
+      background: rgba(249, 45, 130, 0.7);
+    }
+
+
+    .left-content {
+      width: 70%;
+      display: flex;
+      align-items: center;
+
+      .leaderboard-top {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        margin-right: 5px;
+        border-radius: 50%;
+        position: relative;
+        border-radius: 50%;
+        align-items: center;
+        justify-content: center;
+        background: rgba(102, 102, 102, 0.4);
+
+        .numerical-order {
+          position: absolute;
+          color: #fff;
+        }
+      }
+
+      .leaderboard-top.top1 {
+        background: #FFD700;
+
+        .numerical-order {
+          color: @regular-text;
+        }
+      }
+
+      .leaderboard-top.top2 {
+        background: #C0C0C0;
+
+        .numerical-order {
+          color: @regular-text;
+        }
+      }
+
+      .leaderboard-top.top3 {
+        background: #CD7F32;
+
+        .numerical-order {
+          color: @regular-text;
+        }
+      }
+    }
+  }
+}

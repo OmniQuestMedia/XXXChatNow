@@ -1,0 +1,1 @@
+export const REFERRAL_CHANNEL = 'REFERRAL_CHANNEL';

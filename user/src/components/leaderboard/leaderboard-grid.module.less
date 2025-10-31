@@ -1,0 +1,119 @@
+@import '../../../style/default.less';
+
+.leaderboard-box {
+    position: relative;
+    margin-bottom: 10px;
+
+    :global .performer-avatar {
+        position: relative;
+        padding-top: 77%;
+
+        &::before {
+            content: " ";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.6));
+            height: 30%;
+            z-index: 1;
+        }
+
+        .image-performer {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .leaderboard-top {
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #95887c;
+            z-index: 1;
+        }
+
+        .numerical-order {
+            position: absolute;
+            color: #fff;
+        }
+
+        .leaderboard-top.top1 {
+            background: #ffcc00;
+
+            .numerical-order {
+                color: @regular-text;
+            }
+        }
+
+        .leaderboard-top.top2 {
+            background: #cccccc;
+
+            .numerical-order {
+                color: @regular-text;
+            }
+        }
+
+        .leaderboard-top.top3 {
+            background: #ce8032;
+
+            .numerical-order {
+                color: @regular-text;
+            }
+        }
+    }
+}
+
+.per-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.per-username {
+    font-size: 14px;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    text-transform: capitalize;
+}
+
+.per-earning {
+    color: rgb(255, 204, 0);
+    font-size: 10px;
+    line-height: 1;
+}
+
+.blocked-thumb {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: calc(100% - 16px);
+    height: calc(100% - 16px);
+    background-color: rgba(1, 1, 1, 0.8);
+    border-radius: 3px;
+    z-index: @zindex-blocked-thumb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: not-allowed;
+
+    .anticon {
+        color: @white-color;
+        font-size: 20px;
+    }
+}

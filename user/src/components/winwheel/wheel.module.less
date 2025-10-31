@@ -1,0 +1,92 @@
+@import '../../../style/default.less';
+
+.wheelWrapper {
+  position: absolute;
+  right: -302px;
+  top: 50%;
+  transform: scale(0.8) translateY(-50%);
+  margin-top: -50px;
+
+  @media (max-width: 900px) {
+    transform: scale(0.6) translateY(-50%);
+    margin-top: -128px;
+  }
+
+  @media (max-width: 600px) {
+    transform: scale(0.35) translateY(-50%);
+    margin-top: -200px;
+  }
+
+  &:global(.active-wheel) {
+    :global {
+      .sectors {
+        animation: rotate 12s linear infinite;
+      }
+    }
+  }
+
+  :global {
+    .show-wheel {
+      transition: 300ms all;
+      margin-right: -300px;
+    }
+
+    .vlass {
+      margin-right: 0;
+    }
+
+    .circle-center {
+      transition: all 200ms;
+    }
+
+    .group-sectors {
+      cursor: pointer;
+
+      &:hover .circle-center {
+        fill: #9E16E1;
+      }
+    }
+
+    .sectors .sector {
+      position: relative;
+      font-size: 18px;
+    }
+
+    .sectors .sector path,
+    .sectors,
+    .lights {
+      transform-origin: 283.5px 290.5px;
+    }
+
+    .sectors .sector text,
+    .arrow {
+      transform-origin: 283.5px 290.5px;
+    }
+
+    .close-rotation {
+      cursor: pointer;
+    }
+
+    .path-arrow {
+      transform: translate(3px, 0)
+    }
+
+    .lights {
+      path {
+        fill: #fff;
+        stroke: #efd1fd;
+        stroke-width: 3;
+        transform-origin: 283.5px 290.5px;
+        transition: all 300ms;
+
+        &.unactive {
+          opacity: 0;
+        }
+
+        &.active {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}

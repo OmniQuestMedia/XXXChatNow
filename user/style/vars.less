@@ -1,0 +1,35 @@
+@import './mixin.less';
+
+
+/* Creating the loading animation*/
+@keyframes loading {
+  0% {
+    transform: translateY(0);
+  }
+
+  25% {
+    transform: translateY(3px);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  /* Start at 0 degrees */
+  to {
+    transform: rotate(360deg);
+  }
+
+  /* Rotate 360 degrees for one full rotation */
+}

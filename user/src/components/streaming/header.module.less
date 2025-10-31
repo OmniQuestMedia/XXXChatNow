@@ -1,0 +1,78 @@
+@import '../../../style/vars.less';
+
+.stream-header {
+  margin-bottom: 10px;
+  @media (max-width: @mobile-query) {
+    position: relative;
+    margin: 0;
+  }
+  .stream-header-left {
+    @media (max-width: @mobile-query) {
+      width: calc(100% - 88px);
+      padding: 8px;
+    }
+  }
+  .left-content {
+    display: flex;
+    align-items: center;
+    
+    .stream-title {
+      margin-left: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--primary);
+      display: flex;
+      flex-direction: column;
+      text-transform: capitalize;
+      @media (max-width: @mobile-query) {
+        font-size: 14px;
+        line-height: 17px;
+      }
+    }
+
+    .stream-avatar {
+      height: 45px;
+      width: 45px;
+      border-radius: 50%;
+      @media (max-width: @mobile-query) {
+        height: 35px;
+        width: 35px;
+      }
+    }
+  }
+  .stream-header-right {
+    @media (max-width: @mobile-query) {
+      position: absolute;
+      top: 5px;
+      right: 8px;
+      :global .ant-btn {
+        padding: 5px 10px;
+        margin: 0 0 0 5px;
+        span:last-child {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+.button-block {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  :global .ant-btn-primary {
+    background: var(--primary);
+    border: var(--primary);
+  }
+  :global .ant-btn {
+    height: 35px;
+    margin: 5px;
+  }
+  :global .ant-btn-default {
+    &:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+  }
+  
+}

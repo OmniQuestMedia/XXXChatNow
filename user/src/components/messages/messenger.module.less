@@ -1,0 +1,58 @@
+@import '../../../style/vars.less';
+
+.messenger {
+  display: flex;
+  width: 100%;
+  height: 80vh;
+
+  .conversation-list-container {
+    background-color: var(--white);
+    display: flex;
+    width: 30%;
+  }
+
+  .chat-content-container {
+    background: var(--white);
+    display: flex;
+    width: 70%;
+    padding: 20px 0;
+    position: relative;
+
+    .close-btn {
+      display: none;
+    }
+  }
+}
+
+@media all and (max-width: 768px) {
+  .messenger {
+    height: unset;
+
+    .conversation-list-container {
+      width: 100% !important;
+    }
+
+    .conversation-list-container[class~=active] {
+      display: none;
+    }
+
+    .chat-content-container {
+      display: none !important;
+    }
+
+    .chat-content-container[class~=active] {
+      display: flex !important;
+      width: 100%;
+    }
+
+    .chat-content-container[class~=active] .close-btn {
+      display: flex;
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      z-index: 1;
+    }
+
+  }
+
+}

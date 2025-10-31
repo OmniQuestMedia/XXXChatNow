@@ -1,0 +1,78 @@
+@import '../../../style/vars.less';
+
+.text-at-the-top {
+    font-size: medium;
+    padding: 15px;
+    text-align: center;
+}
+
+.booking-calendar {
+    max-width: 860px;
+    margin: auto;
+
+    :global {
+        .ant-picker-calendar-mode-switch {
+            display: none;
+        }
+
+        .ant-picker-calendar-header {
+            margin-right: 10px;
+        }
+
+        .ant-select-arrow {
+            color: @white-color;
+        }
+
+        .ant-picker-calendar-date-content {
+            height: 45px !important;
+
+            ul.events {
+                padding: 0;
+                max-height: 100%;
+                overflow: auto;
+                margin: 0;
+
+                li {
+                    padding-left: 10px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    position: relative;
+                    list-style: none;
+
+                    &::before {
+                        content: '';
+                        width: 5px;
+                        height: 5px;
+                        position: absolute;
+                        left: 0;
+                        top: 7px;
+                        border-radius: 50%;
+                    }
+
+                    &.success {
+                        &::before {
+                            background-color: @success-color;
+                        }
+                    }
+
+                    &.error {
+                        &::before {
+                            background-color: #f04134;
+                        }
+                    }
+                }
+            }
+        }
+
+        .ant-picker-cell-in-view:not(.ant-picker-cell-disabled)>.ant-picker-cell-inner {
+            border-color: #eebd22 !important;
+        }
+
+        .ant-picker-cell-in-view.ant-picker-cell-disabled>.ant-picker-cell-inner {
+            cursor: not-allowed;
+            pointer-events: auto;
+        }
+
+    }
+}

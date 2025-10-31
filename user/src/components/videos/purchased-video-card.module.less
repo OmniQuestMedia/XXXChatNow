@@ -1,0 +1,41 @@
+@import '../../../style/default.less';
+
+.purchased-video-card {
+  margin-bottom: 20px;
+
+  :global .purchased-video-card-thumb {
+    padding: 20px;
+    background-color: rgba(255, 0, 102, 0.1);
+    border-radius: 10px;
+    position: relative;
+
+    img {
+      width: 100%;
+      height: 150px;
+      border-radius: @border-radius-image;
+    }
+
+    span {
+      font-size: 30px;
+      color: @white-color;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 99;
+    }
+  }
+
+  :global .purchased-video-card-name {
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-size: @font-size-base;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}

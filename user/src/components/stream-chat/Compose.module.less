@@ -1,0 +1,141 @@
+@import '../../../style/default.less';
+
+.compose {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background: transparent;
+
+  @media (max-width: @mobile-query) {
+    padding: 6px 10px;
+  }
+}
+
+.compose [class~="ant-input-textarea"] {
+  width: 100%;
+}
+
+.compose-input {
+  flex: 1;
+  border: none;
+  border-radius: 15px;
+  font-size: 14px;
+  height: 30px;
+  background: none;
+  color: var(--text-main);
+  outline: thin;
+  background-color: var(--bg-grey);
+  border-color: var(--border-color) !important;
+  box-shadow: 0 0 0 2px var(--border-color) !important;
+
+  &:focus {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 2px var(--primary) !important;
+  }
+
+  &::placeholder {
+    color: var(--text-grey);
+  }
+}
+
+.compose-input::placeholder {
+  opacity: 0.5;
+}
+
+.compose {
+  [class~="toolbar-button"] {
+    color: #bbbbbf;
+    margin-left: 15px;
+  }
+
+  &:hover [class~="toolbar-button"] {
+    color: #99999c;
+  }
+}
+
+.grp-icons {
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  :global .btn-senttip {
+    padding: 5px 7px;
+    height: auto !important;
+    margin-left: 10px;
+    width: auto;
+  }
+}
+
+.grp-emotions {
+  display: flex;
+  align-items: center;
+
+  [class~="EmojiPickerReact"] {
+    display: none !important;
+    position: absolute !important;
+    right: 0 !important;
+    bottom: 37px  !important
+  }
+}
+
+.grp-file-icon {
+  background: url('/paperclip-ico.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  height: 25px;
+  width: 25px;
+
+  [class~="avatar-uploader"] {
+    opacity: 0;
+    [class~="ant-upload"] {
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      border: none;
+      margin: 0;
+      img {
+        width: 20px!important;
+        height: 20px;
+        object-fit: cover;
+      }
+    }
+
+    [class~="ant-upload-text"] {
+      display: none;
+    }
+  }
+}
+
+.send-icon {
+  margin-left: 10px;
+  font-size: 24px;
+  color: @primary-color;
+  display: none;
+}
+
+.emoji-icon  {
+  margin-left: 10px;
+  font-size: 24px;
+
+  &:hover {
+    color: @primary-color;
+  }
+}
+
+.on-typing {
+  .send-icon {
+    display: block;
+  }
+
+  button {
+    display: none;
+  }
+}

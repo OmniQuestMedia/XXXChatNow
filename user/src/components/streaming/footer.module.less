@@ -1,0 +1,74 @@
+@import '../../../style/vars.less';
+
+.stream-footer {
+    [class~="ant-btn"]:disabled{
+        color: @white-color;
+        background: var(--primary);
+        border-color: var(--primary);
+    }
+    [class~='ant-btn-primary'] {
+        border-color: var(--primary);
+        background: var(--primary);
+    }
+    &-desktop {
+        @media (max-width: @mobile-query) {
+            display: none;
+        }
+    }
+    &-mobile {
+        display: none;
+        position: relative;
+        @media (max-width: @mobile-query) {
+            display: block;
+        }
+        ul {
+            border-top: 1px solid var(--border-color);
+            margin: 0;
+            padding: 0;
+            display: table;
+            width: 100%;
+            padding-right: 180px;
+            :global li {
+                display: table-cell;
+                cursor: pointer;
+                border-right: 1px solid var(--border-color);
+                font-weight: bold;
+                text-align: center;
+                position: relative;
+                &::before {
+                    content: ' ';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 3px;
+                    background-color: transparent;
+                }
+                button {
+                    padding: 10px;
+                    border: 0;
+                    background: none;
+                    width: 100%;
+                }
+                &.active {
+                    color: var(--primary);
+                    &::before {
+                        background-color: var(--primary);
+                    }
+
+                }
+            }
+
+        }
+
+    }
+    :global .stream-footer-mobile-btn {
+        position: absolute;
+        top: 4px;
+        right: 5px;
+        :global .ant-btn  {
+            margin-left: 5px;
+            padding: 5px;
+        }
+    }
+}
