@@ -1,23 +1,23 @@
 ### Overview
-Cam aggregator is xCams base platform with affiliate cam services from xlovecam, stripcash, bongacam, chaturbate
+XXXChatNow.com is cam aggregator base platform with affiliate cam services from xlovecam, stripcash, bongacam, chaturbate, as well as its own models broadcasting worldwide through a contemporay platform.
 
 ### Version
 V1.0.3
 
 ### License
-Cam aggregator is a private project, it MUST be purchased and non-free product.
+XXXChatNow is a privately developed platform - built by models, for models and an savvy sex-positive VIP user.
 
 Struture
 
 - `api`: provides application restful apis, and manage application business
-- `user`: the website for end user, model, studio to acccess
-- `admin`: the management website for administrator
+- `user`: the website is for end users, models, and select, ethical studios to acccess.
+- `admin`: the management website is for administrators
 
 ### Contact
-- Email: `contact@adent.io`
+- Email: general@OQMINC.com
 ### Author
 
-- Sales: contact@adent.io
+- Sales: general@OQMINC.com
 - Technical: tuong.tran@outlook.com
 
 ## Setup
@@ -50,7 +50,7 @@ Struture
 The celebratory actions and number of milestones can be altered during a stream as well.
 2. Goal Window: Goals can be checked below the stream window, in an expandable space.
 Only the next goal and the reward associated shows up in the visible space; others show in the expanded view.
-3. Promoting Goals: he goals get published in the chat room at the beginning of a stream as well as when a new user joins.
+3. Promoting Goals: broadcast goals get published in the chat room at the beginning of a stream as well as when a new user joins.
 Once a milestone is reached, the same will get published in chat as well.
 
 - Check our `wiki`
