@@ -153,8 +153,14 @@ The following governance and onboarding documents **MUST** be maintained and kep
 
 ### 3.1 Governance Documents
 - **COPILOT_GOVERNANCE.md** (this file): Repository-specific Copilot rules and conventions
-- **COPILOT_REPO_BRIEFING.md**: Detailed technical briefing for AI assistants (to be created/maintained)
-- **COPILOT_PR_CHECKLIST.md**: Pull request checklist for AI-assisted changes (to be created/maintained)
+- **COPILOT_REPO_BRIEFING.md**: Detailed technical briefing for AI assistants
+  - Status: To be created as needed
+  - Owner: Repository maintainers
+  - Purpose: Provide detailed technical context for AI assistants working on complex features
+- **COPILOT_PR_CHECKLIST.md**: Pull request checklist for AI-assisted changes
+  - Status: To be created as needed
+  - Owner: Repository maintainers
+  - Purpose: Standardize PR review process for AI-generated changes
 
 ### 3.2 Security & Policy Documents
 - **SECURITY_AUDIT_POLICY_AND_CHECKLIST.md**: Security requirements and audit procedures
@@ -176,7 +182,7 @@ All PRs created by AI assistants must:
 - Link to the originating issue or feature request
 - Pass all automated CI checks (linting, tests, security scans)
 - Require at least **one human reviewer** for approval
-- Include the `COPILOT_PR_CHECKLIST.md` in the PR description
+- Include a checklist covering the key review areas outlined in Section 2 (when `COPILOT_PR_CHECKLIST.md` is available, use that template)
 
 ### 4.2 Elevated Review Requirements
 The following changes require **two human reviewers**, including at least one with domain expertise:
