@@ -149,7 +149,7 @@ Before Copilot generates any code, the following inputs **must** be provided:
    - Format: `type(scope): brief description - TICKET-ID`
    - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
    - Example: `feat(payments): add Stripe integration - XXX-123`
-   - Include co-authored-by tag for AI assistance: `Co-authored-by: GitHub Copilot <noreply@github.com>`
+   - Include co-authored-by tag for AI assistance: `Co-authored-by: GitHub Copilot <copilot@github.com>`
 
 4. **Pre-Push Checklist**
    - [ ] All tests pass locally
@@ -545,7 +545,7 @@ When guidance is received:
 
 1. **Document the Decision**: Add to project documentation if broadly applicable
 2. **Update Patterns**: Incorporate learned patterns into future suggestions
-3. **Store Context**: Use store_memory tool for important learnings
+3. **Store Context**: Document important learnings for future reference
 4. **Validate Understanding**: Confirm interpretation of guidance before proceeding
 
 ---
@@ -579,7 +579,7 @@ type(scope): subject - TICKET-ID
 
 Optional body explaining what and why (not how)
 
-Co-authored-by: GitHub Copilot <noreply@github.com>
+Co-authored-by: GitHub Copilot <copilot@github.com>
 ```
 
 **Commit Types**:
@@ -600,7 +600,7 @@ feat(payments): add Stripe payment integration - XXX-123
 Implements Stripe payment processing with webhook handling
 for subscription management and one-time purchases.
 
-Co-authored-by: GitHub Copilot <noreply@github.com>
+Co-authored-by: GitHub Copilot <copilot@github.com>
 ```
 
 ```
@@ -609,7 +609,7 @@ fix(auth): prevent session fixation vulnerability - XXX-456
 Regenerate session ID after successful login to prevent
 session fixation attacks.
 
-Co-authored-by: GitHub Copilot <noreply@github.com>
+Co-authored-by: GitHub Copilot <copilot@github.com>
 ```
 
 ### File Change Rules
