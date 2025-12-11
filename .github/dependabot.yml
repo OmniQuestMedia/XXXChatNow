@@ -1,0 +1,20 @@
+version: 2
+updates:
+  # Keep NPM (Node / MERN) dependencies fresh
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 10
+    rebase-strategy: "auto"
+
+  # Keep GitHub Actions fresh
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:30"
+    open-pull-requests-limit: 10
