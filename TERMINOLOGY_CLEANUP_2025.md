@@ -43,8 +43,8 @@ The following directories were restored from archive to operational locations:
 
 #### Files Modified:
 1. `api/package.json` - Package name: `xcams-api` → `xxxchatnow-api`
-2. `admin/package.json` - Package name: `xcams-admin` → `xxxchatnow-admin`
-3. `user/package.json` - Package name: `xcams-user` → `xxxchatnow-user`
+2. `admin/package.json` - Package name: `xcams-back-office` → `xxxchatnow-back-office`
+3. `user/package.json` - Package name: `xcams-front-office` → `xxxchatnow-front-office`
 
 ## Environment Variables
 
@@ -93,10 +93,10 @@ No publicly exposed URLs or API endpoints were identified that require attention
 - `api/src/modules/notification/constants.ts`: Push notification topic updated
 
 ### Admin Module
-- `admin/package.json`: `"name": "xcams-admin"` → `"name": "xxxchatnow-admin"`
+- `admin/package.json`: `"name": "xcams-back-office"` → `"name": "xxxchatnow-back-office"`
 
 ### User Module
-- `user/package.json`: `"name": "xcams-user"` → `"name": "xxxchatnow-user"`
+- `user/package.json`: `"name": "xcams-front-office"` → `"name": "xxxchatnow-front-office"`
 
 ### Configuration
 - `config-example/env/api.env`: Environment variable references updated
