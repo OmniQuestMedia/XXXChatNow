@@ -145,10 +145,17 @@ Every spin request includes an idempotency key:
 
 **Database-Level Locking:**
 ```sql
--- Lock user balance for update
+-- Lock user balance for update with timeout
+-- Use short timeout to balance performance with reliability
 SELECT balance FROM loyalty_points 
 WHERE user_id = $1 
-FOR UPDATE NOWAIT;
+FOR UPDATE;  -- PostgreSQL default lock timeout applies
+
+-- Alternative with explicit timeout (PostgreSQL):
+SET lock_timeout = '5s';
+SELECT balance FROM loyalty_points 
+WHERE user_id = $1 
+FOR UPDATE;
 ```
 
 **Optimistic Concurrency Alternative:**
@@ -351,20 +358,31 @@ Alert security team for manual review.
 
 ### Symbols and Payouts
 
-| Symbol | Rarity | 3-Match Payout | Expected Value |
-|--------|--------|----------------|----------------|
-| Cherry | 30% | 150 points | 45 points |
-| Lemon | 25% | 200 points | 50 points |
-| Orange | 20% | 300 points | 60 points |
-| Plum | 12% | 500 points | 60 points |
-| Bell | 8% | 1,000 points | 80 points |
-| Star | 3% | 2,500 points | 75 points |
-| Seven | 1.5% | 5,000 points | 75 points |
-| Diamond | 0.5% | 10,000 points | 50 points |
+**Note**: The table below shows illustrative symbol rarities only. Actual payout values must be calculated using proper RTP mathematics to achieve the target 95% return to player. The final configuration requires:
 
-**Total Expected Return**: 495 points on average per 100-point spin = 495% (needs rebalancing)
+1. Mathematical modeling to determine exact payout values
+2. Simulation testing with 1+ million spins to verify RTP
+3. Actuarial review to ensure financial sustainability
+4. Stakeholder approval before implementation
 
-**Note**: Above payouts are illustrative. Actual configuration must be tuned to achieve target 95% RTP.
+| Symbol | Rarity | 3-Match Payout | Notes |
+|--------|--------|----------------|-------|
+| Cherry | 30% | TBD | Most common, lowest payout |
+| Lemon | 25% | TBD | Common, low payout |
+| Orange | 20% | TBD | Medium-common, moderate payout |
+| Plum | 12% | TBD | Medium-rare, moderate payout |
+| Bell | 8% | TBD | Rare, good payout |
+| Star | 3% | TBD | Very rare, high payout |
+| Seven | 1.5% | TBD | Extremely rare, very high payout |
+| Diamond | 0.5% | TBD | Ultra rare, jackpot payout |
+
+**Target RTP**: 95% (for every 100 points wagered, average return is 95 points)
+
+**Mathematical Requirements**:
+- Total probability across all symbols must equal 100%
+- Expected value calculation: Σ(Probability × Payout) must equal 95 points
+- Variance and standard deviation must be calculated for user experience
+- House edge: 5% (100% - 95% RTP)
 
 ### Configuration Schema
 
@@ -384,21 +402,37 @@ Alert security team for manual review.
       "rarity": 0.30,
       "imageUrl": "/images/symbols/cherry.png",
       "payouts": {
-        "three": 150
+        "three": null  // TBD: Calculate based on RTP requirements
       }
     },
     {
       "id": "lemon",
       "name": "Lemon",
       "rarity": 0.25,
+      "imageUrl": "/images/symbols/lemon.png",
       "payouts": {
-        "three": 200
+        "three": null  // TBD: Calculate based on RTP requirements
       }
     },
-    // ... additional symbols
+    {
+      "id": "orange",
+      "name": "Orange",
+      "rarity": 0.20,
+      "imageUrl": "/images/symbols/orange.png",
+      "payouts": {
+        "three": null  // TBD: Calculate based on RTP requirements
+      }
+    }
+    // ... additional symbols with payouts calculated to achieve 95% RTP
   ]
 }
 ```
+
+**Configuration Notes**:
+- Payout values must be determined through mathematical modeling
+- Configuration must be validated to ensure actual RTP matches target (95% ±1%)
+- Simulation testing required before activating any configuration
+- All configurations must be approved by Product Owner and reviewed by Finance team
 
 ### Configuration Management
 

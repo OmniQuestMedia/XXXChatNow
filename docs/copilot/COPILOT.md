@@ -19,6 +19,7 @@ This document defines **mandatory engineering rules** for GitHub Copilot and all
 
 ### Rule 1: Never Break Existing Token Balance Logic
 - **NEVER** modify existing token balance calculation logic without explicit approval and comprehensive test coverage
+- Transaction records must be retained per platform policy: 8 years total (18 months active/hot storage + 6.5 years archived/cold storage as defined in [Security Audit Policy](/SECURITY_AUDIT_POLICY_AND_CHECKLIST.md))
 - All changes to balance-related code must include:
   - Unit tests covering edge cases (zero balance, negative attempts, overflow)
   - Integration tests verifying end-to-end balance flows
