@@ -1,0 +1,51 @@
+@import '../../style/vars.less';
+
+.title {
+  position: absolute;
+  bottom: 0;
+
+  @media (max-width: 567px) {
+    position: relative;
+  }
+}
+
+.profile-page  .performer-grid {
+  min-height: 0 !important;
+  [class~="ant-card-head"] {
+    padding: 0 20px !important;
+  }
+
+  .streaming-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    min-height: 530px;
+    border-radius: 10px;
+    overflow: hidden;
+    .subscriber {
+      height: calc(100% - 50px);
+      width: 100%;
+      background: @white-color;
+      video {
+        width: 100%;
+        height: 100%;
+      }
+      @media (max-width: 567px) {
+        height: 480px;
+        border-radius: 0;
+      }
+    }
+  }
+
+}
+.streaming-container {
+  :global .ant-tabs-nav {
+    display: none;
+  }
+
+}
+.info-profile {
+  @media screen and (max-width: @mobile-query) {
+    height: calc(100vh - 428px);
+    overflow: auto;
+  }
+}

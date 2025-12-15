@@ -1,0 +1,37 @@
+@import '../../../style/default.less';
+
+.performer-filter {
+  padding: 0 10px;
+
+  :global .active {
+    color: #d9005e;
+    background: @white-color;
+    border-color: #d9005e;
+  }
+
+  :global .ant-btn-primary {
+    color: @white-color;
+    border-color: #ff2977;
+    background: #ff2977;
+
+    &:hover {
+      background: #ef1473;
+    }
+  }
+
+  :global .ant-btn-dashed {
+    &:hover {
+      color: #ff2977;
+      border-color: #ff2977;
+      background: @white-color;
+    }
+  }
+  
+  @media (max-width: 567px) {
+    :global .filter-mobile {
+      overflow-x: auto;
+      width: 100%;
+      padding: 10px 0;
+    }
+  }
+}

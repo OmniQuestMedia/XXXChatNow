@@ -1,0 +1,107 @@
+@import '../../../style/default.less';
+
+.streaming-container {
+  position: relative;
+  margin: 5px 0;
+  min-height: 480px;
+
+  @media (max-width: @mobile-query) {
+    min-height: auto;
+    margin: 0;
+  }
+
+  :global .chatbox-public {
+    @media (max-width: @mobile-query) {
+      :global .ant-tabs-nav {
+        display: none;
+      }
+    }
+  }
+
+  :global .user-ranking {
+    padding: 15px;
+  }
+
+}
+
+.container {
+  [class~='ant-btn-primary'] {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+}
+
+.stream-private-main {
+  position: relative;
+
+  :global {
+    .button-start-stream {
+
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      z-index: 10;
+
+      @media (max-width: @mobile-query) {
+        button {
+          padding: 4px 7px;
+          height: auto;
+        }
+      }
+    }
+
+    #private-publisher {
+      width: 100% !important;
+      height: 100% !important;
+      top: 0 !important;
+      right: 0 !important;
+    }
+
+    @media (max-width: @mobile-query) {
+      #private-subscriber {
+        height: 258px;
+      }
+    }
+
+    .message-stream {
+      @media (max-width: @mobile-query) {
+        height: calc(100vh - 376px);
+      }
+    }
+  }
+}
+
+.stream-started {
+  :global {
+    .load-model-request {
+      display: none;
+    }
+
+    #private-publisher {
+      width: 100px !important;
+      height: 100px !important;
+      top: 38px !important;
+      right: 10px !important;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+.stream-icons-action {
+  display: flex;
+  position: absolute;
+  right: 10px;
+  bottom: 50px;
+  top: 50px;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  z-index: 2;
+}
+
+.public-stream-left {
+  position: relative;
+  overflow: hidden;
+}

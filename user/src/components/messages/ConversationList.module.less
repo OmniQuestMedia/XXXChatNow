@@ -1,0 +1,25 @@
+@import '../../../style/vars.less';
+
+.conversation-list {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  padding: 20px 0;
+  border-right: 1px var(--primary) solid;
+
+  .conversation-title {
+    text-align: center;
+    font-size: 22px;
+    color: var(--black);
+  }
+
+  .text-center {
+    text-align: center;
+  }
+}
+
+@media all and (max-width: 768px) {
+  .conversation-list {
+    overflow: hidden;
+  }
+}

@@ -1,0 +1,102 @@
+@import '../../../style/default.less';
+
+.compose {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background: var(--white);
+}
+
+.compose [class~="ant-input-textarea"] {
+  width: 100%;
+}
+
+.compose-input {
+  flex: 1;
+  border: none;
+  border-radius: 15px;
+  font-size: 14px;
+  height: 30px;
+  background: none;
+  color: var(--black);
+  outline: thin;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 2px var(--primary) !important;
+}
+
+.compose-input:focus {
+  border-color: @secondary-color !important;
+  box-shadow: 0 0 0 2px @secondary-color !important;
+}
+
+.compose-input::placeholder {
+  color: var(--text-grey);
+  opacity: 0.5;
+}
+
+.grp-icons {
+  padding: 0 10px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.grp-emotions {
+  display: flex;
+
+  [class~="EmojiPickerReact"] {
+    display: none !important;
+    position: absolute !important;
+    right: 0 !important;
+    bottom: 37px !important
+  }
+}
+
+.emoji-icon {
+  font-size: 1.5rem;
+  color: var(--primary);
+}
+
+// .grp-emotions:hover {
+//   [class~="EmojiPickerReact"] {
+//     display: flex !important;
+//   }
+// }
+
+.grp-file-icon {
+  background: url('/paperclip-ico.png');
+  background-size: 100%;
+  background-repeat: no-repeat;
+  height: 25px;
+  width: 25px;
+
+  [class~="avatar-uploader"] {
+    opacity: 0;
+
+    [class~="ant-upload"] {
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      border: none;
+      margin: 0;
+
+      img {
+        width: 20px !important;
+        height: 20px;
+        object-fit: cover;
+      }
+    }
+
+    [class~="ant-upload-text"] {
+      display: none;
+    }
+  }
+}

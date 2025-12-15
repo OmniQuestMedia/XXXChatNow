@@ -1,0 +1,62 @@
+@import '../../../style/vars.less';
+
+.conversation-list-item {
+  .conversation {
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    line-height: 30px;
+    padding: 0 10px;
+    cursor: pointer;
+  
+    &:hover {
+      background-color: #ffe6eb;
+    }
+  
+    .conversation-name {
+      max-width: 80%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      font-weight: 600;
+      color: @regular-text;
+    }
+  }
+}
+
+.conversation-list-item:hover {
+  background: #ffe6eb;
+  cursor: pointer;
+}
+
+.conversation-list-item[class~=active] {
+  background: #ffe6eb;
+  // pointer-events: none;
+}
+
+.last-message {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+  height: 20px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conversation-time {
+  font-size: 10px;
+  color: #888;
+  margin: 0;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0;
+  left: 10px;
+}

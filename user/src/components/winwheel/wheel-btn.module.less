@@ -1,0 +1,20 @@
+.btn-wheel {
+  border-radius: 10px;
+  width: auto;
+  border: none;
+  background: transparent;
+
+  &:hover {
+    background: #BC35FF !important;
+  }
+
+  img {
+    transition-property: transform;
+    transition-duration: 0.3s;
+    transition-timing-function: ease-in-out;
+
+    &:hover {
+      transform: rotate(360deg);
+    }
+  }
+}

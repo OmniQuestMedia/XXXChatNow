@@ -1,0 +1,29 @@
+{
+  "files_copied": 1906,
+  "files_with_replacements": 10,
+  "total_replacements": 11,
+  "replacement_details": {
+    "\\bXCams\\b": {
+      "count": 8,
+      "files": [
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/api/README.md",
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/api/env.sample",
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/api/migrations/content/policy.html",
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/api/migrations/content/terms-of-conditions.html",
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/api/src/modules/notification/constants.ts",
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/api/src/modules/performer/services/performer.service.ts",
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/config-example/env/api.env"
+      ]
+    },
+    "\\bxcams-": {
+      "count": 3,
+      "files": [
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/api/package.json",
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/admin/package.json",
+        "/home/runner/work/XXXChatNow/XXXChatNow/_archive/xxxchatnow-seed/user/package.json"
+      ]
+    }
+  },
+  "binary_files": 114,
+  "errors": []
+}

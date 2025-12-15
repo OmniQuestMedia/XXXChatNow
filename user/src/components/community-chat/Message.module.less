@@ -1,0 +1,121 @@
+@import '../../../style/vars.less';
+
+.message {
+  display: flex;
+  flex-direction: column;
+}
+
+.message [class~='timestamp'] {
+  display: flex;
+  justify-content: flex-start;
+  color: #999;
+  font-weight: 600;
+  font-size: 8px;
+  margin: 5px 0px;
+
+}
+
+.message {
+  &[class~=mine] [class~=timestamp] {
+    justify-content: flex-end;
+  }
+}
+
+
+.message {
+  &[class~=bubble-container] {
+    font-size: 14px;
+    display: flex;
+  }
+}
+
+
+.message {
+  [class~='bubble-container'] {
+    display: flex;
+
+  }
+
+  &[class~='mine'] [class~='bubble-container'] {
+    justify-content: flex-end;
+
+  }
+}
+
+// .message.start .bubble-container .bubble {
+//   /* margin-top: 10px; */
+//   border-top-left-radius: 20px;
+// }
+
+// .message.end .bubble-container .bubble {
+//   border-bottom-left-radius: 20px;
+//   /* margin-bottom: 10px; */
+// }
+
+// .message.mine.start .bubble-container .bubble {
+//   margin-top: 10px;
+// }
+
+// .message.mine.end .bubble-container .bubble {
+//   margin-bottom: 10px;
+// }
+
+.message [class~='bubble-container'] [class~='bubble'] {
+  margin: 1px 0px;
+  background: #f4f4f8;
+  padding: 10px 15px;
+  border-radius: 5px;
+  max-width: 75%;
+  position: relative;
+  word-break: break-all;
+
+  :global .close-btn {
+    position: absolute;
+    top: -10px;
+    right: -7px;
+    padding: 0px 7px;
+    border: 1px solid;
+    border-radius: 5px;
+    background: @white-color;
+  }
+
+  [class~='bubble-name'] {
+    color: #999;
+  }
+}
+
+
+.message {
+  &[class~=mine] [class~=bubble-container] [class~=bubble] {
+    background: @primary-color;
+    color: @white-color;
+
+    [class~='bubble-name'] {
+      color: yellow;
+    }
+  }
+}
+
+
+.message[class~='tip'] [class~='bubble-container'] [class~='bubble'] {
+  width: 100% !important;
+  max-width: 100% !important;
+  text-align: center !important;
+  background: @primary-color  !important;
+  color: white !important;
+  [class~=bubble-name] {
+    color: yellow;
+    font-weight: bold;
+    font-size: 14px;
+  }
+}
+
+.message[class~='tip'] [class~=timestamp] {
+  text-align: center;
+  display: inline-block;
+}
+
+.message-time {
+  font-size: 10px;
+  margin: 0;
+}

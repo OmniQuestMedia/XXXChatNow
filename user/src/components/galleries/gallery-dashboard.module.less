@@ -1,0 +1,88 @@
+@import '../../../style/default.less';
+
+.photo-grid {
+  background: transparent !important;
+  padding: 16px 0;
+
+  .photo-box {
+    width: calc(100% / 4);
+    position: relative;
+
+    .photo-info {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+
+      span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 250px
+      }
+    }
+
+    .photo-thumbnail {
+      display: block;
+      position: relative;
+
+      img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+    }
+
+    .actions {
+      position: absolute;
+      bottom: 10px;
+      right: 5px;
+      font-size: 15px;
+      color: @white-color;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 3px 6px;
+      border-radius: 4px;
+
+      [class~="ant-btn"] {
+        font-size: 15px;
+      }
+    }
+
+    .photo-status {
+      position: absolute;
+      top: 10px;
+      right: 5px;
+    }
+
+    .sale-tag {
+      position: absolute;
+      top: 10px;
+      left: 5px;
+    }
+
+    .photo-description {
+      color: var(--text-grey);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 990px) {
+      width: calc(100% / 3);
+    }
+
+    @media (max-width: 767px) {
+      width: calc(100% / 2);
+
+      .photo-thumbnail {
+        img {
+          height: 155px;
+        }
+      }
+    }
+
+    @media (max-width: 479px) {
+      width: 100%;
+    }
+  } 
+}

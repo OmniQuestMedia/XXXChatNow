@@ -1,0 +1,99 @@
+@import '../../style/vars.less';
+
+.community-chat-page {
+  margin: 0 auto;
+  max-width: 100vw;
+
+  .community-chat-list {
+    background-color: @sub-background-container;
+    min-height: calc(100vh - 200px);
+    max-height: calc(100vh - 200px);
+    overflow: auto;
+    border-radius: 10px 0 0 10px;
+
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+
+      h3 {
+        margin-bottom: 0 !important;
+        margin-top: 0 !important;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .community-chat-content {
+    padding: 10px;
+    border-top: 1px solid @sub-background-container;
+    border-bottom: 1px solid @sub-background-container;
+    min-height: calc(100vh - 200px);
+    max-height: calc(100vh - 200px);
+  }
+
+  .participants {
+    background-color: @sub-background-container;
+    min-height: calc(100vh - 200px);
+    max-height: calc(100vh - 200px);
+    overflow: auto;
+    border-radius: 0 10px 10px 0;
+
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .title {
+      padding: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .participant {
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 32px;
+      padding: 0 10px;
+      cursor: pointer;
+      height: 60px;
+
+      &:hover {
+        background-color: #ffe6eb;
+      }
+
+      .section-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50px;
+        cursor: pointer;
+
+        .avatar {
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .participant-name {
+        max-width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        color: @regular-text;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+.community-chat-page [class~=custom] {
+  height: calc(100vh - 200px) !important;
+}

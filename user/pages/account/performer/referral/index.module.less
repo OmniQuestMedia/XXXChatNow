@@ -1,0 +1,60 @@
+@import '../../../../style/vars.less';
+
+.page-referral {
+  :global .title {
+
+    h1 {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .info {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      p {
+        margin: 0 7px 0 0;
+      }
+
+      :global .anticon {
+        color: @primary-color;
+        font-size: 1.2rem;
+        cursor: pointer;
+      }
+    }
+  }
+
+  :global .ant-tabs {
+    padding: 30px
+  }
+
+  :global .ant-table {
+    :global .ant-table-thead {
+      :global .ant-table-cell {
+        font-weight: 600;
+      }
+    }
+  }
+
+  :global .ant-tabs-content-holder {
+    .no-found {
+      text-align: center;
+    }
+  }
+}
+
+ .ant-popover {
+  :global .ant-popover-content {
+    :global .ant-popover-inner-content {
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}

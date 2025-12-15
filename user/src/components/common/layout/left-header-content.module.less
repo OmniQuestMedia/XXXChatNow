@@ -1,0 +1,23 @@
+@import '../../../../style/vars.less';
+
+
+
+.cate-sub-menu-overlay {
+  width: 450px;
+  ul li {
+    width: 25%;
+    .ant-dropdown-menu-title-content {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+    &:hover {
+      color: @white-color;
+      background-color: var(--primary);
+    }
+  }
+
+  @media (max-width: @mobile-query) {
+    width: 100%;
+  }
+}

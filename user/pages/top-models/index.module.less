@@ -1,0 +1,51 @@
+@import '../../style/vars.less';
+
+.top-models-wrapper {
+    padding-top: 70px;
+    position: relative;
+}
+
+.top-models-container {
+    max-width: 1136px;
+    margin: 0px auto;
+
+    @media screen and (max-width: @mobile-small-query) {
+        padding: 10px;
+    }
+}
+
+.top-models-type{
+    display: flex;
+    position: absolute;
+    height: 40px;
+    width: 100%;
+    background-color: rgb(123, 0, 0);
+    -moz-box-pack: center;
+    justify-content: center;
+    -moz-box-align: center;
+    align-items: center;
+    top: 0;
+    gap: 20px;
+}
+
+.duration-type {
+    color: rgb(255, 255, 255);
+    font-size: 12px;
+    letter-spacing: 0px;
+    line-height: 14px;
+    text-align: center;
+    text-transform: capitalize;
+    position: relative;
+
+    &.active {
+        &::after {
+            content: "";
+            position: absolute;
+            display: block;
+            height: 2px;
+            width: 100%;
+            background: rgb(255, 204, 0);
+            bottom: -13px;
+        }
+    }
+}

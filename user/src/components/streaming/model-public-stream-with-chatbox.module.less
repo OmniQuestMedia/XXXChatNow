@@ -1,0 +1,90 @@
+@import '../../../style/vars.less';
+
+.public-stream-with-chatbox {
+  :global .ant-btn-primary {
+    background: var(--primary);
+    border: var(--primary);
+  }
+}
+
+.public-stream-with-chatbox {
+  @media (max-width: @mobile-query) {
+    overflow: hidden;
+  }
+
+  :global .stream-box-model {
+    height: 500px;
+    position: relative;
+    background-image: url('/bg-live.jpg');
+    background-size: cover;
+    background-position: center center;
+    border-radius: 10px;
+
+    .stream-footer-mobile {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      z-index: 99;
+    }
+
+    @media (max-width: @mobile-query) {
+      height: 250px;
+      border-radius: 0;
+    }
+
+    :global #publisher {
+      padding: 0 !important;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+  }
+
+  :global .ant-tabs-nav {
+    @media (max-width: @mobile-query) {
+      .ant-tabs-nav-list {
+        border-right: 1px solid var(--white);
+      }
+    }
+  }
+
+  :global .message-stream {
+    @media (max-width: @mobile-query) {
+      height: calc(100vh - 420px) !important;
+    }
+  }
+}
+
+.stream-footer {
+  &-desktop {
+    @media (max-width: @mobile-query) {
+      display: none;
+    }
+  }
+
+  &-mobile {
+    display: none;
+    position: relative;
+    z-index: 10;
+
+    @media (max-width: @mobile-query) {
+      display: block;
+    }
+
+    :global .stream-footer-mobile-btn {
+      position: absolute;
+      top: 6px;
+      right: 9px;
+
+      :global .ant-btn {
+        margin-left: 5px;
+        padding: 5px;
+      }
+    }
+
+  }
+}

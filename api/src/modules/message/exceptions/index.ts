@@ -1,0 +1,1 @@
+export * from './group-name-existed.exception';

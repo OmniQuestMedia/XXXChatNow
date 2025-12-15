@@ -1,0 +1,53 @@
+@import '../../../style/default.less';
+
+.video-grid {
+  background: transparent !important;
+  padding: 16px 0;
+
+  .video-box {
+    width: calc(100% / 4);
+    box-shadow: none;
+    position: relative;
+    padding: 15px;
+
+    .video-thumbnail {
+      position: relative;
+
+      img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 5px;
+      }
+    }
+
+    .play-icon {
+      position: absolute;
+      color: @white-color;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 30px;
+    }
+
+    .video-info {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px;
+    }
+
+    @media (max-width: 990px) {
+      width: calc(100% / 3);
+    }
+
+    @media (max-width: 567px) {
+      width: calc(100% / 2);
+
+      .video-thumbnail {
+        img {
+          height: 155px;
+        }
+      }
+    }
+  }
+}

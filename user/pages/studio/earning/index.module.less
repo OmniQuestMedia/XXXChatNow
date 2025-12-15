@@ -1,0 +1,25 @@
+@import '../../../style/vars.less';
+
+.earning-history-page {
+
+  background-color: var(--white);
+  height: 100%;
+
+  :global .table {
+    .ant-table-thead {
+
+      .admin-to-studio-transaction,
+      .studio-to-model-transaction {
+        background: #99ff99;
+      }
+    }
+
+    .ant-table-tbody {
+
+      // Fix css when table has no data
+      .ant-table-expanded-row-fixed {
+        width: auto !important;
+      }
+    }
+  }
+}
