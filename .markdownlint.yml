@@ -16,3 +16,9 @@ MD034: false
 
 # First line in file should be a top-level heading
 MD041: false
+
+# Fenced code blocks should have a language specified
+MD040: false
+
+# Trailing punctuation in heading
+MD026: false
