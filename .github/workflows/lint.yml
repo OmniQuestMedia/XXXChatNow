@@ -34,4 +34,4 @@ jobs:
           VALIDATE_JSON: true
           VALIDATE_MARKDOWN: true
           VALIDATE_YAML: true
-          FILTER_REGEX_EXCLUDE: .*node_modules/.*
+          FILTER_REGEX_EXCLUDE: (node_modules|dist|build|coverage|\.next|\.turbo|\.cache)/
