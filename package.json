@@ -1,0 +1,10 @@
+{
+  // [The package.json will be retrieved and only the scripts section will be changed. Please replace this placeholder with your actual package.json content, except for scripts which will include:]
+  "scripts": {
+    // [existing scripts preserved]
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
+    "format": "prettier \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml,css,scss,html}\" --write",
+    "format:check": "prettier \"**/*.{js,jsx,ts,tsx,json,md,yml,yaml,css,scss,html}\" --check"
+  }
+}
