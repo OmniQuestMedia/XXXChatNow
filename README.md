@@ -7,11 +7,24 @@ V1.0.3
 ### License
 XXXChatNow is a privately developed platform - built by models, for models and an savvy sex-positive VIP user.
 
-Struture
+## Documentation
+
+**All developers, GitHub Copilot, and contributors must follow the authoritative documentation and standards:**
+
+- **[Copilot Engineering Rules](/docs/copilot/COPILOT.md)** - Mandatory rules for all token-based feature development, including non-regression rules and PR checklists
+- **[Engineering Standards](/docs/governance/ENGINEERING_STANDARDS.md)** - Cross-cutting governance for all token-based features including documentation, testing, performance, and security standards
+- **[Slot Machine Specification](/docs/specs/SLOT_MACHINE_SPEC_v1.0.md)** - Detailed technical specification for the slot machine feature with server-authoritative token mechanics
+- **[Security Audit Policy](/SECURITY_AUDIT_POLICY_AND_CHECKLIST.md)** - Security requirements and audit checklist
+- **[AI Onboarding Guide](/AI_ONBOARDING.md)** - Guidelines for AI assistant integration
+
+**These documents are authoritative and must be followed for all future feature and PR work involving tokens, promotions, chip menu, slot machine, and related financial operations.**
+
+## Structure
 
 - `api`: provides application restful apis, and manage application business
 - `user`: the website is for end users, models, and select, ethical studios to acccess.
 - `admin`: the management website is for administrators
+- `docs`: authoritative documentation for features, specifications, and governance
 
 ### Contact
 - Email: general@OQMINC.com
