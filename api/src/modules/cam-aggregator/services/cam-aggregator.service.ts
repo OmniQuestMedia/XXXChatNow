@@ -41,15 +41,15 @@ export class CamAggregatorService {
     await collection.deleteMany({
       name: {
         $in: [
-          'syncLovexCamsPerformerData',
+          'syncXLoveCamPerformerData',
           'syncBongaCamsPerformerData',
           'syncChaturbatePerformerData',
           'syncStripcashPerformerData'
         ]
       }
     });
-    this.agendaService.define('syncLovexCamsPerformerData', this.syncXLoveCamsModels.bind(this));
-    this.agendaService.schedule('10 seconds from now', 'syncLovexCamsPerformerData', {});
+    this.agendaService.define('syncXLoveCamPerformerData', this.syncXLoveCamModels.bind(this));
+    this.agendaService.schedule('10 seconds from now', 'syncXLoveCamPerformerData', {});
 
     this.agendaService.define('syncBongaCamsPerformerData', this.syncBongaCamsModels.bind(this));
     this.agendaService.schedule('10 seconds from now', 'syncBongaCamsPerformerData', {});
@@ -302,7 +302,7 @@ export class CamAggregatorService {
     return aggregate.map((item) => plainToInstance(AggregatorPerformerDto, item));
   }
 
-  private async syncXLoveCamsModels(job) {
+  private async syncXLoveCamModels(job) {
     try {
       const [xLoveCamEnabled, authItemId, authSecret, authServiceId] = await Promise.all([
         this.settingService.getKeyValue(SETTING_KEYS.CAM_AGG_XLOVECAM_ENABLED),
@@ -364,7 +364,7 @@ export class CamAggregatorService {
       this.logger.error(e.stack || e);
     } finally {
       job.remove();
-      this.agendaService.schedule('1 minutes from now', 'syncLovexCamsPerformerData', {});
+      this.agendaService.schedule('1 minutes from now', 'syncXLoveCamPerformerData', {});
     }
   }
 
