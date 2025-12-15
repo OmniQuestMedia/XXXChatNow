@@ -21,3 +21,8 @@ jobs:
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+name: Checkout Code
+  uses: actions/checkout@v6
+  with:
+    fetch-depth: 0
