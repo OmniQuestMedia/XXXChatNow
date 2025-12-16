@@ -28,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: main
           VALIDATE_ALL_CODEBASE: false
-          
+
           # Enabled validators
           VALIDATE_GITHUB_ACTIONS: true
           VALIDATE_MARKDOWN: true
