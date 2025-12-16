@@ -1,0 +1,13 @@
+# build / deps
+node_modules
+dist
+build
+coverage
+
+# archives (never lint archived seed content)
+_archive/
+
+# lockfiles (optional)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

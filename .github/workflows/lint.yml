@@ -1,0 +1,38 @@
+name: Lint (Super-Linter)
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Super-Linter
+        uses: github/super-linter@v6
+        env:
+          DEFAULT_BRANCH: main
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_GITHUB_ACTIONS: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_YAML: true
+          VALIDATE_JSON: true
+          VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_TYPESCRIPT_ES: true
+          VALIDATE_TSX: true
+          VALIDATE_CSS: true
+          VALIDATE_HTML: true
+          VALIDATE_ENV: true
+          VALIDATE_CHECKOV: false
+          VALIDATE_GITLEAKS: false
+          VALIDATE_JSCPD: false
