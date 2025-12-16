@@ -1,0 +1,47 @@
+---
+name: Lint (Super-Linter)
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: read
+  statuses: write
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  super-linter:
+    name: Super-Linter
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout (full history required)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run Super-Linter (targeted validators)
+        uses: super-linter/super-linter@v8.3.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          # Only run what this repo is currently using in CI
+          VALIDATE_YAML: true
+          VALIDATE_JSON: true
+
+          # Reduce noise/churn and prevent scanning build artifacts
+          VALIDATE_ALL_CODEBASE: false
+          IGNORE_GITIGNORED_FILES: true
+
+          # Config directory for super-linter template discovery
+          LINTER_RULES_PATH: .github/linters
+
+          # Ensure regexes apply to repo-relative paths if used later
+          STRIP_DEFAULT_WORKSPACE_FOR_REGEX: true
