@@ -29,15 +29,17 @@ _archive/            # Archived legacy code (DO NOT MODIFY)
 
 ## Commands
 
+**Note**: This repository is currently in a documentation/planning phase. The commands below are templates that will be implemented as the RedRoomRewards system is developed. Update package.json and these instructions when source code is added.
+
 ### Linting
 ```bash
-npm run lint              # Check for lint errors
+npm run lint              # Check for lint errors (to be configured for actual source structure)
 npm run lint:fix          # Auto-fix lint errors
 ```
 
 ### Formatting
 ```bash
-npm run format            # Format all files
+npm run format            # Format all files (to be configured for actual source structure)
 npm run format:check      # Check formatting
 ```
 
@@ -69,6 +71,7 @@ npm audit                 # Check for vulnerabilities (when dependencies are add
   - Use descriptive names over short names
 
 ### File Organization
+**Future structure** (to be implemented when RedRoomRewards system is developed):
 ```
 src/
   modules/
