@@ -42,17 +42,18 @@ npm run format:check      # Check formatting
 ```
 
 ### Testing
+**Note**: Testing infrastructure will be added as the RedRoomRewards system is developed. Test commands should follow these patterns:
 ```bash
-npm test                  # Run all tests
-npm run test:unit         # Run unit tests only
-npm run test:integration  # Run integration tests
-npm run test:load         # Run load tests
-npm run test:security     # Run security tests
+npm test                  # Run all tests (to be implemented)
+npm run test:unit         # Run unit tests only (to be implemented)
+npm run test:integration  # Run integration tests (to be implemented)
+npm run test:load         # Run load tests (to be implemented)
+npm run test:security     # Run security tests (to be implemented)
 ```
 
 ### Security
 ```bash
-npm audit                 # Check for vulnerabilities
+npm audit                 # Check for vulnerabilities (when dependencies are added)
 ```
 
 ## Coding Standards
@@ -129,7 +130,7 @@ src/
 - ✅ Response times: balance queries < 100ms, operations < 200ms, game spins < 300ms (p95)
 
 ### Database Standards for Token Features
-- Use **INTEGER** for token amounts (NEVER FLOAT)
+- Use **INTEGER** for token amounts (NEVER FLOAT) - Floating point arithmetic has precision issues that can cause rounding errors in financial calculations. Store amounts in smallest unit (e.g., cents for currency, individual tokens)
 - Include proper indexes for query performance
 - Implement foreign key constraints
 - Use UUIDs for transaction IDs
@@ -256,7 +257,7 @@ test(tokens): add race condition tests
 
 ### Token Features
 - ❌ Using `Math.random()` for game outcomes (use cryptographically secure RNG)
-- ❌ Floating point for currency/tokens (use integers, e.g., cents)
+- ❌ Floating point for currency/tokens (causes precision errors; use integers for smallest unit like cents or individual tokens)
 - ❌ Missing idempotency keys on state changes
 - ❌ Missing audit logs for token operations
 - ❌ Client-side token calculations or validations
@@ -303,10 +304,7 @@ Require approval from ALL stakeholders for:
 
 ## Questions or Support
 
-- **Technical**: engineering-team@xxxchatnow.com
-- **Security**: security-team@xxxchatnow.com
-- **Process**: product-team@xxxchatnow.com
-- **General**: general@OQMINC.com
+For current contact information, see the [Contributing Guide](/CONTRIBUTING.md#questions-and-support).
 
 ---
 
