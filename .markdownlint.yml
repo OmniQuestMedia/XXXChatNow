@@ -1,28 +1,26 @@
-default: true
-MD013: false   # line length
-MD033: false   # inline HTML
-MD041: false   # first line heading
-# Markdown linting rules
-# Using minimal configuration for Super-Linter compliance
+# Canonical. Do not duplicate or override except by DECISIONS.md approval.
+# Markdown linting rules for Super-Linter
 
-# Line length - allow long lines for code blocks and tables
+default: true
+
+# MD013: Line length - disabled to allow long lines in code blocks and tables
 MD013: false
 
-# Multiple headings with same content
+# MD024: Multiple headings with same content - allow if nesting differs
 MD024:
   allow_different_nesting: true
 
-# Inline HTML
+# MD026: Trailing punctuation in heading - disabled for flexibility
+MD026: false
+
+# MD033: Inline HTML - disabled to allow HTML in markdown
 MD033: false
 
-# Bare URL used
+# MD034: Bare URL used - disabled to allow plain URLs
 MD034: false
 
-# First line in file should be a top-level heading
-MD041: false
-
-# Fenced code blocks should have a language specified
+# MD040: Fenced code blocks should have a language - disabled for flexibility
 MD040: false
 
-# Trailing punctuation in heading
-MD026: false
+# MD041: First line in file should be a top-level heading - disabled
+MD041: false

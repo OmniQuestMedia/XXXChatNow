@@ -1,0 +1,29 @@
+# Canonical. Do not duplicate or override except by DECISIONS.md approval.
+# Prettier ignore rules for Super-Linter
+
+# Archive and legacy code
+/archive/
+/_archive/
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.turbo/
+coverage/
+.cache/
+
+# System files
+.DS_Store
+*.log
