@@ -1,0 +1,10 @@
+---
+# Markdown lint configuration
+default: true
+MD013:
+  line_length: 120  # Allow longer lines for documentation
+  code_blocks: false  # Don't check code blocks
+MD033:
+  allowed_elements: ["a", "br", "details", "summary"]  # Allow some HTML tags
+MD041: false  # First line doesn't need to be a top-level heading
+punctuation: ".,;:!?"  # loosen trailing punctuation rule
