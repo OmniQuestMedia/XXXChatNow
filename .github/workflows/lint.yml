@@ -40,7 +40,6 @@ jobs:
           VALIDATE_CSS: true
           VALIDATE_HTML: true
           VALIDATE_ENV: true
-          
           # Temporarily disabled (Phase 2C re-enable)
           VALIDATE_CHECKOV: false
           VALIDATE_GITLEAKS: false
