@@ -22,15 +22,17 @@ export class PolicyController {
 
   @Post()
   async create(@Body() createPolicyDto: CreatePolicyDto) {
-    // TODO: Get user from request context
-    const modifiedBy = 'system'; // Placeholder
+    // TODO: Implement authentication middleware to extract user from request
+    // For now, using 'system' - this MUST be replaced before production
+    const modifiedBy = 'system';
     return this.policyService.create(createPolicyDto, modifiedBy);
   }
 
   @Put(':key')
   async update(@Param('key') key: string, @Body() updatePolicyDto: UpdatePolicyDto) {
-    // TODO: Get user from request context
-    const modifiedBy = 'system'; // Placeholder
+    // TODO: Implement authentication middleware to extract user from request
+    // For now, using 'system' - this MUST be replaced before production
+    const modifiedBy = 'system';
     return this.policyService.update(key, updatePolicyDto, modifiedBy);
   }
 

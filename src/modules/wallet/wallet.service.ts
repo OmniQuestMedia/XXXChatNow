@@ -156,10 +156,8 @@ export class WalletService {
         // Save updated lot
         await queryRunner.manager.save(lot);
 
-        // If lot is empty, mark it for cleanup (but keep for audit)
-        if (lot.tokens === 0) {
-          // Optional: set a flag for cleanup, but preserve record
-        }
+        // Note: Empty lots (tokens === 0) are preserved for audit trail
+        // They will not be returned by getActiveLots() due to filtering
       }
 
       // Create transaction record

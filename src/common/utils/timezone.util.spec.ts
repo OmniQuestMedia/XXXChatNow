@@ -199,7 +199,7 @@ describe('Timezone Utilities', () => {
 
   describe('diffHours', () => {
     it('should calculate difference in hours', () => {
-      const date1 = new Date('2026-06-01T24:00:00Z');
+      const date1 = new Date('2026-06-02T00:00:00Z'); // Next day midnight
       const date2 = new Date('2026-06-01T00:00:00Z');
       
       expect(diffHours(date1, date2)).toBe(24);
