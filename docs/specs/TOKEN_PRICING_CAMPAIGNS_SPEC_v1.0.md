@@ -82,15 +82,97 @@ interface PolicyConfiguration {
 | `token_spend_order` | ["promo_bonus", "membership_monthly", "purchased"] | wallet | Enforced spend order |
 | `rack_rate_promo_eligible` | false | campaigns | Rack rate users get promos |
 | `promo_month_budget_percent` | 0.70 | campaigns | Budget as % of membership revenue |
+| `promo_budget_cap_percent` | 0.60 | campaigns | Maximum % of membership revenue for promotional budget (retaining 40% for OQMI) |
+| `promo_max_bonus_tokens_vip` | 100 | campaigns | Maximum bonus tokens per VIP member during promotion |
+| `promo_max_bonus_tokens_gold_vip` | 250 | campaigns | Maximum bonus tokens per Gold VIP member during promotion |
+| `promo_max_bonus_tokens_silver_vip` | 150 | campaigns | Maximum bonus tokens per Silver VIP member during promotion |
+| `promo_max_bonus_tokens_platinum_vip` | 500 | campaigns | Maximum bonus tokens per Platinum VIP member during promotion |
+| `membership_monthly_revenue_vip` | 999 | pricing | Monthly membership revenue per VIP user (cents) |
+| `membership_monthly_revenue_gold_vip` | 1999 | pricing | Monthly membership revenue per Gold VIP user (cents) |
+| `membership_monthly_revenue_silver_vip` | 1499 | pricing | Monthly membership revenue per Silver VIP user (cents) |
+| `membership_monthly_revenue_platinum_vip` | 2999 | pricing | Monthly membership revenue per Platinum VIP user (cents) |
 
 ### API Endpoints
 
 ```
-GET    /api/admin/policies              - List all policies
-GET    /api/admin/policies/:key         - Get specific policy
-PUT    /api/admin/policies/:key         - Update policy (audit logged)
-POST   /api/admin/policies/validate     - Validate policy changes
-GET    /api/admin/policies/history/:key - Get policy change history
+GET    /api/admin/policies                           - List all policies
+GET    /api/admin/policies/:key                      - Get specific policy
+PUT    /api/admin/policies/:key                      - Update policy (audit logged)
+POST   /api/admin/policies/validate                  - Validate policy changes
+GET    /api/admin/policies/:key/history              - Get policy change history
+GET    /api/admin/policies/campaign-budget/tier/:tier - Calculate promotional budget for tier
+POST   /api/admin/policies/campaign-budget/aggregate  - Calculate aggregated budget across tiers
+POST   /api/admin/policies/campaign-budget/validate   - Validate promotion budget constraints
+```
+
+### Campaign Budget Calculation
+
+The system provides automatic budget calculations based on membership revenue and configurable promotional caps:
+
+#### Budget Constraints
+- **60% Budget Cap**: Maximum 60% of membership revenue can be allocated to promotional bonuses
+- **40% Revenue Retention**: Minimum 40% of membership revenue is retained for OQMI
+- **Per-Tier Limits**: Each tier has configurable maximum bonus token amounts
+
+#### Tier Budget Example (VIP)
+```typescript
+{
+  tier: "vip",
+  membershipRevenue: 999,        // $9.99/month in cents
+  maxBudgetPerUser: 599,          // 60% = $5.99
+  maxBonusTokens: 100,            // Configurable limit
+  estimatedTokenValue: 650,       // 100 tokens * $0.065 * 100 = $6.50
+  retainedRevenue: 400,           // 40% = $4.00
+  retainedRevenuePercent: 40.04
+}
+```
+
+#### Aggregated Budget Calculation
+The system can calculate total promotional costs across all tiers:
+
+```typescript
+POST /api/admin/policies/campaign-budget/aggregate
+{
+  "userCountByTier": {
+    "vip": 100,
+    "gold_vip": 50,
+    "silver_vip": 75,
+    "platinum_vip": 25
+  }
+}
+
+Response:
+{
+  "totalEstimatedUsers": 250,
+  "totalPromotionCost": 300625,      // $3,006.25 total cost
+  "totalRetainedRevenue": 120000,    // $1,200.00 retained
+  "averageCostPerUser": 1202.5,      // $12.03 per user
+  "averageRetainedPerUser": 480,     // $4.80 per user
+  "tierBreakdown": [ /* individual tier budgets */ ]
+}
+```
+
+#### Budget Validation
+Before awarding promotional tokens, validate against budget constraints:
+
+```typescript
+POST /api/admin/policies/campaign-budget/validate
+{
+  "tier": "vip",
+  "bonusTokens": 50
+}
+
+Response:
+{
+  "valid": true
+}
+
+// OR if exceeding limits:
+{
+  "valid": false,
+  "message": "Bonus tokens (150) exceed maximum allowed for vip tier",
+  "maxAllowed": 100
+}
 ```
 
 ---
