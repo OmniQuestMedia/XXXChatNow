@@ -76,8 +76,9 @@ This repository contains three separate applications that work together to form 
 **Key Dependencies:**
 - React Redux v8.0.4
 - Redux Saga v1.2.1
+- Next Redux Wrapper v8.1.0
 - Socket.IO Client (WebSocket connection to API)
-- Video.js v7.3.48 (video streaming)
+- Video.js v7.20.3 (video streaming)
 - HLS.js v1.5.8 (HTTP Live Streaming)
 - Firebase v10.1.0 (push notifications)
 - reCAPTCHA (security)
