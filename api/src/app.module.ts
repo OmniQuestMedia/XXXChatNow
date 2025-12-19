@@ -42,6 +42,7 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { ReferralModule } from './modules/referral/referral.module';
 import { WheelModule } from './modules/wheel/wheel.module';
 import { PerformerScheduleModule } from './modules/performer-schedule/performer-schedule.module';
+import { SlotMachineModule } from './modules/slot-machine/slot-machine.module';
 
 @Module({
   imports: [
@@ -85,7 +86,8 @@ import { PerformerScheduleModule } from './modules/performer-schedule/performer-
     NotificationModule,
     LeaderBoardModule,
     FeaturedCreatorModule,
-    PerformerScheduleModule
+    PerformerScheduleModule,
+    SlotMachineModule
   ],
   controllers: [AppController],
   providers: [AppService]
