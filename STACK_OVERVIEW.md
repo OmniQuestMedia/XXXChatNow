@@ -110,7 +110,7 @@ This is **NOT** a "Next.js only" application. It's a **full-stack microservices 
 ### Development Workflow:
 
 Each component runs independently during development:
-- API: `cd api && yarn dev` (port 8080 - configured via HTTP_PORT in .env)
+- API: `cd api && yarn dev` (default port 9000, configurable via HTTP_PORT in .env)
 - Admin: `cd admin && yarn dev` (port 8082)
 - User: `cd user && yarn dev` (port 8081)
 
