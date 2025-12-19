@@ -110,18 +110,18 @@ This is **NOT** a "Next.js only" application. It's a **full-stack microservices 
 ### Development Workflow:
 
 Each component runs independently during development:
-- API: `cd api && yarn dev` (port not specified, typically 3000)
+- API: `cd api && yarn dev` (port 8080 - configured via HTTP_PORT in .env)
 - Admin: `cd admin && yarn dev` (port 8082)
 - User: `cd user && yarn dev` (port 8081)
 
 ### Production Stack:
 
 In production, this platform requires:
-- Node.js runtime (v14+)
-- PostgreSQL database server (v12+)
+- Node.js runtime (v14+ as documented in README.md)
+- PostgreSQL database server (v12+ as documented in README.md)
 - MongoDB database server
 - Redis server
-- Nginx or similar reverse proxy (configuration examples in `/config-example`)
+- Nginx or similar reverse proxy (configuration examples in `/config-example/nginx`)
 
 ---
 
