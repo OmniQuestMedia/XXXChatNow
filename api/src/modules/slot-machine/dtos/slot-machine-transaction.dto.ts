@@ -10,7 +10,7 @@
  */
 
 import { ObjectId } from 'mongodb';
-import { pick } from 'lodash';
+import pick from 'lodash/pick';
 
 export class SlotMachineTransactionDto {
   _id: ObjectId;

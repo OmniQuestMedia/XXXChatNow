@@ -16,6 +16,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { QueueModule, AgendaModule } from 'src/kernel';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
+import { DBLoggerModule } from '../logger/db-logger.module';
 import {
   SlotMachineTransaction,
   SlotMachineTransactionSchema,
@@ -49,7 +50,8 @@ import { SlotMachineListener } from './listeners';
     QueueModule.forRoot(),
     AgendaModule.register(),
     forwardRef(() => UserModule),
-    forwardRef(() => AuthModule)
+    forwardRef(() => AuthModule),
+    forwardRef(() => DBLoggerModule)
   ],
   providers: [
     SlotMachineService,

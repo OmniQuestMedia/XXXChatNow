@@ -179,8 +179,8 @@ export class SlotMachineService {
     try {
       await session.withTransaction(async () => {
         // Create transaction record
-        transaction = await this.transactionModel.create([transactionData], { session });
-        transaction = transaction[0];
+        const [createdTransaction] = await this.transactionModel.create([transactionData], { session });
+        transaction = createdTransaction;
 
         // TODO: Deduct balance via RedRoomRewards API with idempotency
         // await this.loyaltyService.deduct({
@@ -249,8 +249,20 @@ export class SlotMachineService {
     // 14. Check for anomalies
     const anomalies = await this.rateLimitService.detectAnomalies(userId);
     if (anomalies.rapidSpinning || anomalies.unusualWinRate) {
-      // TODO: Alert security team about suspicious activity
-      console.warn('Anomaly detected for user', userId.toString(), anomalies);
+      // TODO: Alert security team through proper security monitoring system
+      // This should integrate with your security incident management system
+      // Examples: PagerDuty, Datadog, Sentry, or internal SIEM
+      await this.queueEventService.publish(
+        new QueueEvent({
+          channel: 'SECURITY_ALERTS',
+          eventName: 'ANOMALY_DETECTED',
+          data: {
+            userId: userId.toString(),
+            anomalyType: anomalies.rapidSpinning ? 'rapid_spinning' : 'unusual_win_rate',
+            timestamp: new Date().toISOString()
+          }
+        })
+      );
     }
 
     return transaction;

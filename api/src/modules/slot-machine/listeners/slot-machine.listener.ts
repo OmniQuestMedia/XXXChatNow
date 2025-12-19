@@ -2,7 +2,7 @@
  * Slot Machine Event Listener
  * 
  * Handles events from slot machine operations for:
- * - Audit logging
+ * - Audit logging (using structured database logging)
  * - Analytics
  * - Notifications
  * 
@@ -13,8 +13,9 @@
  * - SECURITY_AUDIT_POLICY_AND_CHECKLIST.md
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { QueueEventService, QueueEvent } from 'src/kernel';
+import { DBLoggerService } from 'src/modules/logger/db-logger.service';
 import {
   SLOT_MACHINE_CHANNEL,
   SLOT_MACHINE_EVENT
@@ -23,7 +24,9 @@ import {
 @Injectable()
 export class SlotMachineListener {
   constructor(
-    private readonly queueEventService: QueueEventService
+    private readonly queueEventService: QueueEventService,
+    @Inject(forwardRef(() => DBLoggerService))
+    private readonly logger: DBLoggerService
   ) {
     this.queueEventService.subscribe(
       SLOT_MACHINE_CHANNEL,
@@ -40,20 +43,24 @@ export class SlotMachineListener {
 
   /**
    * Handle completed spin event
-   * Log for audit trail (no PII)
+   * Log for audit trail using structured database logging (no PII)
    */
   private async handleSpinCompleted(event: QueueEvent): Promise<void> {
     const { spinId, userId, isWin, payout, betAmount } = event.data;
 
-    // Log to audit system (no PII - just IDs and amounts)
-    console.log('[AUDIT] Slot machine spin completed:', {
-      spinId,
-      userId, // ID only, no PII
-      isWin,
-      payout,
-      betAmount,
-      timestamp: new Date().toISOString()
-    });
+    // Log to structured audit system (no PII - just IDs and amounts)
+    await this.logger.log(
+      JSON.stringify({
+        event: 'slot_machine_spin_completed',
+        spinId,
+        userId, // ID only, no PII
+        isWin,
+        payout,
+        betAmount,
+        timestamp: new Date().toISOString()
+      }),
+      { context: 'SlotMachineAudit' }
+    );
 
     // TODO: Send to analytics service
     // await this.analyticsService.track({
@@ -70,24 +77,31 @@ export class SlotMachineListener {
 
   /**
    * Handle failed spin event
-   * Alert for system issues
+   * Alert for system issues using structured logging
    */
   private async handleSpinFailed(event: QueueEvent): Promise<void> {
     const { spinId, userId, error } = event.data;
 
-    // Log error for investigation (no PII)
-    console.error('[AUDIT] Slot machine spin failed:', {
-      spinId,
-      userId, // ID only, no PII
-      error,
-      timestamp: new Date().toISOString()
-    });
+    // Log error for investigation using structured database logging (no PII)
+    await this.logger.error(
+      JSON.stringify({
+        event: 'slot_machine_spin_failed',
+        spinId,
+        userId, // ID only, no PII
+        error: error?.message || error,
+        timestamp: new Date().toISOString()
+      }),
+      { context: 'SlotMachineAudit' }
+    );
 
-    // TODO: Alert operations team for system issues
-    // await this.alertService.sendAlert({
-    //   severity: 'high',
-    //   message: 'Slot machine spin failed',
-    //   data: { spinId, error }
-    // });
+    // TODO: Alert operations team through proper alerting system
+    // This should integrate with your incident management system
+    // await this.queueEventService.publish(
+    //   new QueueEvent({
+    //     channel: 'OPERATIONS_ALERTS',
+    //     eventName: 'SYSTEM_ERROR',
+    //     data: { severity: 'high', message: 'Slot machine spin failed', spinId, error }
+    //   })
+    // );
   }
 }
