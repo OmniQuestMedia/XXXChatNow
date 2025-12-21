@@ -387,9 +387,15 @@ export class SMAuditService {
       issues.push('Transaction missing integrity hash');
     }
 
-    // Verify amounts are positive
-    if (transaction.amount <= 0) {
-      issues.push('Transaction amount is not positive');
+    // Verify amounts are valid based on transaction type
+    if (transaction.type === TransactionType.DEBIT && transaction.amount <= 0) {
+      issues.push('Debit transaction amount must be positive');
+    }
+    if (transaction.type === TransactionType.CREDIT && transaction.amount <= 0) {
+      issues.push('Credit transaction amount must be positive');
+    }
+    if (transaction.type === TransactionType.REFUND && transaction.amount < 0) {
+      issues.push('Refund transaction amount cannot be negative');
     }
 
     // Verify balance calculations

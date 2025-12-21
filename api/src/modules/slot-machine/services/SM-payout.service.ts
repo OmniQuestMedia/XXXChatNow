@@ -186,8 +186,8 @@ export class SMPayoutService {
     }
 
     // Validate amount
-    if (params.amount < 0) {
-      throw new BadRequestException('Credit amount cannot be negative');
+    if (params.amount <= 0) {
+      throw new BadRequestException('Credit amount must be positive');
     }
 
     // Create transaction record (PENDING)
