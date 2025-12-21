@@ -21,13 +21,23 @@ import {
   SlotMachineTransaction,
   SlotMachineTransactionSchema,
   SlotMachineConfig,
-  SlotMachineConfigSchema
+  SlotMachineConfigSchema,
+  SMQueueEntry,
+  SMQueueEntrySchema,
+  SMGameSession,
+  SMGameSessionSchema,
+  SMPayoutTransaction,
+  SMPayoutTransactionSchema
 } from './schemas';
 import {
   SlotMachineService,
   SlotMachineRNGService,
   SlotMachineConfigService,
-  SlotMachineRateLimitService
+  SlotMachineRateLimitService,
+  SMQueueService,
+  SMPayoutService,
+  SMledgerClientService,
+  SMAuditService
 } from './services';
 import {
   SlotMachineController,
@@ -45,6 +55,18 @@ import { SlotMachineListener } from './listeners';
       {
         name: SlotMachineConfig.name,
         schema: SlotMachineConfigSchema
+      },
+      {
+        name: SMQueueEntry.name,
+        schema: SMQueueEntrySchema
+      },
+      {
+        name: SMGameSession.name,
+        schema: SMGameSessionSchema
+      },
+      {
+        name: SMPayoutTransaction.name,
+        schema: SMPayoutTransactionSchema
       }
     ]),
     QueueModule.forRoot(),
@@ -58,6 +80,10 @@ import { SlotMachineListener } from './listeners';
     SlotMachineRNGService,
     SlotMachineConfigService,
     SlotMachineRateLimitService,
+    SMQueueService,
+    SMPayoutService,
+    SMledgerClientService,
+    SMAuditService,
     SlotMachineListener
   ],
   controllers: [
@@ -67,7 +93,11 @@ import { SlotMachineListener } from './listeners';
   exports: [
     SlotMachineService,
     SlotMachineConfigService,
-    SlotMachineRateLimitService
+    SlotMachineRateLimitService,
+    SMQueueService,
+    SMPayoutService,
+    SMledgerClientService,
+    SMAuditService
   ]
 })
 export class SlotMachineModule {}
