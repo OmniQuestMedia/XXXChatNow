@@ -2,7 +2,12 @@
 
 ## Overview
 
-This module implements the core backend/API scaffolding for the Slot Machine feature in XXXChatNow. It provides a secure, auditable, and scalable slot machine game system integrated with the platform's loyalty points system.
+This module implements the complete backend/API for the Slot Machine feature in XXXChatNow, including:
+
+1. **Original Slot Machine** - Direct spin-based gameplay
+2. **SM Queue System** - Model-based queuing with controlled access (NEW)
+
+Both systems provide secure, auditable, and scalable slot machine game functionality integrated with the platform's loyalty points system.
 
 ## References
 
@@ -18,20 +23,30 @@ This implementation strictly follows:
 ```
 slot-machine/
 ├── controllers/          # API endpoints
-│   ├── slot-machine.controller.ts        # User-facing endpoints
-│   └── admin-slot-machine.controller.ts  # Admin management endpoints
+│   ├── slot-machine.controller.ts        # User-facing endpoints (original)
+│   ├── admin-slot-machine.controller.ts  # Admin management endpoints
+│   └── SM-queue.controller.ts            # Queue management endpoints (NEW)
 ├── services/            # Business logic
-│   ├── slot-machine.service.ts           # Core game logic
+│   ├── slot-machine.service.ts           # Core game logic (original)
 │   ├── slot-machine-rng.service.ts       # CSPRNG-based RNG
 │   ├── slot-machine-config.service.ts    # Configuration management
-│   └── slot-machine-rate-limit.service.ts # Rate limiting
+│   ├── slot-machine-rate-limit.service.ts # Rate limiting
+│   ├── SM-queue.service.ts               # Queue management (NEW)
+│   ├── SM-payout.service.ts              # Token operations (NEW)
+│   ├── SM-ledger-client.service.ts       # Ledger API integration (NEW)
+│   └── SM-audit.service.ts               # Audit trail (NEW)
 ├── schemas/             # MongoDB schemas
-│   ├── slot-machine-transaction.schema.ts # Immutable transaction records
-│   └── slot-machine-config.schema.ts      # Versioned configuration
+│   ├── slot-machine-transaction.schema.ts # Original transaction records
+│   ├── slot-machine-config.schema.ts      # Versioned configuration
+│   ├── SM-queue-entry.schema.ts          # Queue entries (NEW)
+│   ├── SM-game-session.schema.ts         # Active sessions (NEW)
+│   └── SM-payout-transaction.schema.ts   # Payout records (NEW)
 ├── dtos/                # Data transfer objects
 ├── payloads/            # Request validation
 ├── listeners/           # Event handlers for audit logging
-└── constants.ts         # Module constants
+├── constants.ts         # Module constants
+├── README.md            # This file
+└── SM-QUEUE-SYSTEM.md   # Queue system documentation (NEW)
 ```
 
 ## Security Features
@@ -77,10 +92,10 @@ slot-machine/
 
 ## API Endpoints
 
-### User Endpoints
+### Original Slot Machine Endpoints
 
 #### POST `/api/v1/slot-machine/spin`
-**UI HOOK POINT**: Initiate a slot machine spin
+**UI HOOK POINT**: Initiate a slot machine spin (direct gameplay)
 
 **Headers:**
 ```
@@ -129,6 +144,19 @@ Returns symbols, payouts, spin cost, and rate limits.
 
 Returns remaining spins in current hour and reset time.
 
+### SM Queue System Endpoints (NEW)
+
+See [SM-QUEUE-SYSTEM.md](./SM-QUEUE-SYSTEM.md) for complete documentation.
+
+#### POST `/api/v1/slot-machine/queue/join`
+**UI HOOK POINT**: Join queue to play with a specific model
+
+#### DELETE `/api/v1/slot-machine/queue/leave`
+**UI HOOK POINT**: Leave queue and receive refund
+
+#### GET `/api/v1/slot-machine/queue/status`
+**UI HOOK POINT**: Get queue status for a model
+
 ### Admin Endpoints
 
 #### GET `/api/v1/admin/slot-machine/configs`
@@ -139,6 +167,31 @@ Create new configuration (admin only)
 
 #### PUT `/api/v1/admin/slot-machine/config/:id/activate`
 Activate a configuration (admin only)
+
+## Systems Overview
+
+### 1. Original Slot Machine (Direct Play)
+
+Direct spin-based gameplay where users:
+- Pay tokens per spin
+- Get immediate results
+- No queuing required
+- Rate limited per user
+
+**Use case**: Quick, casual gameplay
+
+### 2. SM Queue System (Model-Based Play)
+
+Queue-based gameplay where users:
+- Join queue for specific model
+- Wait for their turn (FIFO)
+- One active game per model at a time
+- Entry fee held in escrow
+- Automatic refunds on abandonment/timeout
+
+**Use case**: Premium, model-specific interactive experiences
+
+See [SM-QUEUE-SYSTEM.md](./SM-QUEUE-SYSTEM.md) for complete documentation.
 
 ## Configuration
 
