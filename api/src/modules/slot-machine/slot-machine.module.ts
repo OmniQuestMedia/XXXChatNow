@@ -41,7 +41,8 @@ import {
 } from './services';
 import {
   SlotMachineController,
-  AdminSlotMachineController
+  AdminSlotMachineController,
+  SMQueueController
 } from './controllers';
 import { SlotMachineListener } from './listeners';
 
@@ -88,7 +89,8 @@ import { SlotMachineListener } from './listeners';
   ],
   controllers: [
     SlotMachineController,
-    AdminSlotMachineController
+    AdminSlotMachineController,
+    SMQueueController
   ],
   exports: [
     SlotMachineService,
