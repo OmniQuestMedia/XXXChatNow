@@ -198,8 +198,8 @@ export class SMQueueService {
   ): Promise<void> {
     const queueEntry = await this.queueEntryModel
       .findOne({
-        userId,
-        performerId,
+        userId: { $eq: userId },
+        performerId: { $eq: performerId },
         status: QueueEntryStatus.WAITING
       })
       .exec();
