@@ -344,9 +344,18 @@ export class SMPayoutService {
 
   /**
    * Check idempotency - return existing transaction if already processed
+   * Validates the idempotency key to prevent NoSQL injection via crafted query objects.
    */
   private async checkIdempotency(idempotencyKey: string): Promise<SMPayoutTransactionDocument | null> {
-    return this.transactionModel.findOne({ idempotencyKey }).exec();
+    // Ensure idempotencyKey is a primitive string to avoid NoSQL operator injection
+    if (typeof idempotencyKey !== 'string') {
+      throw new BadRequestException('Invalid idempotency key format');
+    }
+
+    // Use $eq to ensure the value is treated strictly as a literal
+    return this.transactionModel
+      .findOne({ idempotencyKey: { $eq: idempotencyKey } })
+      .exec();
   }
 
   /**
