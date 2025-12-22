@@ -53,8 +53,7 @@ export class MenuDto {
       title: this.title,
       path: this.path,
       internal: this.internal,
-      // not support parent ID in FE right now
-      // parentId: this.parentId,
+      parentId: this.parentId,
       section: this.section,
       ordering: this.ordering,
       isOpenNewTab: this.isOpenNewTab

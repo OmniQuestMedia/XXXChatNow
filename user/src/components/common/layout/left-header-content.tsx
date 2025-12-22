@@ -1,6 +1,7 @@
 import { NavBar, NavItem } from '@components/common/base/nav';
 import { currentUserSelector } from '@redux/selectors';
-// import { Dropdown, Menu } from 'antd';
+import { Menu, Dropdown } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
 import Link from 'next/link';
 import { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -13,7 +14,8 @@ const mapStateToProps = (state) => ({
   currentUser: currentUserSelector(state),
   pluralTextModel: state.ui.pluralTextModel,
   streamSettings: state.streaming.settings,
-  performerCategories: state.performer.categories
+  performerCategories: state.performer.categories,
+  menus: state.ui.menus || []
 });
 
 const connector = connect(mapStateToProps);
@@ -28,66 +30,93 @@ function LeftHeaderContent({
   //   total: 0,
   //   data: []
   // },
-  streamSettings
+  streamSettings,
+  menus = []
 }: PropsFromRedux) {
   const [selectedKey, setSelectedKey] = useState('');
   const path = streamSettings[SETTING_KEYS.OPTION_FOR_GROUP] === 'webrtc' ? 'webrtc/' : '';
-  // const { data: categories } = performerCategories;
+  
+  // Filter menus for header section
+  const headerMenus = menus.filter((menu: any) => menu.section === 'header');
 
-  // const categoryItems = categories.map((category) => ({
-  //   label: (
-  //     <Link
-  //       href={{
-  //         pathname: '/search/models',
-  //         query: {
-  //           category: category.slug
-  //         }
-  //       }}
-  //       as={`/category/${category.slug}`}
-  //     >
-  //       <a>{category.name}</a>
-  //     </Link>
-  //   ),
-  //   key: category._id
-  // }));
+  const renderMenuItem = (menu: any, isChild = false) => {
+    const {
+      path: menuPath, isOpenNewTab, internal, title, _id, children
+    } = menu;
+    const href = menuPath || '/';
+    const key = _id || title;
 
-  // const CategorySubMenu = (
-  //   <Menu
-  //     mode="inline"
-  //     style={{ display: 'flex', flexWrap: 'wrap' }}
-  //     items={categoryItems}
-  //     onClick={() => setSelectedKey('')}
-  //   />
-  // );
+    // If menu has children, render as dropdown
+    if (children && children.length > 0) {
+      const subMenuItems = children.map((child: any) => ({
+        key: child._id || child.title,
+        label: child.internal ? (
+          <Link href={child.path}>
+            <a>{child.title}</a>
+          </Link>
+        ) : (
+          <a
+            href={child.path}
+            target={child.isOpenNewTab ? '_blank' : ''}
+            rel="noreferrer"
+          >
+            {child.title}
+          </a>
+        )
+      }));
+
+      const subMenu = (
+        <Menu items={subMenuItems} onClick={() => setSelectedKey('')} />
+      );
+
+      return (
+        <Dropdown key={key} overlay={subMenu} trigger={['click', 'hover']}>
+          <NavItem
+            onClick={() => setSelectedKey(key)}
+            aria-hidden="true"
+          >
+            <span className="hidden-lg">
+              {title}
+              {' '}
+              <DownOutlined />
+            </span>
+          </NavItem>
+        </Dropdown>
+      );
+    }
+
+    // Single menu item without children
+    return (
+      <NavItem
+        key={key}
+        onClick={() => setSelectedKey(key)}
+        aria-hidden="true"
+      >
+        {internal ? (
+          <Link href={href}>
+            <a>
+              <span className="hidden-lg">{title}</span>
+            </a>
+          </Link>
+        ) : (
+          <a
+            href={href}
+            target={isOpenNewTab ? '_blank' : ''}
+            rel="noreferrer"
+          >
+            <span className="hidden-lg">{title}</span>
+          </a>
+        )}
+      </NavItem>
+    );
+  };
 
   return (
     <NavBar activeKey={selectedKey}>
-      <NavItem
-        key="home"
-        // className="hidden-sm"
-        onClick={() => {
-          setSelectedKey('home');
-        }}
-        aria-hidden="true"
-      >
-        <Link href="/">
-          <a>
-            <span className="hidden-lg">Home</span>
-            {/* <HomeOutlined className="visible-lg" /> */}
-          </a>
-        </Link>
-      </NavItem>
-      {/* {categories.length > 0 && (
-        <Dropdown
-          overlay={CategorySubMenu}
-          overlayClassName={style['cate-sub-menu-overlay']}
-          trigger={['click', 'hover']}
-        >
-          <NavItem hidden={loggedIn && currentUser && currentUser.isPerformer}>
-            <span className="hidden-lg">Categories</span>
-          </NavItem>
-        </Dropdown>
-      )} */}
+      {/* Database-driven menus */}
+      {headerMenus.map((menu: any) => renderMenuItem(menu))}
+      
+      {/* Legacy hardcoded menus - keeping for backward compatibility */}
       <NavItem
         key="allModel"
         // className="hidden-sm"

@@ -26,35 +26,49 @@ function Footer({
     loadSettings();
   }, []);
 
+  const renderMenuItem = (menu: any) => {
+    const {
+      path, isOpenNewTab, internal, title, _id
+    } = menu;
+    const href = path || '/';
+    const key = _id || generateUuid();
+    
+    if (internal) {
+      return (
+        <Link key={key} href={href}>
+          <a className="mr-8">{title}</a>
+        </Link>
+      );
+    }
+    return (
+      <a
+        href={href}
+        key={key}
+        className="mr-8"
+        target={isOpenNewTab ? '_blank' : ''}
+        rel="noreferrer"
+      >
+        {title}
+      </a>
+    );
+  };
+
   const renderMenu = () => {
     const { menus = [] } = ui;
 
+    // Filter menus for footer section
+    const footerMenus = menus.filter((menu: any) => menu.section === 'footer');
+
     const data = [];
-    if (menus.length) {
-      menus.forEach((menu) => {
-        const {
-          path, isOpenNewTab, internal, title
-        } = menu;
-        const href = path || '/';
-        const key = generateUuid();
-        if (internal) {
-          data.push(
-            <Link key={key} href={href}>
-              <a className="mr-8">{title}</a>
-            </Link>
-          );
-        } else {
-          data.push(
-            <a
-              href={href}
-              key={key}
-              className="mr-8"
-              target={isOpenNewTab ? '_blank' : ''}
-              rel="noreferrer"
-            >
-              {menu.title}
-            </a>
-          );
+    if (footerMenus.length) {
+      footerMenus.forEach((menu: any) => {
+        data.push(renderMenuItem(menu));
+        
+        // Render children if they exist (hierarchical support)
+        if (menu.children && menu.children.length > 0) {
+          menu.children.forEach((childMenu: any) => {
+            data.push(renderMenuItem(childMenu));
+          });
         }
       });
     }

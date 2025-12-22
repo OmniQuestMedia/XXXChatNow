@@ -115,6 +115,51 @@ export class MenuService {
         ordering: 1
       });
 
-    return data.map((item) => MenuDto.fromModel(item).toUserResponse());
+    const menus = data.map((item) => MenuDto.fromModel(item).toUserResponse());
+    return this.buildMenuTree(menus);
+  }
+
+  /**
+   * Build hierarchical menu tree from flat menu list
+   * @param menus Flat list of menus
+   * @returns Hierarchical menu tree
+   */
+  private buildMenuTree(menus: any[]): any[] {
+    const menuMap = new Map();
+    const roots = [];
+
+    // First pass: create map of all menus by ID
+    menus.forEach((menu) => {
+      menuMap.set(menu._id.toString(), { ...menu, children: [] });
+    });
+
+    // Second pass: build tree structure
+    menus.forEach((menu) => {
+      const menuWithChildren = menuMap.get(menu._id.toString());
+      if (menu.parentId) {
+        const parent = menuMap.get(menu.parentId.toString());
+        if (parent) {
+          parent.children.push(menuWithChildren);
+        } else {
+          // Parent not found, treat as root
+          roots.push(menuWithChildren);
+        }
+      } else {
+        roots.push(menuWithChildren);
+      }
+    });
+
+    // Clean up empty children arrays
+    const cleanEmptyChildren = (node: any) => {
+      if (node.children && node.children.length === 0) {
+        delete node.children;
+      } else if (node.children) {
+        node.children.forEach(cleanEmptyChildren);
+      }
+    };
+
+    roots.forEach(cleanEmptyChildren);
+
+    return roots;
   }
 }
