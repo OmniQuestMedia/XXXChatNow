@@ -109,7 +109,7 @@ export class SMQueueService {
 
     // 2. Check idempotency
     const existing = await this.queueEntryModel
-      .findOne({ idempotencyKey: params.idempotencyKey })
+      .findOne({ idempotencyKey: { $eq: params.idempotencyKey } })
       .exec();
     if (existing) {
       this.logger.log(`User already in queue: ${existing.queueId}`);
