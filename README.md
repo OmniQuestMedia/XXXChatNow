@@ -2,6 +2,24 @@
 
 XXXChatNow is a comprehensive adult video chat platform consisting of three main components:
 
+## 📊 Current Development Status
+
+**Latest Update**: December 23, 2025
+
+For detailed status information, see:
+- 📋 **[CURRENT_STATUS_AND_NEXT_STEPS.md](CURRENT_STATUS_AND_NEXT_STEPS.md)** - Comprehensive status report
+- 🚀 **[QUICK_STATUS_REFERENCE.md](QUICK_STATUS_REFERENCE.md)** - Quick daily reference
+
+### Active Feature Development
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| **🎰 Slot Machine** | Backend Complete | [Status Report](SLOT_MACHINE_IMPLEMENTATION_SUMMARY.md) |
+| **📋 Model Menus** | Core Service Exists | Needs enhancement for interactive features |
+| **🎯 Performance Queue** | Design Complete | Implementation starting |
+
+**Key Blocker**: Performance Queue must be implemented before slot machine can be deployed to production (per Integration Contract).
+
 ## Components
 
 ### 1. API (`/api`)
