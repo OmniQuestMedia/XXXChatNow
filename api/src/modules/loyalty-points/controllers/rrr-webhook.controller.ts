@@ -106,43 +106,43 @@ export class RRRWebhookController {
     return { received: true };
   }
 
-  private async handlePointsPosted(data: any): Promise<void> {
+  private async handlePointsPosted(_data: any): Promise<void> {
     // TODO: Implement points posted handler
     // Update local cache, emit events, etc.
     this.logger.log('Points posted event received');
   }
 
-  private async handlePointsReversed(data: any): Promise<void> {
+  private async handlePointsReversed(_data: any): Promise<void> {
     // TODO: Implement points reversed handler
     this.logger.log('Points reversed event received');
   }
 
-  private async handleRedemptionCommitted(data: any): Promise<void> {
+  private async handleRedemptionCommitted(_data: any): Promise<void> {
     // TODO: Implement redemption committed handler
     this.logger.log('Redemption committed event received');
   }
 
-  private async handleRedemptionReversed(data: any): Promise<void> {
+  private async handleRedemptionReversed(_data: any): Promise<void> {
     // TODO: Implement redemption reversed handler
     this.logger.log('Redemption reversed event received');
   }
 
-  private async handleLinkUpdated(data: any): Promise<void> {
+  private async handleLinkUpdated(_data: any): Promise<void> {
     // TODO: Implement link updated handler
     this.logger.log('Link updated event received');
   }
 
-  private async handlePromotionStatusChanged(data: any): Promise<void> {
+  private async handlePromotionStatusChanged(_data: any): Promise<void> {
     // TODO: Implement promotion status changed handler
     this.logger.log('Promotion status changed event received');
   }
 
-  private async handleTransferCompleted(data: any): Promise<void> {
+  private async handleTransferCompleted(_data: any): Promise<void> {
     // TODO: Implement transfer completed handler
     this.logger.log('Transfer completed event received');
   }
 
-  private async handleTransferReversed(data: any): Promise<void> {
+  private async handleTransferReversed(_data: any): Promise<void> {
     // TODO: Implement transfer reversed handler
     this.logger.log('Transfer reversed event received');
   }

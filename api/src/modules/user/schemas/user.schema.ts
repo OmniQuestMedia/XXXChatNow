@@ -44,7 +44,7 @@ export class User {
   city: string;
 
   @Prop()
-  state: String;
+  state: string;
 
   @Prop({
     index: true,

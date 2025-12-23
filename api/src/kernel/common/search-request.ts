@@ -18,7 +18,7 @@ export class SearchRequest {
     if (value > 200) return 200;
     return value;
   })
-  limit: number = 10;
+  limit = 10;
 
   @IsOptional()
   @Type(() => Number)
@@ -27,7 +27,7 @@ export class SearchRequest {
     if (!value || value < 0) return 0;
     return value;
   })
-  offset: number = 0;
+  offset = 0;
 
   @Optional()
   @IsString()

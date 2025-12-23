@@ -312,8 +312,8 @@ export class SlotMachineService {
    */
   public async getHistory(
     userId: ObjectId | string,
-    limit: number = 20,
-    offset: number = 0
+    limit = 20,
+    offset = 0
   ): Promise<{ data: SlotMachineTransactionDocument[]; total: number }> {
     const [data, total] = await Promise.all([
       this.transactionModel

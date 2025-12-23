@@ -6,8 +6,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  Request,
-  Query
+  Request
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '../../auth/guards/auth.guard';

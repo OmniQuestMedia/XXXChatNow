@@ -6,8 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   RRR_API_BASE_URL,
   RRR_API_VERSION,
-  RRR_CLIENT_ID,
-  RRRErrorCode
+  RRR_CLIENT_ID
 } from '../constants';
 import {
   CreateLinkIntentDto,
@@ -35,7 +34,7 @@ export class RRRApiClientService {
   private readonly baseUrl: string;
   private readonly clientId: string;
   private accessToken: string | null = null;
-  private tokenExpiresAt: number = 0;
+  private tokenExpiresAt = 0;
 
   constructor(
     private readonly httpService: HttpService,

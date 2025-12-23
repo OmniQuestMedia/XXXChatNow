@@ -20,16 +20,16 @@ export class SettingDto {
   description: string;
 
   @Expose()
-  group: string = 'system';
+  group = 'system';
 
   @Expose()
-  public: boolean = false;
+  public = false;
 
   @Expose()
-  type: string = 'text';
+  type = 'text';
 
   @Expose()
-  visible: boolean = true;
+  visible = true;
 
   @Expose()
   autoload: boolean;
