@@ -23,6 +23,7 @@ import { TokenPackageModule } from '../token-package/token-package.module';
 import { UpdateOrderStatusPaymentTransactionSuccessListener } from './listeners/update-order-status-transaction-success.listener';
 import { UpdateUserBalanceFromOrderSuccessListener } from './listeners/update-user-balance-from-order-success.listener';
 import { CreateOrderFromPurchasedItemListener } from './listeners/create-order-from-purchased-item.listener';
+import { PostRRREarnEventFromOrderSuccessListener } from './listeners/post-rrr-earn-event-from-order-success.listener';
 import { OrderController } from './controllers/order.controller';
 import { OrderSearchService } from './services/order-search.service';
 import { NotifyOrderUpdateListener } from './listeners/notify-order-update.listener';
@@ -31,6 +32,7 @@ import {
 } from './schemas';
 import { PurchasedItemModule } from '../purchased-item/purchased-item.module';
 import { FeaturedCreatorModule } from '../featured-creator/featured-creator.module';
+import { LoyaltyPointsModule } from '../loyalty-points/loyalty-points.module';
 import {
   FeaturedCreatorBooking, FeaturedCreatorBookingSchema, FeaturedCreatorPackage, FeaturedCreatorPackageSchema
 } from '../featured-creator/schemas';
@@ -66,7 +68,8 @@ import { FeaturedCreatorPackageService } from '../featured-creator/services';
     forwardRef(() => TokenPackageModule),
     forwardRef(() => TokenPackageModule),
     forwardRef(() => PurchasedItemModule),
-    forwardRef(() => FeaturedCreatorModule)
+    forwardRef(() => FeaturedCreatorModule),
+    forwardRef(() => LoyaltyPointsModule)
   ],
   providers: [
     OrderService,
@@ -76,6 +79,7 @@ import { FeaturedCreatorPackageService } from '../featured-creator/services';
     PaymentSearchService,
     UpdateOrderStatusPaymentTransactionSuccessListener,
     UpdateUserBalanceFromOrderSuccessListener,
+    PostRRREarnEventFromOrderSuccessListener,
     CreateOrderFromPurchasedItemListener,
     NotifyOrderUpdateListener,
     FeaturedCreatorPackageService

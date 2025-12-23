@@ -16,6 +16,7 @@ import { PerformerAssetsModule } from '../performer-assets/performer-assets.modu
 import { User, UserSchema } from './schemas/user.schema';
 import { ShippingInfo, ShippingInfoSchema } from './schemas/shipping-info.schema';
 import { PerformerModule } from '../performer/performer.module';
+import { LoyaltyPointsModule } from '../loyalty-points/loyalty-points.module';
 import { UserRankModel } from './models/user-rank.model';
 import { UserRankSchema } from './schemas/user-rank.schema';
 
@@ -40,7 +41,8 @@ import { UserRankSchema } from './schemas/user-rank.schema';
     AgendaModule.register(),
     forwardRef(() => SocketModule),
     forwardRef(() => PerformerAssetsModule),
-    forwardRef(() => PerformerModule)
+    forwardRef(() => PerformerModule),
+    forwardRef(() => LoyaltyPointsModule)
   ],
   providers: [
     UserService, UserSearchService, UserConnectedListener

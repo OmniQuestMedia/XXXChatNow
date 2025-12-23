@@ -20,7 +20,17 @@ import {
   CommitRedemptionDto,
   ReverseRedemptionDto,
   RRRWalletDto,
-  RRRLedgerEntryDto
+  RRRLedgerEntryDto,
+  QuoteTopUpDto,
+  QuoteTopUpResponseDto,
+  CommitTopUpDto,
+  CreateAwardIntentDto,
+  AwardIntentResponseDto,
+  CommitAwardDto,
+  CreatePromotionDto,
+  PromotionDto,
+  PromotionApprovalDto,
+  CreateAdjustmentDto
 } from '../dtos';
 
 /**
@@ -300,6 +310,219 @@ export class RRRApiClientService {
           { headers }
         )
       );
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Quote top-up
+   */
+  async quoteTopUp(dto: QuoteTopUpDto, idempotencyKey?: string): Promise<QuoteTopUpResponseDto> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/${RRR_API_VERSION}/points/topup/quote`,
+          dto,
+          { headers }
+        )
+      );
+
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Commit top-up
+   */
+  async commitTopUp(dto: CommitTopUpDto, idempotencyKey?: string): Promise<void> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/${RRR_API_VERSION}/points/topup/commit`,
+          dto,
+          { headers }
+        )
+      );
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Create award intent (model to viewer)
+   */
+  async createAwardIntent(dto: CreateAwardIntentDto, idempotencyKey?: string): Promise<AwardIntentResponseDto> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/${RRR_API_VERSION}/awards/intents`,
+          dto,
+          { headers }
+        )
+      );
+
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Commit award
+   */
+  async commitAward(dto: CommitAwardDto, idempotencyKey?: string): Promise<void> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/${RRR_API_VERSION}/awards/commit`,
+          dto,
+          { headers }
+        )
+      );
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Create promotion
+   */
+  async createPromotion(dto: CreatePromotionDto, idempotencyKey?: string): Promise<PromotionDto> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/${RRR_API_VERSION}/promotions`,
+          dto,
+          { headers }
+        )
+      );
+
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Update promotion
+   */
+  async updatePromotion(promotionId: string, dto: Partial<CreatePromotionDto>, idempotencyKey?: string): Promise<PromotionDto> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      const response = await firstValueFrom(
+        this.httpService.patch(
+          `${this.baseUrl}/${RRR_API_VERSION}/promotions/${promotionId}`,
+          dto,
+          { headers }
+        )
+      );
+
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Submit promotion for approval
+   */
+  async submitPromotionForApproval(promotionId: string, idempotencyKey?: string): Promise<void> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/${RRR_API_VERSION}/promotions/${promotionId}/submit`,
+          {},
+          { headers }
+        )
+      );
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Approve promotion
+   */
+  async approvePromotion(promotionId: string, dto: PromotionApprovalDto, idempotencyKey?: string): Promise<void> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/${RRR_API_VERSION}/promotions/${promotionId}/approve`,
+          dto,
+          { headers }
+        )
+      );
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Get promotion
+   */
+  async getPromotion(promotionId: string): Promise<PromotionDto> {
+    try {
+      const headers = await this.getHeaders();
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.baseUrl}/${RRR_API_VERSION}/promotions/${promotionId}`,
+          { headers }
+        )
+      );
+
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * List promotions
+   */
+  async listPromotions(params?: { status?: string }): Promise<PromotionDto[]> {
+    try {
+      const headers = await this.getHeaders();
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.baseUrl}/${RRR_API_VERSION}/promotions`,
+          {
+            headers,
+            params
+          }
+        )
+      );
+
+      return response.data;
+    } catch (error) {
+      return this.handleError(error);
+    }
+  }
+
+  /**
+   * Create manual adjustment
+   */
+  async createAdjustment(dto: CreateAdjustmentDto, idempotencyKey?: string): Promise<EarnEventResponseDto> {
+    try {
+      const headers = await this.getHeaders(idempotencyKey || uuidv4());
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.baseUrl}/${RRR_API_VERSION}/points/adjustments`,
+          dto,
+          { headers }
+        )
+      );
+
+      return response.data;
     } catch (error) {
       return this.handleError(error);
     }

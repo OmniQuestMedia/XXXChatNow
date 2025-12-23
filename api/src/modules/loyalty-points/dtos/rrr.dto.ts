@@ -410,3 +410,269 @@ export class ReverseRedemptionDto {
   @IsEnum(RRRReversalReason)
   reason: RRRReversalReason;
 }
+
+/**
+ * Top-Up DTOs
+ */
+export class QuoteTopUpDto {
+  @ApiProperty()
+  @IsNumber()
+  bundle: number;
+
+  @ApiProperty()
+  @IsNumber()
+  unit_price_minor: number;
+}
+
+export class QuoteTopUpResponseDto {
+  @ApiProperty()
+  @IsUUID()
+  topup_quote_id: string;
+
+  @ApiProperty()
+  @IsNumber()
+  points: number;
+
+  @ApiProperty()
+  @IsNumber()
+  total_cost_minor: number;
+
+  @ApiProperty()
+  @IsISO8601()
+  expires_at: string;
+}
+
+export class CommitTopUpDto {
+  @ApiProperty()
+  @IsUUID()
+  topup_quote_id: string;
+
+  @ApiProperty()
+  @IsString()
+  client_order_id: string;
+
+  @ApiProperty()
+  @IsString()
+  client_user_id: string;
+
+  @ApiProperty()
+  @IsUUID()
+  rrr_member_id: string;
+}
+
+/**
+ * Award DTOs (Model to Viewer)
+ */
+export class AwardContextDto {
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  room_id?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  stream_id?: string;
+}
+
+export class CreateAwardIntentDto {
+  @ApiProperty()
+  @IsString()
+  client_model_id: string;
+
+  @ApiProperty()
+  @IsUUID()
+  rrr_model_member_id: string;
+
+  @ApiProperty()
+  @IsString()
+  client_viewer_user_id: string;
+
+  @ApiProperty()
+  @IsUUID()
+  rrr_viewer_member_id: string;
+
+  @ApiProperty()
+  @IsNumber()
+  points: number;
+
+  @ApiProperty({ type: AwardContextDto })
+  @ValidateNested()
+  @Type(() => AwardContextDto)
+  @IsOptional()
+  context?: AwardContextDto;
+}
+
+export class AwardIntentResponseDto {
+  @ApiProperty()
+  @IsUUID()
+  intent_id: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  eligible: boolean;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  ineligibility_reason?: string;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  max_points?: number;
+}
+
+export class CommitAwardDto {
+  @ApiProperty()
+  @IsUUID()
+  intent_id: string;
+
+  @ApiProperty()
+  @IsString()
+  client_model_id: string;
+
+  @ApiProperty()
+  @IsString()
+  client_viewer_user_id: string;
+}
+
+/**
+ * Promotion DTOs
+ */
+export class PromotionEligibilityDto {
+  @ApiProperty()
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  xcn_membership_tiers?: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  min_lifetime_spend_minor?: number;
+}
+
+export class PromotionEarnRulesDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  multiplier?: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  cap_points?: number;
+
+  @ApiProperty()
+  @IsNumber()
+  @IsOptional()
+  expiry_days?: number;
+}
+
+export class CreatePromotionDto {
+  @ApiProperty()
+  @IsString()
+  name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty({ type: PromotionEligibilityDto })
+  @ValidateNested()
+  @Type(() => PromotionEligibilityDto)
+  @IsOptional()
+  eligibility?: PromotionEligibilityDto;
+
+  @ApiProperty({ type: PromotionEarnRulesDto })
+  @ValidateNested()
+  @Type(() => PromotionEarnRulesDto)
+  @IsOptional()
+  earn_rules?: PromotionEarnRulesDto;
+
+  @ApiProperty()
+  @IsISO8601()
+  @IsOptional()
+  starts_at?: string;
+
+  @ApiProperty()
+  @IsISO8601()
+  @IsOptional()
+  ends_at?: string;
+}
+
+export class PromotionApprovalDto {
+  @ApiProperty({ type: RRRActorDto })
+  @ValidateNested()
+  @Type(() => RRRActorDto)
+  actor: RRRActorDto;
+
+  @ApiProperty()
+  @IsOptional()
+  signature?: {
+    method: string;
+    attestation: string;
+  };
+}
+
+export class PromotionDto {
+  @ApiProperty()
+  @IsUUID()
+  promotion_id: string;
+
+  @ApiProperty()
+  @IsString()
+  client_id: string;
+
+  @ApiProperty()
+  @IsString()
+  name: string;
+
+  @ApiProperty()
+  @IsString()
+  status: string;
+
+  @ApiProperty({ type: PromotionEligibilityDto })
+  @IsOptional()
+  eligibility?: PromotionEligibilityDto;
+
+  @ApiProperty({ type: PromotionEarnRulesDto })
+  @IsOptional()
+  earn_rules?: PromotionEarnRulesDto;
+
+  @ApiProperty()
+  @IsArray()
+  @IsOptional()
+  approvals?: any[];
+}
+
+/**
+ * Manual Adjustment DTOs
+ */
+export class CreateAdjustmentDto {
+  @ApiProperty()
+  @IsString()
+  client_user_id: string;
+
+  @ApiProperty()
+  @IsUUID()
+  rrr_member_id: string;
+
+  @ApiProperty()
+  @IsNumber()
+  points: number;
+
+  @ApiProperty()
+  @IsString()
+  reason_code: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  ticket_reference?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  metadata?: Record<string, any>;
+}
