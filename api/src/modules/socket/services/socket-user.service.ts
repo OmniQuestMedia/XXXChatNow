@@ -120,7 +120,7 @@ export class SocketUserService {
     await Promise.all(ids.map((id) => this.server.to(id).emit(eventName, data)));
   }
 
-  hasConnected(socketId: string): Boolean {
+  hasConnected(socketId: string): boolean {
     return !!this.server.sockets.sockets.get(socketId);
   }
 

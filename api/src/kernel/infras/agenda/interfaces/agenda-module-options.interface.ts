@@ -1,7 +1,7 @@
 import { ModuleMetadata, Type } from '@nestjs/common/interfaces';
 import { AgendaConfig } from 'agenda';
 
-export interface AgendaModuleOptions extends AgendaConfig { }
+export type AgendaModuleOptions = AgendaConfig
 
 export interface AgendaOptionsFactory {
   createAgendaOptions(): Promise<AgendaModuleOptions> | AgendaModuleOptions;
