@@ -14,16 +14,14 @@ export class RRRAccountLink {
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     required: true,
-    index: true,
-    unique: true
+    index: true
   })
   userId: ObjectId | MongooseObjectId | MongooseSchema.Types.ObjectId;
 
   @Prop({
     type: String,
     required: true,
-    index: true,
-    unique: true
+    index: true
   })
   rrrMemberId: string;
 

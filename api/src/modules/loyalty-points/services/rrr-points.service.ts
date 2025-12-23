@@ -11,7 +11,7 @@ import {
   ReverseRedemptionDto,
   RRRWalletDto
 } from '../dtos';
-import { RRREarnEventType, RRRPostingMode, RRRRedemptionMode } from '../constants';
+import { RRREarnEventType, RRRPostingMode, RRRRedemptionMode, RRRReversalReason } from '../constants';
 
 /**
  * Service for managing loyalty points earning and redemption
@@ -210,12 +210,12 @@ export class RRRPointsService {
    */
   async reverseRedemption(
     orderId: string,
-    reason: string,
+    reason: RRRReversalReason,
     idempotencyKey: string
   ): Promise<void> {
     const dto: ReverseRedemptionDto = {
       client_order_id: orderId,
-      reason: reason as any
+      reason
     };
 
     try {
