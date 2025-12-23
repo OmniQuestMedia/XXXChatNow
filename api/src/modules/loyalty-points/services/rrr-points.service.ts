@@ -9,7 +9,13 @@ import {
   QuoteRedemptionResponseDto,
   CommitRedemptionDto,
   ReverseRedemptionDto,
-  RRRWalletDto
+  RRRWalletDto,
+  QuoteTopUpDto,
+  QuoteTopUpResponseDto,
+  CommitTopUpDto,
+  CreateAwardIntentDto,
+  AwardIntentResponseDto,
+  CommitAwardDto
 } from '../dtos';
 import { RRREarnEventType, RRRPostingMode, RRRRedemptionMode, RRRReversalReason } from '../constants';
 
@@ -222,6 +228,116 @@ export class RRRPointsService {
       await this.rrrApiClient.reverseRedemption(dto, idempotencyKey);
     } catch (error) {
       this.logger.error(`Failed to reverse redemption for order ${orderId}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Quote top-up (for checkout when user is short of points)
+   */
+  async quoteTopUp(
+    bundle: number,
+    unitPriceMinor = 3
+  ): Promise<QuoteTopUpResponseDto> {
+    const dto: QuoteTopUpDto = {
+      bundle,
+      unit_price_minor: unitPriceMinor
+    };
+
+    try {
+      return await this.rrrApiClient.quoteTopUp(dto);
+    } catch (error) {
+      this.logger.error(`Failed to quote top-up for bundle ${bundle}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Commit top-up after payment success
+   */
+  async commitTopUp(
+    userId: ObjectId,
+    topupQuoteId: string,
+    orderId: string,
+    idempotencyKey: string
+  ): Promise<void> {
+    const rrrMemberId = await this.accountLinkService.getRRRMemberId(userId);
+    
+    if (!rrrMemberId) {
+      throw new BadRequestException('User is not linked to RRR account');
+    }
+
+    const dto: CommitTopUpDto = {
+      topup_quote_id: topupQuoteId,
+      client_order_id: orderId,
+      client_user_id: userId.toString(),
+      rrr_member_id: rrrMemberId
+    };
+
+    try {
+      await this.rrrApiClient.commitTopUp(dto, idempotencyKey);
+    } catch (error) {
+      this.logger.error(`Failed to commit top-up for user ${userId}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Create award intent (model to viewer)
+   */
+  async createAwardIntent(
+    modelUserId: ObjectId,
+    viewerUserId: ObjectId,
+    points: number,
+    context?: { room_id?: string; stream_id?: string }
+  ): Promise<AwardIntentResponseDto> {
+    const modelRRRMemberId = await this.accountLinkService.getRRRMemberId(modelUserId);
+    const viewerRRRMemberId = await this.accountLinkService.getRRRMemberId(viewerUserId);
+    
+    if (!modelRRRMemberId) {
+      throw new BadRequestException('Model is not linked to RRR account');
+    }
+    
+    if (!viewerRRRMemberId) {
+      throw new BadRequestException('Viewer is not linked to RRR account');
+    }
+
+    const dto: CreateAwardIntentDto = {
+      client_model_id: modelUserId.toString(),
+      rrr_model_member_id: modelRRRMemberId,
+      client_viewer_user_id: viewerUserId.toString(),
+      rrr_viewer_member_id: viewerRRRMemberId,
+      points,
+      context
+    };
+
+    try {
+      return await this.rrrApiClient.createAwardIntent(dto);
+    } catch (error) {
+      this.logger.error(`Failed to create award intent from model ${modelUserId} to viewer ${viewerUserId}`, error.stack);
+      throw error;
+    }
+  }
+
+  /**
+   * Commit award
+   */
+  async commitAward(
+    modelUserId: ObjectId,
+    viewerUserId: ObjectId,
+    intentId: string,
+    idempotencyKey: string
+  ): Promise<void> {
+    const dto: CommitAwardDto = {
+      intent_id: intentId,
+      client_model_id: modelUserId.toString(),
+      client_viewer_user_id: viewerUserId.toString()
+    };
+
+    try {
+      await this.rrrApiClient.commitAward(dto, idempotencyKey);
+    } catch (error) {
+      this.logger.error(`Failed to commit award from model ${modelUserId} to viewer ${viewerUserId}`, error.stack);
       throw error;
     }
   }

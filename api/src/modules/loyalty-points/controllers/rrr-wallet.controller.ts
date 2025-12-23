@@ -60,4 +60,20 @@ export class RRRWalletController {
       requestedPoints
     );
   }
+
+  /**
+   * Quote top-up (for when user is short of points)
+   */
+  @Post('quote-topup')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Quote points top-up purchase' })
+  async quoteTopUp(
+    @Request() req,
+    @Body('bundle') bundle: number,
+    @Body('unit_price_minor') unitPriceMinor?: number
+  ) {
+    return this.pointsService.quoteTopUp(bundle, unitPriceMinor || 3);
+  }
 }

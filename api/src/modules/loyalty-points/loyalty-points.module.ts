@@ -4,17 +4,23 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from 'nestjs-config';
 import {
   RRRAccountLink,
-  RRRAccountLinkSchema
+  RRRAccountLinkSchema,
+  RRRWebhookEvent,
+  RRRWebhookEventSchema
 } from './schemas';
 import {
   RRRApiClientService,
   RRRAccountLinkService,
-  RRRPointsService
+  RRRPointsService,
+  RRRPromotionsService
 } from './services';
 import {
   RRRLinkController,
   RRRWalletController,
-  RRRWebhookController
+  RRRWebhookController,
+  RRRAwardsController,
+  RRRPromotionsController,
+  RRRAdjustmentsController
 } from './controllers';
 
 /**
@@ -32,23 +38,32 @@ import {
       {
         name: RRRAccountLink.name,
         schema: RRRAccountLinkSchema
+      },
+      {
+        name: RRRWebhookEvent.name,
+        schema: RRRWebhookEventSchema
       }
     ])
   ],
   providers: [
     RRRApiClientService,
     RRRAccountLinkService,
-    RRRPointsService
+    RRRPointsService,
+    RRRPromotionsService
   ],
   controllers: [
     RRRLinkController,
     RRRWalletController,
-    RRRWebhookController
+    RRRWebhookController,
+    RRRAwardsController,
+    RRRPromotionsController,
+    RRRAdjustmentsController
   ],
   exports: [
     RRRApiClientService,
     RRRAccountLinkService,
-    RRRPointsService
+    RRRPointsService,
+    RRRPromotionsService
   ]
 })
 export class LoyaltyPointsModule {}

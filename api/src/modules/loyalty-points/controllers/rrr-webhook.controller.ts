@@ -9,8 +9,11 @@ import {
   Logger
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import * as crypto from 'crypto';
 import { RRR_WEBHOOK_SECRET, RRRWebhookEventType } from '../constants';
+import { RRRWebhookEvent, RRRWebhookEventDocument } from '../schemas';
 
 /**
  * Controller for handling RRR webhooks
@@ -19,6 +22,11 @@ import { RRR_WEBHOOK_SECRET, RRRWebhookEventType } from '../constants';
 @Controller('loyalty-points/webhooks')
 export class RRRWebhookController {
   private readonly logger = new Logger(RRRWebhookController.name);
+
+  constructor(
+    @InjectModel(RRRWebhookEvent.name)
+    private readonly webhookEventModel: Model<RRRWebhookEventDocument>
+  ) {}
 
   /**
    * Verify webhook signature
@@ -41,6 +49,27 @@ export class RRRWebhookController {
   }
 
   /**
+   * Check if event has already been processed (idempotency)
+   */
+  private async isEventProcessed(eventId: string): Promise<boolean> {
+    const existing = await this.webhookEventModel.findOne({ event_id: eventId });
+    return !!existing;
+  }
+
+  /**
+   * Mark event as processed
+   */
+  private async markEventProcessed(eventId: string, eventType: string, data: any): Promise<void> {
+    await this.webhookEventModel.create({
+      event_id: eventId,
+      event_type: eventType,
+      data,
+      status: 'processed',
+      processed_at: new Date()
+    });
+  }
+
+  /**
    * Handle RRR webhook events
    */
   @Post()
@@ -60,6 +89,12 @@ export class RRRWebhookController {
 
     // Log webhook event (no PII)
     this.logger.log(`Received RRR webhook: ${event_type} (${event_id})`);
+
+    // Check idempotency - if already processed, return success
+    if (await this.isEventProcessed(event_id)) {
+      this.logger.log(`Event ${event_id} already processed, skipping`);
+      return { received: true };
+    }
 
     try {
       switch (event_type) {
@@ -98,6 +133,9 @@ export class RRRWebhookController {
         default:
           this.logger.warn(`Unknown webhook event type: ${event_type}`);
       }
+
+      // Mark as processed to ensure idempotency
+      await this.markEventProcessed(event_id, event_type, data);
     } catch (error) {
       this.logger.error(`Error processing webhook ${event_type}`, error.stack);
       throw error;
@@ -106,44 +144,83 @@ export class RRRWebhookController {
     return { received: true };
   }
 
-  private async handlePointsPosted(_data: any): Promise<void> {
-    // TODO: Implement points posted handler
-    // Update local cache, emit events, etc.
-    this.logger.log('Points posted event received');
+  private async handlePointsPosted(data: any): Promise<void> {
+    // Points have been successfully posted to member's account
+    const { member_id, points_delta, ledger_entry_id, source_ref } = data;
+    
+    this.logger.log(`Points posted: ${points_delta} for member ${member_id}, entry: ${ledger_entry_id}`);
+    
+    // TODO: Update local cache/stats if needed
+    // TODO: Send notification to user about points earned
+    // Example:
+    // await this.notificationService.sendPointsEarnedNotification(member_id, points_delta);
   }
 
-  private async handlePointsReversed(_data: any): Promise<void> {
-    // TODO: Implement points reversed handler
-    this.logger.log('Points reversed event received');
+  private async handlePointsReversed(data: any): Promise<void> {
+    // Points have been reversed (e.g., chargeback, refund)
+    const { member_id, points_delta, reason, ledger_entry_id } = data;
+    
+    this.logger.log(`Points reversed: ${points_delta} for member ${member_id}, reason: ${reason}`);
+    
+    // TODO: Update local cache/stats
+    // TODO: Send notification to user about points reversal
   }
 
-  private async handleRedemptionCommitted(_data: any): Promise<void> {
-    // TODO: Implement redemption committed handler
-    this.logger.log('Redemption committed event received');
+  private async handleRedemptionCommitted(data: any): Promise<void> {
+    // Redemption has been successfully committed
+    const { member_id, points_burned, discount_minor, order_id } = data;
+    
+    this.logger.log(`Redemption committed: ${points_burned} points for member ${member_id}, order: ${order_id}`);
+    
+    // TODO: Update order records if needed
+    // TODO: Clear any cached redemption quotes
   }
 
-  private async handleRedemptionReversed(_data: any): Promise<void> {
-    // TODO: Implement redemption reversed handler
-    this.logger.log('Redemption reversed event received');
+  private async handleRedemptionReversed(data: any): Promise<void> {
+    // Redemption has been reversed (points restored)
+    const { member_id, points_restored, order_id, reason } = data;
+    
+    this.logger.log(`Redemption reversed: ${points_restored} points restored for member ${member_id}, order: ${order_id}`);
+    
+    // TODO: Update order records
+    // TODO: Send notification about reversal
   }
 
-  private async handleLinkUpdated(_data: any): Promise<void> {
-    // TODO: Implement link updated handler
-    this.logger.log('Link updated event received');
+  private async handleLinkUpdated(data: any): Promise<void> {
+    // Link status has changed (activated, revoked, etc.)
+    const { member_id, client_user_id, status } = data;
+    
+    this.logger.log(`Link updated: member ${member_id}, client user ${client_user_id}, status: ${status}`);
+    
+    // TODO: Update local link cache
+    // TODO: Send notification about link status change
   }
 
-  private async handlePromotionStatusChanged(_data: any): Promise<void> {
-    // TODO: Implement promotion status changed handler
-    this.logger.log('Promotion status changed event received');
+  private async handlePromotionStatusChanged(data: any): Promise<void> {
+    // Promotion status has changed
+    const { promotion_id, status, previous_status } = data;
+    
+    this.logger.log(`Promotion ${promotion_id} status changed: ${previous_status} -> ${status}`);
+    
+    // TODO: Update local promotion cache
+    // TODO: Notify admins about status change
   }
 
-  private async handleTransferCompleted(_data: any): Promise<void> {
-    // TODO: Implement transfer completed handler
-    this.logger.log('Transfer completed event received');
+  private async handleTransferCompleted(data: any): Promise<void> {
+    // Points transfer completed (model to viewer, etc.)
+    const { from_member_id, to_member_id, points, transfer_id } = data;
+    
+    this.logger.log(`Transfer completed: ${points} points from ${from_member_id} to ${to_member_id}`);
+    
+    // TODO: Send notifications to both parties
   }
 
-  private async handleTransferReversed(_data: any): Promise<void> {
-    // TODO: Implement transfer reversed handler
-    this.logger.log('Transfer reversed event received');
+  private async handleTransferReversed(data: any): Promise<void> {
+    // Points transfer has been reversed
+    const { from_member_id, to_member_id, points, transfer_id, reason } = data;
+    
+    this.logger.log(`Transfer reversed: ${points} points, reason: ${reason}`);
+    
+    // TODO: Send notifications about reversal
   }
 }
