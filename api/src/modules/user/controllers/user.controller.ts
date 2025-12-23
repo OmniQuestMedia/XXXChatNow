@@ -28,6 +28,7 @@ import { UserSearchService, UserService } from '../services';
 import { UserDto, IUserResponse } from '../dtos';
 import { UserSearchRequestPayload, UserUpdatePayload } from '../payloads';
 import { STATUS_ACTIVE } from '../constants';
+import { RRRPointsService, RRRAccountLinkService } from 'src/modules/loyalty-points/services';
 
 const fs = require('fs');
 
@@ -38,7 +39,9 @@ export class UserController {
     private readonly userService: UserService,
     private readonly authService: AuthService,
     private readonly userSearchService: UserSearchService,
-    private readonly videoService: VideoService
+    private readonly videoService: VideoService,
+    private readonly rrrPointsService: RRRPointsService,
+    private readonly rrrAccountLinkService: RRRAccountLinkService
   ) {}
 
   @Get('me')
@@ -52,8 +55,34 @@ export class UserController {
     }
 
     const result = await this.userService.findById(user._id);
+    const userResponse = new UserDto(result).toResponse(true);
     
-    return DataResponse.ok(new UserDto(result).toResponse(true));
+    // Enhance response with RRR points data (non-blocking)
+    try {
+      const linkStatus = await this.rrrAccountLinkService.getLinkStatus(user._id);
+      const wallet = linkStatus.linked ? await this.rrrPointsService.getUserWallet(user._id) : null;
+      
+      (userResponse as any).rrr = {
+        linked: linkStatus.linked,
+        link_type: linkStatus.link_type,
+        linked_at: linkStatus.linked_at,
+        wallet: wallet ? {
+          available_points: wallet.available_points,
+          pending_points: wallet.pending_points,
+          escrow_points: wallet.escrow_points,
+          expiring_soon: wallet.expiring_soon
+        } : null
+      };
+    } catch (error) {
+      // If RRR is down, just set linked to false and continue
+      (userResponse as any).rrr = {
+        linked: false,
+        available: false,
+        error: 'RedRoomRewards temporarily unavailable'
+      };
+    }
+    
+    return DataResponse.ok(userResponse);
   }
 
   @Put()
