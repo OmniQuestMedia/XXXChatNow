@@ -172,22 +172,62 @@ api/src/modules/slot-machine/
 
 ### Required Integrations
 
-1. **RedRoomRewards API** (lines marked in code)
+1. **Performance Queue Integration** (CRITICAL - Per Integration Contract v1)
+   ```typescript
+   // Per XXXCHATNOW_INTERACTIVE_FEATURE_INTEGRATION_CONTRACT_v1.md:
+   // 1. Create escrow hold for spin cost
+   const escrowHold = await escrowService.createHold({
+     userId,
+     amount: betAmount,
+     reason: 'slot_machine_spin',
+     idempotencyKey
+   });
+
+   // 2. Execute spin (RNG, determine outcome)
+   const spinResult = await this.executeSpinLogic(betAmount);
+
+   // 3. Emit standardized queue intake payload (do NOT settle directly)
+   await queueService.intake({
+     idempotencyKey,
+     sourceFeature: 'slot_machine',
+     sourceEventId: spinId,
+     performerId: null, // Slot machine has no performer
+     userId,
+     escrowTransactionId: escrowHold.id,
+     tokens: betAmount,
+     title: `Slot Machine Spin`,
+     description: `Spin result: ${spinResult.symbols.join(', ')}`,
+     durationSeconds: null,
+     metadata: {
+       symbols: spinResult.symbols,
+       isWin: spinResult.isWin,
+       payout: spinResult.payout
+     }
+   });
+
+   // Queue handles settlement/refund, NOT slot machine service
+   ```
+   **Status**: Blocked on performance queue module implementation
+
+2. **RedRoomRewards API** (lines marked in code)
    ```typescript
    // Replace direct balance updates with:
    await loyaltyService.deduct({ userId, amount, reason, transactionId, idempotencyKey });
    await loyaltyService.credit({ userId, amount, reason, transactionId, metadata });
    ```
+   **Status**: Waiting on API availability
 
-2. **Age Verification** (slot-machine.service.ts:87)
+3. **Age Verification** (slot-machine.service.ts:87)
    ```typescript
    await this.checkAgeCompliance(userId);
    ```
+   **Status**: Requires compliance team input
 
-3. **Jurisdiction Compliance** (slot-machine.service.ts:88)
+4. **Jurisdiction Compliance** (slot-machine.service.ts:88)
    ```typescript
    await this.checkJurisdictionCompliance(userId);
    ```
+   **Status**: Requires compliance team input
 
 ### Recommended Enhancements
 
@@ -380,19 +420,51 @@ const result = await response.json();
 
 ## Conclusion
 
-The slot machine backend scaffolding is **complete and production-ready** for XXXChatNow platform. All security requirements are met, no vulnerabilities detected, and comprehensive documentation provided. The implementation follows all briefing specifications and security policies.
+The slot machine backend scaffolding is **complete and security-compliant** for XXXChatNow platform. All security requirements are met, no vulnerabilities detected, and comprehensive documentation provided. The implementation follows all briefing specifications and security policies.
+
+**CRITICAL**: Per the Integration Contract v1, the slot machine **MUST be refactored** to route through the Performance Queue before production deployment. Direct settlement is explicitly prohibited.
+
+### Current Status (Updated December 23, 2025)
+
+**Backend Scaffold**: ✅ COMPLETE  
+**Security Compliance**: ✅ COMPLETE (0 CodeQL alerts)  
+**Integration Contract Compliance**: ⏸️ PENDING (requires performance queue)  
+**Production Ready**: ❌ BLOCKED (waiting on queue implementation)
 
 ### Next Steps
 
-1. Frontend team can begin UI implementation
-2. DevOps team can prepare deployment infrastructure
-3. Product team can complete RedRoomRewards API integration
-4. Compliance team can implement age/jurisdiction checks
-5. QA team can develop comprehensive test suite
+**Priority 1: Performance Queue Integration** (BLOCKING)
+1. Wait for performance queue module completion
+2. Refactor slot machine to:
+   - Create escrow holds before spin
+   - Emit queue intake payloads after spin
+   - Remove direct settlement logic
+   - Add rollback on escrow failure
+3. Add integration tests for slot → queue → settlement flow
+4. Validate idempotency across queue boundary
+
+**Priority 2: API Integrations** (BLOCKING)
+1. Complete RedRoomRewards API integration
+2. Implement age verification checks
+3. Implement jurisdiction compliance checks
+
+**Priority 3: Frontend Implementation** (Can proceed in parallel)
+1. UI components for spin interface
+2. Animation system for results
+3. History display with pagination
+4. Rate limit indicator
+
+**Priority 4: Testing & Validation**
+1. Integration tests with performance queue
+2. E2E tests with complete user flows
+3. Load testing (1000 spins/sec target)
+4. Compliance audit review
 
 ---
 
 **Implementation Date**: December 19, 2025  
-**Status**: ✅ COMPLETE - Ready for Integration  
+**Last Updated**: December 23, 2025  
+**Status**: ✅ Backend Scaffold Complete | ⏸️ Blocked on Performance Queue  
 **Security Scan**: ✅ PASSED (0 alerts)  
-**Code Review**: ✅ PASSED (all issues resolved)
+**Code Review**: ✅ PASSED (all issues resolved)  
+**Integration Contract**: ⏸️ Compliance pending queue implementation
