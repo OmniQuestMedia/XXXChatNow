@@ -29,6 +29,32 @@ export class RRRWebhookController {
   ) {}
 
   /**
+   * Validate and sanitize event_id from webhook payload
+   */
+  private getValidatedEventId(event_id: unknown): string {
+    if (typeof event_id !== 'string') {
+      throw new BadRequestException('Invalid webhook payload: event_id must be a string');
+    }
+
+    const trimmed = event_id.trim();
+    if (!trimmed) {
+      throw new BadRequestException('Invalid webhook payload: event_id is required');
+    }
+
+    // Prevent excessively long IDs
+    if (trimmed.length > 128) {
+      throw new BadRequestException('Invalid webhook payload: event_id too long');
+    }
+
+    // Prevent MongoDB operator injection by rejecting '$' and '.'
+    if (trimmed.includes('$') || trimmed.includes('.')) {
+      throw new BadRequestException('Invalid webhook payload: event_id contains illegal characters');
+    }
+
+    return trimmed;
+  }
+
+  /**
    * Verify webhook signature
    */
   private verifySignature(body: string, signature: string): boolean {
@@ -52,7 +78,8 @@ export class RRRWebhookController {
    * Check if event has already been processed (idempotency)
    */
   private async isEventProcessed(eventId: string): Promise<boolean> {
-    const existing = await this.webhookEventModel.findOne({ event_id: eventId });
+    // Use $eq to prevent operator injection
+    const existing = await this.webhookEventModel.findOne({ event_id: { $eq: eventId } });
     return !!existing;
   }
 
@@ -77,7 +104,7 @@ export class RRRWebhookController {
   @ApiOperation({ summary: 'Handle RRR webhook events' })
   async handleWebhook(
     @Headers('x-rrr-signature') signature: string,
-    @Body() payload: any
+    @Body() payload: unknown
   ): Promise<{ received: boolean }> {
     // Verify signature
     const bodyString = JSON.stringify(payload);
@@ -85,7 +112,11 @@ export class RRRWebhookController {
       throw new BadRequestException('Invalid webhook signature');
     }
 
-    const { event_type, event_id, data } = payload;
+    // Safely extract and validate fields from unknown payload
+    const p = payload as Record<string, unknown>;
+    const event_type = p.event_type;
+    const event_id = this.getValidatedEventId(p.event_id);
+    const data = p.data;
 
     // Log webhook event (no PII)
     this.logger.log(`Received RRR webhook: ${event_type} (${event_id})`);
