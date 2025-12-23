@@ -193,9 +193,9 @@ Week 6:   Final testing & compliance review
 - Resource allocation (2-3 engineers)
 
 **Expected Launch**: 
-- **Optimistic**: Early February 2025
-- **Realistic**: Mid-February 2025
-- **Conservative**: Late February 2025
+- **Optimistic**: Early February 2026
+- **Realistic**: Mid-February 2026
+- **Conservative**: Late February 2026
 
 ---
 
