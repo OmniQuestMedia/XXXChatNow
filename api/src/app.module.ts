@@ -43,6 +43,7 @@ import { ReferralModule } from './modules/referral/referral.module';
 import { WheelModule } from './modules/wheel/wheel.module';
 import { PerformerScheduleModule } from './modules/performer-schedule/performer-schedule.module';
 import { SlotMachineModule } from './modules/slot-machine/slot-machine.module';
+import { AuditModule } from './modules/audit/audit.module';
 
 @Module({
   imports: [
@@ -87,7 +88,8 @@ import { SlotMachineModule } from './modules/slot-machine/slot-machine.module';
     LeaderBoardModule,
     FeaturedCreatorModule,
     PerformerScheduleModule,
-    SlotMachineModule
+    SlotMachineModule,
+    AuditModule
   ],
   controllers: [AppController],
   providers: [AppService]
