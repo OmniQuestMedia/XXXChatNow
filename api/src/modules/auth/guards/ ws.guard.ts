@@ -14,9 +14,8 @@ export class WSGuard implements CanActivate {
   async canActivate(
     context: ExecutionContext
   ): Promise<boolean> {
-    const client = context.switchToWs().getClient();
-    const { handshake } = client;
-    console.log(client, handshake);
+    // const client = context.switchToWs().getClient();
+    // const { handshake } = client;
     throw new WsException('forbiden');
   }
 }

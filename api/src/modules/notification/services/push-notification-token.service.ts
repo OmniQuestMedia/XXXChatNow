@@ -1,5 +1,5 @@
 import {
-  ForbiddenException, Injectable, OnModuleInit
+  ForbiddenException, Injectable, Logger, OnModuleInit
 } from '@nestjs/common';
 // import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, ObjectId } from 'mongoose';
@@ -17,6 +17,8 @@ import { PushNotificationToken } from '../schemas';
 
 @Injectable()
 export class PushNotificationTokenService implements OnModuleInit {
+  private readonly logger = new Logger(PushNotificationTokenService.name);
+
   constructor(
     @InjectModel(PushNotificationToken.name) private readonly PushNotificationTokenModel: Model<PushNotificationToken>,
     private readonly queueEventService: QueueEventService,
@@ -158,7 +160,7 @@ export class PushNotificationTokenService implements OnModuleInit {
       const payload = new PushNotificationTokenPayload(userAgent, registrationToken);
       await this.create(payload, performer);
     } catch (error) {
-      console.log(error);
+      this.logger.error('Failed to create subscription notification', error.stack);
     }
   }
 }
