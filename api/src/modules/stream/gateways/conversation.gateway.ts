@@ -204,8 +204,10 @@ export class StreamConversationWsGateway {
         streamId: stream.streamIds.find((streamId) => streamId.includes(request.performerId.toString()))
       };
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log(err);
+      this.logger.error({
+        message: 'Error joining private room',
+        error: err.message
+      });
     }
   }
 

@@ -142,8 +142,8 @@ export class XLoveCamService {
 
   public async getDetails(modelIds, options = {
     authServiceId: '2',
-    authItemId: '18856',
-    authSecret: '63389fc7199e9f7bf6c7ac63057cec86'
+    authItemId: '',
+    authSecret: ''
   }) {
     const { authServiceId, authItemId, authSecret } = options;
     let data = stringify({
@@ -164,10 +164,7 @@ export class XLoveCamService {
     return resp.data?.content || {};
   }
 
-  public async getDetails2(modelId) {
-    const authServiceId = '2';
-    const authItemId = '18856';
-    const authSecret = '63389fc7199e9f7bf6c7ac63057cec86';
+  public async getDetails2(modelId, authServiceId = '2', authItemId = '', authSecret = '') {
     const data = stringify({
       authServiceId,
       authItemId,
