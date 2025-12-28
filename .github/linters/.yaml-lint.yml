@@ -9,6 +9,7 @@ ignore: |
   coverage/
   .venv/
   vendor/
+  archive/
 
 rules:
   # GitHub Actions workflows use 'on', which yamllint considers truthy by default
