@@ -104,3 +104,15 @@ export const PERFORMANCE_QUEUE_ERRORS = {
   INVALID_PRIORITY: 'INVALID_PRIORITY',
   INVALID_MODE: 'INVALID_MODE'
 };
+
+/**
+ * API Constants
+ */
+// Maximum time period for metrics queries (in minutes)
+export const MAX_METRICS_PERIOD_MINUTES = 1440; // 24 hours
+
+// Maximum number of DLQ entries to return per request
+export const MAX_DLQ_LIMIT = 100;
+
+// Default DLQ limit if not specified
+export const DEFAULT_DLQ_LIMIT = 50;

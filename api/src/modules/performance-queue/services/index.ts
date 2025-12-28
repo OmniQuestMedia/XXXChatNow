@@ -1,2 +1,3 @@
-// Export all services here as they are implemented
-// Example: export * from './performance-queue.service';
+export { PerformanceQueueService } from './performance-queue.service';
+export { QueueRateLimitService } from './queue-rate-limit.service';
+export { QueueHealthService } from './queue-health.service';
