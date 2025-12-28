@@ -44,6 +44,7 @@ import { WheelModule } from './modules/wheel/wheel.module';
 import { PerformerScheduleModule } from './modules/performer-schedule/performer-schedule.module';
 import { SlotMachineModule } from './modules/slot-machine/slot-machine.module';
 import { LoyaltyPointsModule } from './modules/loyalty-points/loyalty-points.module';
+import { PerformanceQueueModule } from './modules/performance-queue/performance-queue.module';
 
 @Module({
   imports: [
@@ -89,7 +90,8 @@ import { LoyaltyPointsModule } from './modules/loyalty-points/loyalty-points.mod
     FeaturedCreatorModule,
     PerformerScheduleModule,
     SlotMachineModule,
-    LoyaltyPointsModule
+    LoyaltyPointsModule,
+    PerformanceQueueModule
   ],
   controllers: [AppController],
   providers: [AppService]
