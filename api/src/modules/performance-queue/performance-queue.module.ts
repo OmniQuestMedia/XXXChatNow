@@ -18,26 +18,30 @@ import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
 import { DBLoggerModule } from '../logger/db-logger.module';
 
-// Import schemas when implemented
-// import { QueueRequest, QueueRequestSchema } from './schemas';
+// Import schemas
+import { QueueRequest, QueueRequestSchema, QueueMetrics, QueueMetricsSchema } from './schemas';
 
-// Import services when implemented
-// import { PerformanceQueueService } from './services';
+// Import services
+import { PriorityQueueService, QueueMetricsService } from './services';
 
-// Import controllers when implemented
-// import { PerformanceQueueController } from './controllers';
+// Import controllers
+import { PerformanceQueueController } from './controllers';
 
-// Import listeners when implemented
-// import { PerformanceQueueListener } from './listeners';
+// Import listeners
+import { PerformanceQueueListener } from './listeners';
 
 @Module({
   imports: [
-    // MongooseModule.forFeature([
-    //   {
-    //     name: QueueRequest.name,
-    //     schema: QueueRequestSchema
-    //   }
-    // ]),
+    MongooseModule.forFeature([
+      {
+        name: QueueRequest.name,
+        schema: QueueRequestSchema
+      },
+      {
+        name: QueueMetrics.name,
+        schema: QueueMetricsSchema
+      }
+    ]),
     QueueModule.forRoot(),
     AgendaModule.register(),
     forwardRef(() => UserModule),
@@ -45,17 +49,16 @@ import { DBLoggerModule } from '../logger/db-logger.module';
     forwardRef(() => DBLoggerModule)
   ],
   providers: [
-    // Services will be added here as they are implemented
-    // PerformanceQueueService,
-    // PerformanceQueueListener
+    PriorityQueueService,
+    QueueMetricsService,
+    PerformanceQueueListener
   ],
   controllers: [
-    // Controllers will be added here as they are implemented
-    // PerformanceQueueController
+    PerformanceQueueController
   ],
   exports: [
-    // Export services that need to be used by other modules
-    // PerformanceQueueService
+    PriorityQueueService,
+    QueueMetricsService
   ]
 })
 export class PerformanceQueueModule {}
