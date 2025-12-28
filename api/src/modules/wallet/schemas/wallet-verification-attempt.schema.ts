@@ -43,18 +43,6 @@ export class WalletVerificationAttempt {
     required: false
   })
   userAgent?: string;
-
-  @Prop({
-    type: Date,
-    default: Date.now
-  })
-  createdAt: Date;
-
-  @Prop({
-    type: Date,
-    default: Date.now
-  })
-  updatedAt: Date;
 }
 
 export type WalletVerificationAttemptDocument = HydratedDocument<WalletVerificationAttempt>;

@@ -92,9 +92,7 @@ export class WalletRateLimitService {
       status,
       failureReason: metadata?.failureReason,
       ipAddress: metadata?.ipAddress,
-      userAgent: metadata?.userAgent,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      userAgent: metadata?.userAgent
     });
 
     this.logger.log(`Recorded ${status} verification attempt for user ${userId}`);
