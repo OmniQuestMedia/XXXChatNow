@@ -32,13 +32,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          # Only run what this repo is currently using in CI
+          # ALLOW-LIST ONLY: Only explicitly enabled validators will run
+          # Any validator not listed here is implicitly disabled
           VALIDATE_YAML: true
           VALIDATE_JSON: true
 
           # Reduce noise/churn and prevent scanning build artifacts
           VALIDATE_ALL_CODEBASE: false
           IGNORE_GITIGNORED_FILES: true
+
+          # Exclude archive directory from all linting
+          FILTER_REGEX_EXCLUDE: archive/.*
 
           # Config directory for super-linter template discovery
           LINTER_RULES_PATH: .github/linters
