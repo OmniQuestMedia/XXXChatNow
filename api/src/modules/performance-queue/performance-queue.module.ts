@@ -14,7 +14,8 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
-import { QueueModule, AgendaModule } from 'src/kernel';
+import { QueueModule } from 'src/kernel';
+import { AgendaService } from 'src/kernel/infras/agenda';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
 import { DBLoggerModule } from '../logger/db-logger.module';
@@ -34,13 +35,25 @@ import { PerformanceQueueController } from './controllers';
         schema: DeadLetterQueueSchema
       }
     ]),
+    RedisModule.forRootAsync({
+      useFactory: () => ({
+        config: {
+          host: process.env.REDIS_HOST || '127.0.0.1',
+          port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+          db: parseInt(process.env.REDIS_DB, 10) || 0
+        }
+      })
+    }),
     QueueModule.forRoot(),
-    AgendaModule.register(),
     forwardRef(() => UserModule),
     forwardRef(() => AuthModule),
     forwardRef(() => DBLoggerModule)
   ],
   providers: [
+    {
+      provide: 'AgendaService',
+      useExisting: AgendaService
+    },
     PerformanceQueueService,
     QueueRateLimitService,
     QueueHealthService

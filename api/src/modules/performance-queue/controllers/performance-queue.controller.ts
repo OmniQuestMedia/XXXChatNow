@@ -34,6 +34,7 @@ import {
   QueueHealthDto,
   QueueMetricsDto
 } from '../dtos';
+import { MAX_METRICS_PERIOD_MINUTES, MAX_DLQ_LIMIT, DEFAULT_DLQ_LIMIT } from '../constants';
 
 @ApiTags('Performance Queue')
 @Controller('performance-queue')
@@ -97,7 +98,7 @@ export class PerformanceQueueController {
   async getMetrics(
     @Query('period') period?: number
   ): Promise<QueueMetricsDto> {
-    const periodMinutes = period && period > 0 && period <= 1440 ? period : 60;
+    const periodMinutes = period && period > 0 && period <= MAX_METRICS_PERIOD_MINUTES ? period : 60;
     return this.healthService.getMetrics(periodMinutes);
   }
 
@@ -108,7 +109,7 @@ export class PerformanceQueueController {
   async getDeadLetterQueue(
     @Query('limit') limit?: number
   ) {
-    const maxLimit = limit && limit > 0 && limit <= 100 ? limit : 50;
+    const maxLimit = limit && limit > 0 && limit <= MAX_DLQ_LIMIT ? limit : DEFAULT_DLQ_LIMIT;
     return this.healthService.getDeadLetterQueueEntries(maxLimit);
   }
 

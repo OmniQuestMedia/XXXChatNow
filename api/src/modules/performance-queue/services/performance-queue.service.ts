@@ -10,7 +10,7 @@
  * - COPILOT_GOVERNANCE.md
  */
 
-import { Injectable, HttpException, HttpStatus, OnModuleInit } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, OnModuleInit, Logger, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
@@ -35,6 +35,7 @@ import {
 
 @Injectable()
 export class PerformanceQueueService implements OnModuleInit {
+  private readonly logger = new Logger(PerformanceQueueService.name);
   private queueInstance: any;
   private processorMap: Map<string, Function> = new Map();
 
@@ -42,7 +43,8 @@ export class PerformanceQueueService implements OnModuleInit {
     @InjectModel(QueueRequest.name) private queueRequestModel: Model<QueueRequest>,
     @InjectModel(DeadLetterQueue.name) private deadLetterQueueModel: Model<DeadLetterQueue>,
     private readonly queueService: QueueService,
-    private readonly rateLimitService: QueueRateLimitService
+    private readonly rateLimitService: QueueRateLimitService,
+    @Inject('AgendaService') private readonly agendaService: any
   ) {}
 
   async onModuleInit() {
@@ -61,6 +63,18 @@ export class PerformanceQueueService implements OnModuleInit {
 
     this.queueInstance.on('failed', async (job: any, error: Error) => {
       await this.handleJobFailure(job.data.requestId, error);
+    });
+
+    // Set up Agenda job for retries
+    this.agendaService.define('retry-queue-request', async (job: any) => {
+      const { requestId, userId, type, payload, mode } = job.attrs.data;
+      await this.queueInstance.createJob({
+        requestId,
+        userId,
+        type,
+        payload,
+        mode
+      }).save();
     });
   }
 
@@ -240,14 +254,14 @@ export class PerformanceQueueService implements OnModuleInit {
     const request = await this.queueRequestModel.findOne({ requestId });
 
     if (!request) {
-      console.error(`Request not found for retry: ${requestId}`);
+      this.logger.error(`Request not found for retry: ${requestId}`);
       return;
     }
 
     const retryCount = request.retryCount + 1;
 
     if (retryCount < MAX_RETRY_ATTEMPTS) {
-      // Retry with exponential backoff
+      // Retry with exponential backoff using Agenda
       const backoffMs = RETRY_BACKOFF_MS * Math.pow(2, retryCount);
 
       await this.queueRequestModel.updateOne(
@@ -259,16 +273,14 @@ export class PerformanceQueueService implements OnModuleInit {
         }
       );
 
-      // Resubmit to queue after backoff
-      setTimeout(async () => {
-        await this.queueInstance.createJob({
-          requestId: request.requestId,
-          userId: request.userId.toString(),
-          type: request.type,
-          payload: request.payload,
-          mode: request.mode
-        }).save();
-      }, backoffMs);
+      // Schedule retry using Agenda for reliability across process restarts
+      await this.agendaService.schedule(new Date(Date.now() + backoffMs), 'retry-queue-request', {
+        requestId: request.requestId,
+        userId: request.userId.toString(),
+        type: request.type,
+        payload: request.payload,
+        mode: request.mode
+      });
     } else {
       // Max retries exceeded, move to dead letter queue
       await this.moveToDeadLetterQueue(request, error);
@@ -304,7 +316,7 @@ export class PerformanceQueueService implements OnModuleInit {
         metadata: request.metadata
       });
     } catch (dlqError) {
-      console.error('Failed to move request to DLQ:', dlqError);
+      this.logger.error('Failed to move request to DLQ', dlqError);
     }
   }
 
@@ -318,8 +330,7 @@ export class PerformanceQueueService implements OnModuleInit {
       mode: request.mode,
       type: request.type,
       priority: request.priority,
-      createdAt: request.createdAt,
-      queuePosition: undefined // Would need separate query
+      createdAt: request.createdAt
     };
   }
 

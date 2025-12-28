@@ -9,13 +9,14 @@
  * - SECURITY_AUDIT_POLICY_AND_CHECKLIST.md
  */
 
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { RedisService } from '@liaoliaots/nestjs-redis';
 import Redis from 'ioredis';
 import { MAX_REQUESTS_PER_USER_PER_MINUTE, PERFORMANCE_QUEUE_ERRORS } from '../constants';
 
 @Injectable()
 export class QueueRateLimitService {
+  private readonly logger = new Logger(QueueRateLimitService.name);
   private redis: Redis;
 
   constructor(private readonly redisService: RedisService) {
@@ -59,7 +60,7 @@ export class QueueRateLimitService {
         throw error;
       }
       // If Redis fails, allow the request but log the error
-      console.error('Rate limit check failed:', error);
+      this.logger.error('Rate limit check failed', error);
       return true;
     }
   }
@@ -86,7 +87,7 @@ export class QueueRateLimitService {
 
       return { current, remaining, resetAt };
     } catch (error) {
-      console.error('Failed to get rate limit status:', error);
+      this.logger.error('Failed to get rate limit status', error);
       return { current: 0, remaining: limit, resetAt: new Date(Date.now() + 60000) };
     }
   }
@@ -103,7 +104,7 @@ export class QueueRateLimitService {
     try {
       await this.redis.del(windowKey);
     } catch (error) {
-      console.error('Failed to reset rate limit:', error);
+      this.logger.error('Failed to reset rate limit', error);
     }
   }
 }

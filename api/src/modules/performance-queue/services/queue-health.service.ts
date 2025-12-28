@@ -61,7 +61,9 @@ export class QueueHealthService {
     });
 
     // Calculate capacity utilization
-    const capacityUtilization = Math.round((pendingCount / MAX_QUEUE_DEPTH) * 100);
+    const capacityUtilization = MAX_QUEUE_DEPTH > 0 
+      ? Math.min(100, Math.round((pendingCount / MAX_QUEUE_DEPTH) * 100))
+      : 0;
 
     // Determine overall health status
     let status: 'healthy' | 'degraded' | 'unhealthy';

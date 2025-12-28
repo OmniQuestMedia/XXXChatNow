@@ -8,12 +8,19 @@ import { QueueRateLimitService } from './queue-rate-limit.service';
 import { QueueRequest, DeadLetterQueue } from '../schemas';
 import { QUEUE_MODE, REQUEST_STATUS, PRIORITY_LEVEL } from '../constants';
 
+// Mock AgendaService class
+class MockAgendaService {
+  define = jest.fn();
+  schedule = jest.fn().mockResolvedValue(true);
+}
+
 describe('PerformanceQueueService', () => {
   let service: PerformanceQueueService;
   let queueRequestModel: Model<QueueRequest>;
   let deadLetterQueueModel: Model<DeadLetterQueue>;
   let rateLimitService: QueueRateLimitService;
   let queueService: QueueService;
+  let agendaService: MockAgendaService;
 
   const mockUserId = new Types.ObjectId();
   const mockQueueInstance = {
@@ -50,6 +57,10 @@ describe('PerformanceQueueService', () => {
           }
         },
         {
+          provide: 'AgendaService',
+          useClass: MockAgendaService
+        },
+        {
           provide: QueueRateLimitService,
           useValue: {
             checkRateLimit: jest.fn().mockResolvedValue(true)
@@ -62,6 +73,7 @@ describe('PerformanceQueueService', () => {
     queueRequestModel = module.get<Model<QueueRequest>>(getModelToken(QueueRequest.name));
     deadLetterQueueModel = module.get<Model<DeadLetterQueue>>(getModelToken(DeadLetterQueue.name));
     queueService = module.get<QueueService>(QueueService);
+    agendaService = module.get('AgendaService');
     rateLimitService = module.get<QueueRateLimitService>(QueueRateLimitService);
 
     // Initialize the module
