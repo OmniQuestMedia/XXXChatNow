@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsBoolean, IsOptional, IsISO8601 } from 'class-validator';
+import { IsNumber, IsBoolean, IsOptional, IsISO8601, IsString } from 'class-validator';
 
 /**
  * Wallet Balance DTO
@@ -19,6 +19,8 @@ export class WalletBalanceDto {
   walletVerifiedAt?: Date;
 
   @ApiProperty({ description: 'User currency', default: 'USD' })
+  @IsString()
+  @IsOptional()
   currency?: string;
 }
 
