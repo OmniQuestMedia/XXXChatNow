@@ -79,3 +79,32 @@ export class QueueMetricsDto {
   throughputPerMinute: number;
   failureRate: number;
 }
+
+export class DetailedMetricsDto {
+  timeRange: string;
+  breakdown: MetricsBreakdownDto[];
+}
+
+export class MetricsBreakdownDto {
+  status: string;
+  count: number;
+  averageWaitTimeMs: number;
+  averageProcessingTimeMs: number;
+  maxWaitTimeMs: number;
+  maxProcessingTimeMs: number;
+}
+
+export class MetricsByTypeDto {
+  timeRange: string;
+  byType: TypeMetricsDto[];
+}
+
+export class TypeMetricsDto {
+  type: string;
+  total: number;
+  completed: number;
+  failed: number;
+  successRate: number;
+  averageProcessingTimeMs: number;
+}
+

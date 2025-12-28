@@ -31,8 +31,10 @@ export class PerformanceQueueListener {
     if (event.eventName === PERFORMANCE_QUEUE_EVENT.REQUEST_SUBMITTED) {
       this.logger.log(`Request submitted: ${event.data.requestId}`);
       
-      // TODO: Send notification to user if needed
-      // TODO: Update real-time dashboard
+      // Extension points for future enhancements:
+      // - Send real-time notification to user via WebSocket
+      // - Update dashboard metrics in real-time
+      // - Trigger analytics tracking
     }
   }
 
@@ -44,8 +46,10 @@ export class PerformanceQueueListener {
     if (event.eventName === PERFORMANCE_QUEUE_EVENT.REQUEST_COMPLETED) {
       this.logger.log(`Request completed: ${event.data.requestId}`);
       
-      // TODO: Send completion notification to user
-      // TODO: Trigger downstream processes if needed
+      // Extension points for future enhancements:
+      // - Send completion notification to user
+      // - Trigger downstream processes
+      // - Update analytics
     }
   }
 
@@ -57,9 +61,11 @@ export class PerformanceQueueListener {
     if (event.eventName === PERFORMANCE_QUEUE_EVENT.REQUEST_FAILED) {
       this.logger.error(`Request failed: ${event.data.requestId}`, event.data.error);
       
-      // TODO: Send failure notification to user
-      // TODO: Alert monitoring system
-      // TODO: Move to dead letter queue if max retries exceeded
+      // Extension points for future enhancements:
+      // - Send failure notification to user
+      // - Alert monitoring system (e.g., Sentry, DataDog)
+      // - Move to dead letter queue if max retries exceeded
+      // - Create incident ticket for operations team
     }
   }
 
@@ -71,8 +77,11 @@ export class PerformanceQueueListener {
     if (event.eventName === PERFORMANCE_QUEUE_EVENT.QUEUE_FULL) {
       this.logger.warn('Queue is full, rejecting new requests');
       
-      // TODO: Alert operations team
-      // TODO: Consider auto-scaling if in cloud environment
+      // Extension points for future enhancements:
+      // - Alert operations team via PagerDuty/OpsGenie
+      // - Trigger auto-scaling in cloud environment
+      // - Activate circuit breaker to protect system
+      // - Send notification to administrators
     }
   }
 }

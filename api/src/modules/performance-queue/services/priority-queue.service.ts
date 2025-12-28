@@ -207,8 +207,14 @@ export class PriorityQueueService {
   /**
    * Process a job from the queue
    * 
-   * This is where the actual work happens. The implementation will be
-   * extended based on the specific job types.
+   * This is the core job processing method that:
+   * - Updates job status to processing
+   * - Calls executeJob() to perform the actual work
+   * - Tracks timing metrics
+   * - Handles success/failure states
+   * 
+   * The actual work logic is delegated to executeJob() which should be
+   * extended for specific job types. See executeJob() documentation for details.
    */
   private async processJob(job: QueueJob): Promise<any> {
     this.activeWorkers++;
@@ -259,14 +265,41 @@ export class PriorityQueueService {
   /**
    * Execute the actual job logic
    * 
-   * This method will be extended to handle different job types
+   * IMPORTANT: This is a framework method that needs to be extended for specific job types.
+   * 
+   * To implement custom job processing:
+   * 1. Define job types in constants.ts
+   * 2. Extend this method with a switch statement for your job types
+   * 3. Implement specific handlers for each job type
+   * 
+   * Example:
+   * ```typescript
+   * private async executeJob(job: QueueJob): Promise<any> {
+   *   switch (job.type) {
+   *     case 'notification':
+   *       return this.notificationService.send(job.payload);
+   *     case 'email':
+   *       return this.emailService.send(job.payload);
+   *     default:
+   *       throw new Error(`Unknown job type: ${job.type}`);
+   *   }
+   * }
+   * ```
+   * 
+   * Current implementation returns a success response for all jobs.
+   * This allows the queue system to function for testing and integration,
+   * while actual job processing logic should be implemented based on use case.
    */
   private async executeJob(job: QueueJob): Promise<any> {
-    // TODO: Implement specific job type handlers
-    // For now, return success
+    // Framework implementation - extend this method for specific job types
+    this.logger.log(`Executing job type: ${job.type}`);
+    
+    // Return success for framework validation
+    // Real implementations should replace this with actual job processing
     return {
       success: true,
-      message: `Job ${job.type} processed successfully`
+      message: `Job ${job.type} processed successfully`,
+      processedAt: new Date().toISOString()
     };
   }
 

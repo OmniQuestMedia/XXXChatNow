@@ -12,7 +12,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { QueueRequest, QueueMetrics } from '../schemas';
-import { QueueMetricsDto } from '../dtos';
+import { QueueMetricsDto, DetailedMetricsDto, MetricsByTypeDto } from '../dtos';
 import { REQUEST_STATUS } from '../constants';
 
 @Injectable()
@@ -100,7 +100,7 @@ export class QueueMetricsService {
   /**
    * Get detailed metrics breakdown by status
    */
-  async getDetailedMetrics(startDate: Date, endDate: Date): Promise<any> {
+  async getDetailedMetrics(startDate: Date, endDate: Date): Promise<DetailedMetricsDto> {
     const pipeline = [
       {
         $match: {
@@ -137,7 +137,7 @@ export class QueueMetricsService {
   /**
    * Get metrics by job type
    */
-  async getMetricsByType(startDate: Date, endDate: Date): Promise<any> {
+  async getMetricsByType(startDate: Date, endDate: Date): Promise<MetricsByTypeDto> {
     const pipeline = [
       {
         $match: {
