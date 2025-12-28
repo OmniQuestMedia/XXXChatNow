@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { User } from '../../user/schemas/user.schema';
 import { WalletBalanceDto, WalletVerificationStatusDto } from '../dtos';
+import { WalletRateLimitService } from './wallet-rate-limit.service';
 
 /**
  * Service for wallet operations including balance retrieval and verification
@@ -13,7 +14,8 @@ export class WalletService {
   private readonly logger = new Logger(WalletService.name);
 
   constructor(
-    @InjectModel(User.name) private readonly UserModel: Model<User>
+    @InjectModel(User.name) private readonly UserModel: Model<User>,
+    private readonly rateLimitService: WalletRateLimitService
   ) {}
 
   /**
@@ -56,10 +58,17 @@ export class WalletService {
    * additional verification steps such as identity verification, document upload,
    * or integration with third-party verification services.
    */
-  async verifyWallet(userId: ObjectId): Promise<WalletVerificationStatusDto> {
+  async verifyWallet(userId: ObjectId, metadata?: { ipAddress?: string; userAgent?: string }): Promise<WalletVerificationStatusDto> {
+    // Check rate limits before proceeding
+    await this.rateLimitService.checkVerificationRateLimit(userId);
+
     const user = await this.UserModel.findById(userId);
     
     if (!user) {
+      await this.rateLimitService.recordAttempt(userId, 'failed', {
+        failureReason: 'User not found',
+        ...metadata
+      });
       throw new BadRequestException('User not found');
     }
 
@@ -83,6 +92,9 @@ export class WalletService {
         }
       }
     );
+
+    // Record successful verification attempt
+    await this.rateLimitService.recordAttempt(userId, 'success', metadata);
 
     this.logger.log(`Wallet verified for user ${userId}`);
 

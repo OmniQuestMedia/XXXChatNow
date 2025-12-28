@@ -4,11 +4,13 @@ import { Model } from 'mongoose';
 import { ObjectId } from 'mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { WalletService } from './wallet.service';
+import { WalletRateLimitService } from './wallet-rate-limit.service';
 import { User } from '../../user/schemas/user.schema';
 
 describe('WalletService', () => {
   let service: WalletService;
   let userModel: Model<User>;
+  let rateLimitService: WalletRateLimitService;
 
   const mockUserId = new ObjectId();
 
@@ -22,12 +24,20 @@ describe('WalletService', () => {
             findById: jest.fn(),
             updateOne: jest.fn()
           }
+        },
+        {
+          provide: WalletRateLimitService,
+          useValue: {
+            checkVerificationRateLimit: jest.fn(),
+            recordAttempt: jest.fn()
+          }
         }
       ]
     }).compile();
 
     service = module.get<WalletService>(WalletService);
     userModel = module.get<Model<User>>(getModelToken(User.name));
+    rateLimitService = module.get<WalletRateLimitService>(WalletRateLimitService);
   });
 
   it('should be defined', () => {
@@ -135,13 +145,16 @@ describe('WalletService', () => {
         walletVerified: false
       };
 
+      jest.spyOn(rateLimitService, 'checkVerificationRateLimit').mockResolvedValue(undefined);
       jest.spyOn(userModel, 'findById').mockResolvedValue(mockUser as any);
       jest.spyOn(userModel, 'updateOne').mockResolvedValue({ modifiedCount: 1 } as any);
+      jest.spyOn(rateLimitService, 'recordAttempt').mockResolvedValue(undefined);
 
       const result = await service.verifyWallet(mockUserId);
 
       expect(result.verified).toBe(true);
       expect(result.verifiedAt).toBeInstanceOf(Date);
+      expect(rateLimitService.checkVerificationRateLimit).toHaveBeenCalledWith(mockUserId);
       expect(userModel.updateOne).toHaveBeenCalledWith(
         { _id: mockUserId },
         expect.objectContaining({
@@ -152,6 +165,7 @@ describe('WalletService', () => {
           })
         })
       );
+      expect(rateLimitService.recordAttempt).toHaveBeenCalledWith(mockUserId, 'success', undefined);
     });
 
     it('should return existing verification if already verified', async () => {
@@ -162,6 +176,7 @@ describe('WalletService', () => {
         walletVerifiedAt: verifiedAt
       };
 
+      jest.spyOn(rateLimitService, 'checkVerificationRateLimit').mockResolvedValue(undefined);
       jest.spyOn(userModel, 'findById').mockResolvedValue(mockUser as any);
 
       const result = await service.verifyWallet(mockUserId);
@@ -171,13 +186,22 @@ describe('WalletService', () => {
         verifiedAt
       });
       expect(userModel.updateOne).not.toHaveBeenCalled();
+      expect(rateLimitService.recordAttempt).not.toHaveBeenCalled();
     });
 
     it('should throw error when user not found', async () => {
+      jest.spyOn(rateLimitService, 'checkVerificationRateLimit').mockResolvedValue(undefined);
       jest.spyOn(userModel, 'findById').mockResolvedValue(null);
+      jest.spyOn(rateLimitService, 'recordAttempt').mockResolvedValue(undefined);
 
       await expect(service.verifyWallet(mockUserId)).rejects.toThrow(
         BadRequestException
+      );
+      
+      expect(rateLimitService.recordAttempt).toHaveBeenCalledWith(
+        mockUserId,
+        'failed',
+        expect.objectContaining({ failureReason: 'User not found' })
       );
     });
   });

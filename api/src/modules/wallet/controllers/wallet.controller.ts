@@ -56,6 +56,10 @@ export class WalletController {
   @ApiOperation({ summary: 'Verify wallet for authenticated user' })
   async verifyWallet(@Request() req): Promise<WalletVerificationStatusDto> {
     const userId = req.user._id;
-    return this.walletService.verifyWallet(userId);
+    const metadata = {
+      ipAddress: req.ip || req.connection?.remoteAddress,
+      userAgent: req.headers['user-agent']
+    };
+    return this.walletService.verifyWallet(userId, metadata);
   }
 }
