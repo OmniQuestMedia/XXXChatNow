@@ -51,6 +51,8 @@ export interface IUserResponse {
   ethnicPreferences?: string[];
   tagPreferences?: string[];
   badgingColor?: string;
+  walletVerified?: boolean;
+  walletVerifiedAt?: Date;
 }
 
 export class UserDto {
@@ -161,6 +163,12 @@ export class UserDto {
   memberRank?: any;
 
   @Expose()
+  walletVerified?: boolean;
+
+  @Expose()
+  walletVerifiedAt?: Date;
+
+  @Expose()
   agePreferences?: string[];
 
   @Expose()
@@ -217,7 +225,9 @@ export class UserDto {
           'isPrivacy',
           'memberRank',
           'badgingColor',
-          'isDark'
+          'isDark',
+          'walletVerified',
+          'walletVerifiedAt'
         ])
       );
   }
@@ -268,7 +278,9 @@ export class UserDto {
       isPerformer: this.isPerformer,
       twoFactorAuthenticationEnabled: this.twoFactorAuthenticationEnabled,
       createdAt: this.createdAt,
-      username: this.username
+      username: this.username,
+      walletVerified: this.walletVerified,
+      walletVerifiedAt: this.walletVerifiedAt
     };
   }
 

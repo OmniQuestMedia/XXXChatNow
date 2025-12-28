@@ -190,6 +190,14 @@ export class User {
     default: false
   })
   isPrivacy: boolean;
+
+  @Prop({
+    default: false
+  })
+  walletVerified: boolean;
+
+  @Prop()
+  walletVerifiedAt: Date;
 }
 
 export type UserDocument = HydratedDocument<User>;
