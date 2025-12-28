@@ -13,31 +13,27 @@
 
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { QueueModule, AgendaModule } from 'src/kernel';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
 import { DBLoggerModule } from '../logger/db-logger.module';
-
-// Import schemas when implemented
-// import { QueueRequest, QueueRequestSchema } from './schemas';
-
-// Import services when implemented
-// import { PerformanceQueueService } from './services';
-
-// Import controllers when implemented
-// import { PerformanceQueueController } from './controllers';
-
-// Import listeners when implemented
-// import { PerformanceQueueListener } from './listeners';
+import { QueueRequest, QueueRequestSchema, DeadLetterQueue, DeadLetterQueueSchema } from './schemas';
+import { PerformanceQueueService, QueueRateLimitService, QueueHealthService } from './services';
+import { PerformanceQueueController } from './controllers';
 
 @Module({
   imports: [
-    // MongooseModule.forFeature([
-    //   {
-    //     name: QueueRequest.name,
-    //     schema: QueueRequestSchema
-    //   }
-    // ]),
+    MongooseModule.forFeature([
+      {
+        name: QueueRequest.name,
+        schema: QueueRequestSchema
+      },
+      {
+        name: DeadLetterQueue.name,
+        schema: DeadLetterQueueSchema
+      }
+    ]),
     QueueModule.forRoot(),
     AgendaModule.register(),
     forwardRef(() => UserModule),
@@ -45,17 +41,17 @@ import { DBLoggerModule } from '../logger/db-logger.module';
     forwardRef(() => DBLoggerModule)
   ],
   providers: [
-    // Services will be added here as they are implemented
-    // PerformanceQueueService,
-    // PerformanceQueueListener
+    PerformanceQueueService,
+    QueueRateLimitService,
+    QueueHealthService
   ],
   controllers: [
-    // Controllers will be added here as they are implemented
-    // PerformanceQueueController
+    PerformanceQueueController
   ],
   exports: [
-    // Export services that need to be used by other modules
-    // PerformanceQueueService
+    PerformanceQueueService,
+    QueueRateLimitService,
+    QueueHealthService
   ]
 })
 export class PerformanceQueueModule {}

@@ -70,28 +70,40 @@ The module implements:
 
 ## Development Status
 
-### Phase 1 (Current) - Scaffolding ✅
+### Phase 1 - Scaffolding ✅
 - ✅ Directory structure created
 - ✅ Module configuration with dependency injection
 - ✅ Constants and configuration defined
 - ✅ Index files for clean imports
 
-### Phase 2 (Future) - Core Services
-- Queue Manager service
-- Scheduler service
-- Worker management service
-- Rate limiting service
+### Phase 2 - Core Services ✅
+- ✅ MongoDB schemas for queue requests and DLQ
+- ✅ PerformanceQueueService with FIFO, Priority, Batch modes
+- ✅ QueueRateLimitService for distributed rate limiting
+- ✅ QueueHealthService for monitoring and metrics
+- ✅ Worker management with retry and exponential backoff
+- ✅ Dead Letter Queue (DLQ) for failed jobs
 
-### Phase 3 (Future) - API and Integration
-- REST API controllers
-- Event listeners
-- MongoDB schemas and models
-- Data Transfer Objects (DTOs)
+### Phase 3 - API and Integration ✅
+- ✅ REST API controllers with authentication
+- ✅ Data Transfer Objects (DTOs) with validation
+- ✅ Swagger/OpenAPI documentation
+- ✅ Role-based access control (RBAC)
+- ✅ Idempotency key support
 
-### Phase 4 (Future) - Analytics and Monitoring
-- Analytics dashboard
-- Performance metrics
-- Health monitoring
+### Phase 4 - Security Features ✅
+- ✅ Authentication required for all endpoints
+- ✅ Authorization checks (admin-only endpoints)
+- ✅ Rate limiting with Redis
+- ✅ Server-side validation
+- ✅ Audit logging support
+
+### Phase 5 (Future) - Analytics and Advanced Features
+- Performance metrics dashboard
+- Real-time queue monitoring
+- Batch processing optimization
+- Advanced retry strategies
+- Queue priority rebalancing
 
 ## Dependencies
 
@@ -105,7 +117,70 @@ The module integrates with:
 
 ## Usage
 
-The module is automatically registered in the application and will be available once services are implemented in future phases.
+### Submitting Queue Requests
+
+```typescript
+// Example: Submit a message processing request
+POST /performance-queue/submit
+Authorization: Bearer <token>
+{
+  "type": "chat.message",
+  "mode": "priority",
+  "priority": 10,
+  "payload": {
+    "conversationId": "123",
+    "message": "Hello!"
+  },
+  "idempotencyKey": "unique-key-123"
+}
+```
+
+### Checking Request Status
+
+```typescript
+GET /performance-queue/status/:requestId
+Authorization: Bearer <token>
+```
+
+### Registering Custom Processors
+
+In your service/module:
+
+```typescript
+constructor(
+  private readonly queueService: PerformanceQueueService
+) {
+  // Register processor for specific request type
+  this.queueService.registerProcessor('chat.message', async (payload) => {
+    // Process the message
+    const result = await this.processMessage(payload);
+    return result;
+  });
+}
+```
+
+### Admin Endpoints
+
+```typescript
+// Get queue health
+GET /performance-queue/health
+Authorization: Bearer <admin-token>
+
+// Get metrics for last 60 minutes
+GET /performance-queue/metrics?period=60
+Authorization: Bearer <admin-token>
+
+// View dead letter queue
+GET /performance-queue/dlq?limit=50
+Authorization: Bearer <admin-token>
+
+// Mark DLQ entry as reviewed
+POST /performance-queue/dlq/:dlqId/review
+Authorization: Bearer <admin-token>
+{
+  "resolution": "Fixed and reprocessed manually"
+}
+```
 
 ## Security Considerations
 

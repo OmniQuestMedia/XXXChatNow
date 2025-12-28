@@ -1,2 +1,2 @@
-// Export all schemas here as they are implemented
-// Example: export * from './queue-request.schema';
+export { QueueRequest, QueueRequestSchema } from './queue-request.schema';
+export { DeadLetterQueue, DeadLetterQueueSchema } from './dead-letter-queue.schema';
