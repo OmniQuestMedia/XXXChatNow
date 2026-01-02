@@ -128,7 +128,7 @@ export class MoodMessagingService {
    * @param performerId ID of the performer
    * @returns Model mood configuration
    */
-  async getModelConfig(performerId: string): Promise<ModelMoodConfig> {
+  async getModelConfig(performerId: string): Promise<ModelMoodConfigDocument> {
     let config = await this.modelMoodConfigModel
       .findOne({ performerId })
       .populate('enabledBuckets');
@@ -150,7 +150,7 @@ export class MoodMessagingService {
   async updateModelConfig(
     performerId: string,
     dto: UpdateModelConfigDto
-  ): Promise<ModelMoodConfig> {
+  ): Promise<ModelMoodConfigDocument> {
     // Validate enabled buckets exist
     if (dto.enabledBuckets && dto.enabledBuckets.length > 0) {
       const buckets = await this.moodBucketModel.find({
@@ -200,7 +200,7 @@ export class MoodMessagingService {
    * @param performerId ID of the performer
    * @returns Default configuration
    */
-  async restoreDefaults(performerId: string): Promise<ModelMoodConfig> {
+  async restoreDefaults(performerId: string): Promise<ModelMoodConfigDocument> {
     // Get all default buckets
     const defaultBuckets = await this.moodBucketModel.find({
       isDefault: true,
@@ -234,7 +234,7 @@ export class MoodMessagingService {
    * @param performerId ID of the performer
    * @returns Default configuration
    */
-  private async createDefaultConfig(performerId: string): Promise<ModelMoodConfig> {
+  private async createDefaultConfig(performerId: string): Promise<ModelMoodConfigDocument> {
     // Get all default buckets
     const defaultBuckets = await this.moodBucketModel.find({
       isDefault: true,
