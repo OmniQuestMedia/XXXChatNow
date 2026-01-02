@@ -63,7 +63,7 @@ describe('MoodMessagingService', () => {
   });
 
   describe('getPrivateMoodMessage', () => {
-    it('should return a mood message with username substituted', async () => {
+    it('should return a mood message with username substituted and bucket key', async () => {
       const mockTierMapping = {
         tierKey: 'gold_vip',
         tierName: 'Gold VIP',
@@ -98,8 +98,11 @@ describe('MoodMessagingService', () => {
       const result = await service.getPrivateMoodMessage(mockUserId, 'gold_vip', 'TestUser');
 
       expect(result).toBeDefined();
-      expect(result).not.toContain('<user>');
-      expect(result).toContain('TestUser');
+      expect(result.message).toBeDefined();
+      expect(result.bucketKey).toBeDefined();
+      expect(result.message).not.toContain('<user>');
+      expect(result.message).toContain('TestUser');
+      expect(['cute', 'flirty']).toContain(result.bucketKey);
       expect(tierBucketMappingModel.findOne).toHaveBeenCalledWith({ tierKey: 'gold_vip' });
       expect(mockHistory.save).toHaveBeenCalled();
     });
@@ -137,7 +140,16 @@ describe('MoodMessagingService', () => {
       const result = await service.getPrivateMoodMessage(mockUserId, 'invalid_tier', 'TestUser');
 
       expect(result).toBeDefined();
-      expect(result).toContain('TestUser');
+      expect(result.message).toContain('TestUser');
+      expect(result.bucketKey).toBe('soft_sell');
+    });
+
+    it('should throw error if guest tier mapping not found', async () => {
+      jest.spyOn(tierBucketMappingModel, 'findOne').mockResolvedValue(null);
+
+      await expect(
+        service.getPrivateMoodMessage(mockUserId, 'guest', 'TestUser')
+      ).rejects.toThrow('Guest tier mapping not found - database not seeded properly');
     });
 
     it('should select non-repetitive responses', async () => {
@@ -178,7 +190,8 @@ describe('MoodMessagingService', () => {
 
       // Should get either Response 3 or Response 4, not 0, 1, or 2
       expect(result).toBeDefined();
-      expect(['Response 3', 'Response 4']).toContain(result);
+      expect(result.message).toBeDefined();
+      expect(['Response 3', 'Response 4']).toContain(result.message);
       expect(mockHistory.save).toHaveBeenCalled();
       expect(mockHistory.usedResponseIndices.length).toBeGreaterThan(3);
     });

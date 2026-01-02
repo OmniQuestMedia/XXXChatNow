@@ -51,14 +51,15 @@ export class MoodMessagingController {
     const tierKey = query.tierKey || 'guest';
     const username = query.username || user.username || 'there';
 
-    const message = await this.moodMessagingService.getPrivateMoodMessage(
+    const result = await this.moodMessagingService.getPrivateMoodMessage(
       user._id,
       tierKey,
       username
     );
 
     return {
-      message
+      message: result.message,
+      bucketKey: result.bucketKey
     };
   }
 

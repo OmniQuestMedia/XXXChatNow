@@ -34,17 +34,21 @@ export class MoodMessagingService {
    * @param userId - User ID
    * @param tierKey - User's membership tier key (e.g., 'guest', 'gold_vip')
    * @param username - Username to substitute for <user> placeholder
-   * @returns Promise<string> - The mood message with username substituted
+   * @returns Promise<{ message: string, bucketKey: string }> - The mood message with username substituted and bucket key
    */
   async getPrivateMoodMessage(
     userId: ObjectId | string,
     tierKey: string,
     username: string
-  ): Promise<string> {
+  ): Promise<{ message: string; bucketKey: string }> {
     try {
       // Get tier mapping
       const tierMapping = await this.tierBucketMappingModel.findOne({ tierKey });
       if (!tierMapping) {
+        // Prevent infinite recursion - if guest tier also not found, throw error
+        if (tierKey === 'guest') {
+          throw new Error('Guest tier mapping not found - database not seeded properly');
+        }
         this.logger.warn(`Tier mapping not found for tier: ${tierKey}, using guest`);
         return this.getPrivateMoodMessage(userId, 'guest', username);
       }
@@ -82,7 +86,10 @@ export class MoodMessagingService {
 
       // Get the response and substitute username
       const response = bucket.responses[selectedIndex];
-      return this.substitutePlaceholder(response, username);
+      return {
+        message: this.substitutePlaceholder(response, username),
+        bucketKey: randomBucket
+      };
     } catch (error) {
       this.logger.error(`Error getting private mood message: ${error.message}`, error.stack);
       throw error;
@@ -157,6 +164,7 @@ export class MoodMessagingService {
   /**
    * Select a non-repetitive index from available responses
    * Ensures no message repeats within the last 5 uses per user
+   * If all have been used, resets by allowing any response
    */
   private selectNonRepetitiveIndex(
     totalResponses: number,
@@ -168,8 +176,9 @@ export class MoodMessagingService {
       (_, i) => i
     ).filter(i => !usedIndices.includes(i));
 
-    // If all have been used, reset and use any
+    // If all have been used, allow any response (history will still be updated)
     if (availableIndices.length === 0) {
+      this.logger.debug('All responses used recently, allowing any response and continuing tracking');
       return Math.floor(Math.random() * totalResponses);
     }
 
