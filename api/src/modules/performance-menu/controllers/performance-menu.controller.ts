@@ -19,8 +19,8 @@ import {
   HttpStatus
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from '../../../kernel/common/decorators/current-user.decorator';
+import { AuthGuard } from '../../auth/guards';
+import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { PerformanceMenuService } from '../services';
 import { PurchaseMenuItemDto } from '../dtos';
 
@@ -29,7 +29,7 @@ import { PurchaseMenuItemDto } from '../dtos';
  */
 @ApiTags('Performance Menu')
 @Controller('menu')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard)
 @ApiBearerAuth()
 export class PerformanceMenuController {
   constructor(
@@ -93,8 +93,8 @@ export class PerformanceMenuController {
   @ApiResponse({ status: 200, description: 'Purchase history retrieved successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getPurchaseHistory(
-    @Query('limit') limit: string = '50',
-    @Query('offset') offset: string = '0',
+    @Query('limit') limit = '50',
+    @Query('offset') offset = '0',
     @CurrentUser() user: any
   ) {
     return this.menuService.getPurchaseHistory(

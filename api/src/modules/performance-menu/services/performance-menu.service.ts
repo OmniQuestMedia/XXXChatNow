@@ -374,8 +374,8 @@ export class PerformanceMenuService {
    */
   async getPurchaseHistory(
     userId: ObjectId,
-    limit: number = 50,
-    offset: number = 0
+    limit = 50,
+    offset = 0
   ): Promise<any> {
     const purchases = await this.MenuPurchaseModel.find({ user_id: userId })
       .sort({ createdAt: -1 })
