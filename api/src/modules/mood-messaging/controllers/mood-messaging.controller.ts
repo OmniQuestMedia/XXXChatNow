@@ -107,7 +107,7 @@ export class MoodMessagingController {
     description: 'Unauthorized'
   })
   async getAvailableBuckets(
-    @Query('tierKey') tierKey: string = 'guest'
+    @Query('tierKey') tierKey = 'guest'
   ): Promise<AvailableBucketsResponseDto> {
     const buckets = await this.moodMessagingService.getAvailableBucketsForTier(tierKey);
     const hasSecondaryMicro = await this.moodMessagingService.hasSecondaryMicroAccess(tierKey);
