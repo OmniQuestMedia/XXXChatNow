@@ -6,7 +6,7 @@ import {
   HttpCode,
   HttpStatus
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from '../../auth/guards';
 import {
   ApiTags,
   ApiOperation,
@@ -28,7 +28,7 @@ export class MoodMessagingController {
   constructor(private readonly moodMessagingService: MoodMessagingService) {}
 
   @Get('private-mood')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -63,7 +63,7 @@ export class MoodMessagingController {
   }
 
   @Get('public-gratitude')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
@@ -90,7 +90,7 @@ export class MoodMessagingController {
   }
 
   @Get('available-buckets')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
