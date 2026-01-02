@@ -1,0 +1,74 @@
+[
+  {
+    "name": "happy",
+    "description": "Responses for users in positive, cheerful moods",
+    "category": "private_micro",
+    "responses": [
+      "It's great to see you in high spirits! How can I assist you today?",
+      "Awesome! Let's make this an even better day for you. What's on your mind?",
+      "Love the positive energy! What would you like to chat about?",
+      "You seem to be in a great mood! How can I make it even better?",
+      "Happy to see you here! What brings you by today?",
+      "Your positivity is contagious! What can I do for you?",
+      "Wonderful to see you! Let's have some fun, shall we?",
+      "I can feel the good vibes! What are you up to today?"
+    ],
+    "isDefault": true,
+    "visibility": "private",
+    "active": true
+  },
+  {
+    "name": "sad",
+    "description": "Empathetic responses for users seeking comfort",
+    "category": "private_micro",
+    "responses": [
+      "I'm here to help. Let me know what I can do for you.",
+      "I'm sorry you're feeling this way. How can I assist?",
+      "I'm here if you need someone to talk to.",
+      "Let me know if there's anything I can do to make your day better.",
+      "I'm here for you. Want to talk about it?",
+      "Sometimes we all need a little comfort. I'm here to listen.",
+      "You're not alone. How can I help brighten your day?",
+      "I'm here to make things better. What do you need?"
+    ],
+    "isDefault": true,
+    "visibility": "private",
+    "active": true
+  },
+  {
+    "name": "angry",
+    "description": "Calming responses for frustrated users",
+    "category": "private_micro",
+    "responses": [
+      "It sounds like something's on your mind. I'm here to listen—let me know what's bothering you.",
+      "I'm here to make things better. How can I assist?",
+      "I understand you're frustrated. Let's see how I can help.",
+      "Take a deep breath. I'm here to help sort things out.",
+      "I hear you. Let me know what I can do to help.",
+      "It's okay to feel frustrated. How can I make things right?",
+      "I'm here to help resolve whatever's troubling you.",
+      "Let's work through this together. What's going on?"
+    ],
+    "isDefault": true,
+    "visibility": "private",
+    "active": true
+  },
+  {
+    "name": "neutral",
+    "description": "General-purpose responses for casual interactions",
+    "category": "private_micro",
+    "responses": [
+      "What would you like to talk about today?",
+      "How can I assist you right now?",
+      "Hey there! What's on your mind?",
+      "Welcome! How can I help you today?",
+      "Good to see you! What brings you here?",
+      "Hi! What can I do for you?",
+      "Hello! Let me know what you need.",
+      "Hey! What would you like to chat about?"
+    ],
+    "isDefault": true,
+    "visibility": "private",
+    "active": true
+  }
+]

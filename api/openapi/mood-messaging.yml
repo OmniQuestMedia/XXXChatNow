@@ -1,0 +1,370 @@
+openapi: 3.0.0
+info:
+  title: Model Mood Messaging API
+  description: API for managing and using mood-based automated responses for models
+  version: 1.0.0
+  contact:
+    name: XXXChatNow API Support
+    email: support@xxxchatnow.com
+
+servers:
+  - url: https://api.xxxchatnow.com
+    description: Production server
+  - url: https://staging-api.xxxchatnow.com
+    description: Staging server
+
+tags:
+  - name: mood-messaging
+    description: Mood messaging operations
+
+paths:
+  /api/mood-messaging/select:
+    post:
+      tags:
+        - mood-messaging
+      summary: Select a mood response
+      description: Selects a random response from a specified mood bucket using secure randomization
+      operationId: selectMoodResponse
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - bucketName
+              properties:
+                bucketName:
+                  type: string
+                  description: Name of the mood bucket to select from
+                  enum:
+                    - happy
+                    - sad
+                    - angry
+                    - neutral
+                    - tip_gratitude
+                    - gift_gratitude
+                    - general_gratitude
+                    - new_follower_gratitude
+                  example: happy
+                performerId:
+                  type: string
+                  description: ID of the performer (optional, uses authenticated user if not provided)
+                  example: 507f1f77bcf86cd799439011
+                context:
+                  type: object
+                  description: Optional context information
+                  properties:
+                    messageType:
+                      type: string
+                      enum:
+                        - tip
+                        - gift
+                        - message
+                        - greeting
+                        - follow
+                      example: tip
+                    amount:
+                      type: number
+                      description: Amount for tips/gifts
+                      example: 100
+      responses:
+        '200':
+          description: Response selected successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  response:
+                    type: string
+                    example: "It's great to see you in high spirits! How can I assist you today?"
+                  bucketId:
+                    type: string
+                    example: 507f1f77bcf86cd799439012
+                  bucketName:
+                    type: string
+                    example: happy
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Mood bucket not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/mood-messaging/model-config:
+    get:
+      tags:
+        - mood-messaging
+      summary: Get model configuration
+      description: Retrieves the mood messaging configuration for the authenticated model
+      operationId: getModelConfig
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Configuration retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  config:
+                    $ref: '#/components/schemas/ModelMoodConfig'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - User is not a performer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Configuration not found (will create default)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - mood-messaging
+      summary: Update model configuration
+      description: Updates the mood messaging configuration for the authenticated model
+      operationId: updateModelConfig
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabledBuckets:
+                  type: array
+                  description: Array of enabled mood bucket IDs
+                  items:
+                    type: string
+                  example:
+                    - 507f1f77bcf86cd799439012
+                    - 507f1f77bcf86cd799439013
+                customResponses:
+                  type: array
+                  description: Custom responses for specific buckets
+                  items:
+                    type: object
+                    properties:
+                      bucketId:
+                        type: string
+                        example: 507f1f77bcf86cd799439012
+                      responses:
+                        type: array
+                        items:
+                          type: string
+                        example:
+                          - "Custom response 1"
+                          - "Custom response 2"
+                settings:
+                  type: object
+                  properties:
+                    autoRespond:
+                      type: boolean
+                      description: Enable/disable auto-responses
+                      example: true
+                    responseDelay:
+                      type: number
+                      description: Delay in seconds before auto-respond
+                      minimum: 0
+                      maximum: 60
+                      example: 2
+                    dailyLimit:
+                      type: number
+                      description: Maximum auto-responses per day
+                      minimum: 0
+                      maximum: 1000
+                      example: 100
+      responses:
+        '200':
+          description: Configuration updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Configuration updated successfully
+                  config:
+                    $ref: '#/components/schemas/ModelMoodConfig'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - User is not a performer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/mood-messaging/restore-defaults:
+    post:
+      tags:
+        - mood-messaging
+      summary: Restore default configuration
+      description: Resets the model's configuration to system defaults
+      operationId: restoreDefaults
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Configuration restored successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Configuration restored to defaults
+                  config:
+                    $ref: '#/components/schemas/ModelMoodConfig'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden - User is not a performer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    ModelMoodConfig:
+      type: object
+      properties:
+        performerId:
+          type: string
+          description: Performer's unique identifier
+          example: 507f1f77bcf86cd799439011
+        enabledBuckets:
+          type: array
+          description: Array of enabled mood bucket IDs
+          items:
+            type: string
+          example:
+            - 507f1f77bcf86cd799439012
+            - 507f1f77bcf86cd799439013
+        customResponses:
+          type: array
+          description: Custom responses for specific buckets
+          items:
+            type: object
+            properties:
+              bucketId:
+                type: string
+                example: 507f1f77bcf86cd799439012
+              bucketName:
+                type: string
+                example: happy
+              responses:
+                type: array
+                items:
+                  type: string
+                example:
+                  - "Custom response 1"
+                  - "Custom response 2"
+        settings:
+          type: object
+          properties:
+            autoRespond:
+              type: boolean
+              description: Enable/disable auto-responses
+              example: true
+            responseDelay:
+              type: number
+              description: Delay in seconds before auto-respond
+              example: 2
+            dailyLimit:
+              type: number
+              description: Maximum auto-responses per day
+              example: 100
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-01-02T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-02T12:00:00Z"
+
+    Error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: An error occurred
+        error:
+          type: string
+          example: Invalid bucket name
+        code:
+          type: string
+          example: INVALID_BUCKET

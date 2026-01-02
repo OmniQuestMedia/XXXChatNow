@@ -1,0 +1,82 @@
+[
+  {
+    "name": "tip_gratitude",
+    "description": "Public thank you messages for tips",
+    "category": "public_gratitude",
+    "responses": [
+      "Thank you so much for the tip! You're amazing! 💖",
+      "Wow! Thank you for your generosity! 🎉",
+      "You just made my day! Thank you! ✨",
+      "I really appreciate your support! Thank you! 💕",
+      "Thank you for the tip! You're the best! 🌟",
+      "Your generosity means the world to me! Thank you! 💝",
+      "Thank you so much! Your support is everything! 🙏",
+      "You're incredible! Thank you for the tip! 💫",
+      "I'm so grateful for your support! Thank you! 🌹",
+      "Thank you for being so generous! You rock! 🎸"
+    ],
+    "isDefault": true,
+    "visibility": "public",
+    "active": true
+  },
+  {
+    "name": "gift_gratitude",
+    "description": "Public thank you messages for gifts",
+    "category": "public_gratitude",
+    "responses": [
+      "What a wonderful gift! Thank you so much! 🎁",
+      "You didn't have to, but I'm so glad you did! Thank you! 💝",
+      "This is so thoughtful! Thank you! 🌸",
+      "I love it! Thank you for the gift! 💖",
+      "You're so kind! Thank you for this! 🎀",
+      "What a sweet gesture! Thank you! 💐",
+      "This made me smile! Thank you for the gift! 😊",
+      "How thoughtful of you! Thank you! 🌺",
+      "You're too kind! Thank you so much! 💕",
+      "This is perfect! Thank you for thinking of me! 🌹"
+    ],
+    "isDefault": true,
+    "visibility": "public",
+    "active": true
+  },
+  {
+    "name": "general_gratitude",
+    "description": "General public thank you messages",
+    "category": "public_gratitude",
+    "responses": [
+      "Thank you all for being here! You're amazing! 💖",
+      "I appreciate every single one of you! Thank you! 🌟",
+      "You all make this so special! Thank you! ✨",
+      "Thanks for the love and support! 💕",
+      "You're all wonderful! Thank you! 🎉",
+      "I'm so grateful for this community! Thank you! 🙏",
+      "Thank you for spending time with me! 💫",
+      "You all are the best! Thank you! 🌹",
+      "Thanks for being so supportive! 💝",
+      "I couldn't do this without you! Thank you! 💖"
+    ],
+    "isDefault": true,
+    "visibility": "public",
+    "active": true
+  },
+  {
+    "name": "new_follower_gratitude",
+    "description": "Public thank you messages for new followers",
+    "category": "public_gratitude",
+    "responses": [
+      "Welcome to the family! Thank you for following! 💕",
+      "Thanks for hitting that follow button! 🎉",
+      "So happy to have you here! Thanks for the follow! 🌟",
+      "Welcome! Thanks for joining us! 💖",
+      "New follower alert! Thank you! ✨",
+      "Thanks for the follow! You're awesome! 💫",
+      "Welcome aboard! Thanks for following! 🚀",
+      "Happy to have you! Thanks for the follow! 🌹",
+      "Thanks for joining the community! 💝",
+      "New follower! Thank you so much! 🎊"
+    ],
+    "isDefault": true,
+    "visibility": "public",
+    "active": true
+  }
+]
