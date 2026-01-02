@@ -195,6 +195,44 @@ describe('MoodMessagingService', () => {
       expect(mockHistory.save).toHaveBeenCalled();
       expect(mockHistory.usedResponseIndices.length).toBeGreaterThan(3);
     });
+
+    it('should sanitize username to prevent XSS attacks', async () => {
+      const mockTierMapping = {
+        tierKey: 'guest',
+        tierName: 'Guest',
+        buckets: ['soft_sell'],
+        hasSecondaryMicro: false
+      };
+
+      const mockBucket = {
+        key: 'soft_sell',
+        name: 'Soft Sell',
+        responses: ['Hey <user>, check this out!']
+      };
+
+      const mockHistory = {
+        userId: mockUserId,
+        messageType: 'private_mood',
+        bucketKey: 'soft_sell',
+        usedResponseIndices: [],
+        cycleCount: 0,
+        lastUsedAt: new Date(),
+        save: jest.fn()
+      };
+
+      jest.spyOn(tierBucketMappingModel, 'findOne').mockResolvedValue(mockTierMapping as any);
+      jest.spyOn(moodBucketModel, 'findOne').mockResolvedValue(mockBucket as any);
+      jest.spyOn(moodMessageHistoryModel, 'findOne').mockResolvedValue(mockHistory as any);
+
+      // Try to inject malicious script
+      const maliciousUsername = '<script>alert("XSS")</script>';
+      const result = await service.getPrivateMoodMessage(mockUserId, 'guest', maliciousUsername);
+
+      // Username should be sanitized
+      expect(result.message).not.toContain('<script>');
+      expect(result.message).toContain('&lt;script&gt;');
+      expect(result.message).toContain('alert(&quot;XSS&quot;)');
+    });
   });
 
   describe('getPublicMicroGratitudeMessage', () => {

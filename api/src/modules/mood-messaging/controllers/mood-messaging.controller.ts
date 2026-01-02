@@ -49,7 +49,8 @@ export class MoodMessagingController {
     @Query() query: GetPrivateMoodMessageDto
   ): Promise<MoodMessageResponseDto> {
     const tierKey = query.tierKey || 'guest';
-    const username = query.username || user.username || 'there';
+    // Use provided username, or fall back to user's actual username, or user's first name, or 'friend' as last resort
+    const username = query.username || user.username || user.firstName || 'friend';
 
     const result = await this.moodMessagingService.getPrivateMoodMessage(
       user._id,

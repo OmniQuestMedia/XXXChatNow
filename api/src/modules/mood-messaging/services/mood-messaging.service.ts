@@ -60,7 +60,7 @@ export class MoodMessagingService {
       }
 
       // Randomly select a bucket
-      const randomBucket = availableBuckets[Math.floor(Math.random() * availableBuckets.length)];
+      const randomBucket = availableBuckets[this.selectRandomIndex(availableBuckets.length)];
 
       // Get the bucket data
       const bucket = await this.moodBucketModel.findOne({ key: randomBucket });
@@ -179,11 +179,11 @@ export class MoodMessagingService {
     // If all have been used, allow any response (history will still be updated)
     if (availableIndices.length === 0) {
       this.logger.debug('All responses used recently, allowing any response and continuing tracking');
-      return Math.floor(Math.random() * totalResponses);
+      return this.selectRandomIndex(totalResponses);
     }
 
     // Randomly select from available indices
-    return availableIndices[Math.floor(Math.random() * availableIndices.length)];
+    return availableIndices[this.selectRandomIndex(availableIndices.length)];
   }
 
   /**
@@ -210,9 +210,26 @@ export class MoodMessagingService {
 
   /**
    * Substitute <user> placeholder with actual username
+   * Sanitizes username to prevent XSS attacks
    */
   private substitutePlaceholder(message: string, username: string): string {
-    return message.replace(/<user>/g, username);
+    // Sanitize username by escaping HTML special characters
+    const sanitizedUsername = username
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+    
+    return message.replace(/<user>/g, sanitizedUsername);
+  }
+
+  /**
+   * Select a random index from an array
+   */
+  private selectRandomIndex(arrayLength: number): number {
+    return Math.floor(Math.random() * arrayLength);
   }
 
   /**
