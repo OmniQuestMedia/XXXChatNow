@@ -46,6 +46,7 @@ import { SlotMachineModule } from './modules/slot-machine/slot-machine.module';
 import { LoyaltyPointsModule } from './modules/loyalty-points/loyalty-points.module';
 import { PerformanceQueueModule } from './modules/performance-queue/performance-queue.module';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { PerformanceMenuModule } from './modules/performance-menu/performance-menu.module';
 
 @Module({
   imports: [
@@ -93,7 +94,8 @@ import { WalletModule } from './modules/wallet/wallet.module';
     SlotMachineModule,
     LoyaltyPointsModule,
     PerformanceQueueModule,
-    WalletModule
+    WalletModule,
+    PerformanceMenuModule
   ],
   controllers: [AppController],
   providers: [AppService]
