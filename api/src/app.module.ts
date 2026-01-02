@@ -46,6 +46,9 @@ import { SlotMachineModule } from './modules/slot-machine/slot-machine.module';
 import { LoyaltyPointsModule } from './modules/loyalty-points/loyalty-points.module';
 import { PerformanceQueueModule } from './modules/performance-queue/performance-queue.module';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { PerformanceMenuModule } from './modules/performance-menu/performance-menu.module';
+import { MoodMessageModule } from './modules/mood-message/mood-message.module';
+import { MoodMessagingModule } from './modules/mood-messaging/mood-messaging.module';
 
 @Module({
   imports: [
@@ -93,7 +96,10 @@ import { WalletModule } from './modules/wallet/wallet.module';
     SlotMachineModule,
     LoyaltyPointsModule,
     PerformanceQueueModule,
-    WalletModule
+    WalletModule,
+    PerformanceMenuModule,
+    MoodMessageModule,
+    MoodMessagingModule
   ],
   controllers: [AppController],
   providers: [AppService]
