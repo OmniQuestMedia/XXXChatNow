@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "description": "Default tier-to-bucket mapping configuration for mood messaging system",
+  "tiers": {
+    "guest": {
+      "name": "Guest",
+      "description": "Non-authenticated or free users",
+      "buckets": ["soft_sell"],
+      "has_secondary_micro": false
+    },
+    "vip_guest": {
+      "name": "VIP Guest",
+      "description": "Basic VIP membership",
+      "buckets": ["soft_sell", "cute", "flirty"],
+      "has_secondary_micro": false
+    },
+    "silver_vip": {
+      "name": "Silver VIP",
+      "description": "Silver tier membership",
+      "buckets": ["flirty", "playful", "cute"],
+      "has_secondary_micro": false
+    },
+    "gold_vip": {
+      "name": "Gold VIP",
+      "description": "Gold tier membership with secondary micro access",
+      "buckets": ["flirty", "playful", "bratty", "spicy"],
+      "has_secondary_micro": true
+    },
+    "platinum_vip": {
+      "name": "Platinum VIP",
+      "description": "Platinum tier membership with secondary micro access",
+      "buckets": ["playful", "bratty", "spicy", "dominant"],
+      "has_secondary_micro": true
+    },
+    "diamond_vip": {
+      "name": "Diamond VIP",
+      "description": "Highest tier with access to all buckets",
+      "buckets": ["cute", "flirty", "spicy", "bratty", "dominant", "playful", "soft_sell", "secondary_micro"],
+      "has_secondary_micro": true
+    }
+  },
+  "rules": {
+    "default_tier": "guest",
+    "public_micro_gratitude_applies_to_all": true,
+    "secondary_micro_minimum_tier": "gold_vip"
+  }
+}

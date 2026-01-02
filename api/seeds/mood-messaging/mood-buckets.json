@@ -1,0 +1,118 @@
+{
+  "version": "1.0.0",
+  "description": "Mood bucket responses for private messages with dynamic <user> placeholder",
+  "buckets": {
+    "cute": {
+      "name": "Cute",
+      "description": "Sweet and endearing messages",
+      "responses": [
+        "Hey <user>! You're adorable 🥰",
+        "You make me smile, <user> 😊",
+        "<user>, you're so sweet! 💕",
+        "Thinking of you, <user> 🌸",
+        "You brighten my day, <user>! ✨",
+        "<user>, you're such a cutie! 🐰",
+        "Missing you already, <user> 💗",
+        "You're the best, <user>! 🌟"
+      ]
+    },
+    "flirty": {
+      "name": "Flirty",
+      "description": "Playfully suggestive and teasing messages",
+      "responses": [
+        "Hey there, <user> 😘",
+        "You're looking good, <user> 😏",
+        "<user>, come here often? 💋",
+        "Can't stop thinking about you, <user> 🔥",
+        "You're making me blush, <user> 😳",
+        "<user>, you're trouble... and I like it 😈",
+        "What are you doing to me, <user>? 💕",
+        "You're irresistible, <user> 🌹"
+      ]
+    },
+    "spicy": {
+      "name": "Spicy",
+      "description": "Hot and provocative messages",
+      "responses": [
+        "Mmm, <user>... 🔥",
+        "You're driving me wild, <user> 😈",
+        "<user>, you know exactly what you're doing 💦",
+        "I want you, <user> 🔥",
+        "You're so hot, <user> 🌶️",
+        "<user>, let's turn up the heat 😏",
+        "You make me feel things, <user> 💋",
+        "Come closer, <user>... 🔥"
+      ]
+    },
+    "bratty": {
+      "name": "Bratty",
+      "description": "Playfully defiant and teasing messages",
+      "responses": [
+        "Oh, you think so, <user>? 😤",
+        "Make me, <user> 😏",
+        "<user>, you're not the boss of me! 😜",
+        "Maybe I will, maybe I won't, <user> 🤷",
+        "You wish, <user>! 😝",
+        "<user>, prove it then 💁",
+        "In your dreams, <user> 😈",
+        "Try harder, <user>! 🙄"
+      ]
+    },
+    "dominant": {
+      "name": "Dominant",
+      "description": "Assertive and commanding messages",
+      "responses": [
+        "On your knees, <user> 👑",
+        "<user>, you know what I want 😈",
+        "Good boy, <user> 💋",
+        "Listen carefully, <user>... 🔥",
+        "<user>, you're mine tonight 👑",
+        "Don't make me wait, <user> 😏",
+        "Obey me, <user> 💅",
+        "<user>, I'm in control here 👸"
+      ]
+    },
+    "playful": {
+      "name": "Playful",
+      "description": "Fun and lighthearted messages",
+      "responses": [
+        "Let's have some fun, <user>! 🎉",
+        "You're silly, <user>! 😂",
+        "<user>, wanna play? 🎮",
+        "Catch me if you can, <user>! 🏃",
+        "You crack me up, <user> 🤣",
+        "<user>, let's get into some mischief 😜",
+        "Ready for an adventure, <user>? 🚀",
+        "You're fun, <user>! Let's hang out 🎊"
+      ]
+    },
+    "soft_sell": {
+      "name": "Soft Sell",
+      "description": "Membership upsell messages",
+      "responses": [
+        "<user>, want to unlock more? 💎",
+        "Hey <user>, there's so much more for VIPs 🌟",
+        "<user>, upgrade to see exclusive content! ✨",
+        "Imagine what we could do with VIP, <user> 💫",
+        "<user>, ready to take this further? 🔓",
+        "Join me as a VIP, <user>? 💝",
+        "<user>, unlock the full experience 🎁",
+        "There's more waiting for you, <user> 🔑"
+      ]
+    },
+    "secondary_micro": {
+      "name": "Secondary Micro",
+      "description": "Additional responses for eligible tiers (Gold+)",
+      "responses": [
+        "You're special, <user> 💎",
+        "<user>, thanks for being amazing! 🏆",
+        "VIP treatment for you, <user>! 👑",
+        "You deserve the best, <user> ⭐",
+        "<user>, you're one of my favorites! 💝",
+        "Elite status, <user>! 🌟",
+        "<user>, you're in the inner circle 🔥",
+        "Premium vibes only, <user>! ✨"
+      ]
+    }
+  }
+}
