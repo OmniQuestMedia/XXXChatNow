@@ -97,7 +97,10 @@ export class PerformanceMenuService {
     this.logger.log(`Purchase request from user ${userId} for menu item ${dto.menu_item_id}`);
 
     // Validate menu and menu item
-    const menu = await this.MenuModel.findById(dto.menu_id).exec();
+    if (typeof dto.menu_id !== 'string') {
+      throw new BadRequestException('Invalid menu id');
+    }
+    const menu = await this.MenuModel.findById(new ObjectId(dto.menu_id)).exec();
     if (!menu || !menu.is_active) {
       throw new NotFoundException('Menu not found or inactive');
     }
