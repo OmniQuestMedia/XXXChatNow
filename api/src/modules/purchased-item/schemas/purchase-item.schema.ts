@@ -71,6 +71,18 @@ export class PurchasedItem {
   })
   extraInfo: Record<string, any>;
 
+  // RRR (RedRoomRewards) ledger tracking fields
+  @Prop()
+  rrrLedgerEntryId: string;
+
+  @Prop()
+  rrrSourceRef: string;
+
+  @Prop({
+    type: Date
+  })
+  rrrPostedAt: Date;
+
   @Prop({
     type: Date,
     default: Date.now
