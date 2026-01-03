@@ -52,8 +52,19 @@ export class MoodMessageService {
   ): Promise<any> {
     this.logger.log(`Sending mood message from ${senderId} to ${dto.user_id}`);
 
+    // Validate and normalize recipient user ID
+    if (typeof dto.user_id !== 'string') {
+      throw new BadRequestException('Invalid recipient user ID');
+    }
+    let validatedUserId: ObjectId;
+    try {
+      validatedUserId = new ObjectId(dto.user_id);
+    } catch (error) {
+      throw new BadRequestException('Invalid recipient user ID');
+    }
+
     // Validate recipient user exists
-    const recipient = await this.UserModel.findById(dto.user_id).exec();
+    const recipient = await this.UserModel.findById(validatedUserId).exec();
     if (!recipient) {
       throw new NotFoundException('Recipient user not found');
     }
@@ -69,7 +80,7 @@ export class MoodMessageService {
     const messageId = uuidv4();
     const message = new this.MoodMessageModel({
       message_id: messageId,
-      user_id: new ObjectId(dto.user_id),
+      user_id: validatedUserId,
       model_id: senderId,
       message_type: dto.message_type,
       detected_mood: dto.detected_mood,
