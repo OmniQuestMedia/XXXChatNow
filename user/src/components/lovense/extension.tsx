@@ -180,7 +180,7 @@ export default function LovenseExtension({
         const clampedDuration = Math.max(MIN_DURATION, Math.min(MAX_DURATION, durationSec));
 
         // Calculate synthetic tip amount using ship-hack formula
-        // Formula: amount = round(base + strength*multiplier + durationSec*multiplier)
+        // Formula: amount = round(base + strength*strengthMultiplier + durationSec*durationMultiplier)
         const rawAmount = MAPPING_BASE + (clampedStrength * MAPPING_STRENGTH_MULTIPLIER) + (clampedDuration * MAPPING_DURATION_MULTIPLIER);
         const roundedAmount = Math.round(rawAmount);
         
