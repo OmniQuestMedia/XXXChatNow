@@ -4,7 +4,8 @@ import {
   Query,
   UseGuards,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  BadRequestException
 } from '@nestjs/common';
 import { AuthGuard } from '../../auth/guards';
 import {
@@ -48,13 +49,20 @@ export class MoodMessagingController {
     @CurrentUser() user: any,
     @Query() query: GetPrivateMoodMessageDto
   ): Promise<MoodMessageResponseDto> {
-    const tierKey = query.tierKey || 'guest';
+    let tierKey: unknown = query.tierKey || 'guest';
+    if (typeof tierKey !== 'string') {
+      throw new BadRequestException('tierKey must be a string');
+    }
+    tierKey = tierKey.trim();
+    if (!tierKey) {
+      tierKey = 'guest';
+    }
     // Use provided username, or fall back to user's actual username, or user's first name, or 'friend' as last resort
     const username = query.username || user.username || user.firstName || 'friend';
 
     const result = await this.moodMessagingService.getPrivateMoodMessage(
       user._id,
-      tierKey,
+      tierKey as string,
       username
     );
 
@@ -109,10 +117,19 @@ export class MoodMessagingController {
     description: 'Unauthorized'
   })
   async getAvailableBuckets(
-    @Query('tierKey') tierKey = 'guest'
+    @Query('tierKey') rawTierKey = 'guest'
   ): Promise<AvailableBucketsResponseDto> {
-    const buckets = await this.moodMessagingService.getAvailableBucketsForTier(tierKey);
-    const hasSecondaryMicro = await this.moodMessagingService.hasSecondaryMicroAccess(tierKey);
+    let tierKey: unknown = rawTierKey;
+    if (typeof tierKey !== 'string') {
+      throw new BadRequestException('tierKey must be a string');
+    }
+    tierKey = tierKey.trim();
+    if (!tierKey) {
+      tierKey = 'guest';
+    }
+    const buckets = await this.moodMessagingService.getAvailableBucketsForTier(tierKey as string);
+    const hasSecondaryMicro = await this.moodMessagingService.hasSecondaryMicroAccess(tierKey as string);
+
 
     return {
       buckets,
