@@ -135,6 +135,20 @@ export default function LovenseExtension({
         // PR7: Map canonical vibration spec to bounded synthetic tip amount
         // and dispatch via CamExtension.receiveTip(amount, 'Lovense', cParameter)
         
+        // Mapping constants - ship-hack formula parameters
+        // These values are temporary and will be replaced when command-level vibration API is available
+        const MAPPING_BASE = 5;
+        const MAPPING_STRENGTH_MULTIPLIER = 10;
+        const MAPPING_DURATION_MULTIPLIER = 2;
+        const DEFAULT_STRENGTH = 10;  // Default strength for PRESET/LEVEL when missing
+        const DEFAULT_DURATION_SEC = 5;  // Default duration for PRESET/LEVEL when missing
+        const MIN_STRENGTH = 0;
+        const MAX_STRENGTH = 20;
+        const MIN_DURATION = 0;
+        const MAX_DURATION = 30;
+        const MIN_AMOUNT = 1;
+        const MAX_AMOUNT = 500;
+        
         // Handle PATTERN type - not supported, warn and no-op
         if (vibration.type === 'PATTERN') {
           console.warn('[Lovense] PATTERN vibration type not supported (no-op)', { 
@@ -143,18 +157,14 @@ export default function LovenseExtension({
           return;
         }
 
-        // Extract strength and durationSec with defaults for PRESET type
+        // Extract strength and durationSec with defaults
+        // Both PRESET and LEVEL use the same defaults when values are missing
         let strength: number;
         let durationSec: number;
 
-        if (vibration.type === 'PRESET') {
-          // For PRESET: apply defaults if missing
-          strength = vibration.strength ?? 10;
-          durationSec = vibration.durationSec ?? 5;
-        } else if (vibration.type === 'LEVEL') {
-          // For LEVEL: use provided values (should be present)
-          strength = vibration.strength ?? 10;
-          durationSec = vibration.durationSec ?? 5;
+        if (vibration.type === 'PRESET' || vibration.type === 'LEVEL') {
+          strength = vibration.strength ?? DEFAULT_STRENGTH;
+          durationSec = vibration.durationSec ?? DEFAULT_DURATION_SEC;
         } else {
           console.error('[Lovense] Unknown vibration type', { 
             tipId: envelope.tipId, 
@@ -163,21 +173,19 @@ export default function LovenseExtension({
           return;
         }
 
-        // Clamp strength to [0..20]
-        const clampedStrength = Math.max(0, Math.min(20, strength));
+        // Clamp strength to [MIN_STRENGTH..MAX_STRENGTH]
+        const clampedStrength = Math.max(MIN_STRENGTH, Math.min(MAX_STRENGTH, strength));
         
-        // Clamp durationSec to [0..30]
-        const clampedDuration = Math.max(0, Math.min(30, durationSec));
+        // Clamp durationSec to [MIN_DURATION..MAX_DURATION]
+        const clampedDuration = Math.max(MIN_DURATION, Math.min(MAX_DURATION, durationSec));
 
-        // Calculate synthetic tip amount
-        // base = 5
-        // amount = round(base + strength*10 + durationSec*2)
-        const base = 5;
-        const rawAmount = base + (clampedStrength * 10) + (clampedDuration * 2);
+        // Calculate synthetic tip amount using ship-hack formula
+        // Formula: amount = round(base + strength*multiplier + durationSec*multiplier)
+        const rawAmount = MAPPING_BASE + (clampedStrength * MAPPING_STRENGTH_MULTIPLIER) + (clampedDuration * MAPPING_DURATION_MULTIPLIER);
         const roundedAmount = Math.round(rawAmount);
         
-        // Clamp final amount to [1..500]
-        const syntheticTipAmount = Math.max(1, Math.min(500, roundedAmount));
+        // Clamp final amount to [MIN_AMOUNT..MAX_AMOUNT]
+        const syntheticTipAmount = Math.max(MIN_AMOUNT, Math.min(MAX_AMOUNT, roundedAmount));
 
         // Prepare traceability parameter (cParameter)
         const cParameter = {
