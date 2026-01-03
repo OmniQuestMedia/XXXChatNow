@@ -8,6 +8,7 @@ import { PerformerModule } from '../performer/performer.module';
 import { PerformerAssetsModule } from '../performer-assets/performer-assets.module';
 import { SettingModule } from '../settings/setting.module';
 import { LoyaltyPointsModule } from '../loyalty-points/loyalty-points.module';
+import { PerformanceQueueModule } from '../performance-queue/performance-queue.module';
 import {
   PurchaseItemService,
   PurchasedItemSearchService,
@@ -59,6 +60,7 @@ import { PerformerScheduleModule } from '../performer-schedule/performer-schedul
     forwardRef(() => StatisticModule),
     forwardRef(() => StreamModule),
     forwardRef(() => PerformerScheduleModule),
+    forwardRef(() => PerformanceQueueModule),
     forwardRef(() => LoyaltyPointsModule)
   ],
   providers: [

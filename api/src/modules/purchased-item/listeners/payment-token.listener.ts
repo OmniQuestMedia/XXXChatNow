@@ -7,6 +7,7 @@ import {
 } from 'src/modules/performer/services';
 import { EVENT, ROLE } from 'src/kernel/constants';
 import { ObjectId } from 'mongodb';
+import { Types } from 'mongoose';
 import { SocketUserService } from 'src/modules/socket/services/socket-user.service';
 import { SettingService } from 'src/modules/settings/services';
 import { CONVERSATION_TYPE, MESSAGE_TYPE } from 'src/modules/message/constants';
@@ -16,6 +17,7 @@ import { ConversationService } from 'src/modules/message/services';
 import { UserDto } from 'src/modules/user/dtos';
 import { generateUuid } from 'src/kernel/helpers/string.helper';
 import { DBLoggerService } from 'src/modules/logger';
+import { PerformanceQueueService } from 'src/modules/performance-queue/services';
 import { RRRApiClientService } from 'src/modules/loyalty-points/services';
 import { RRRLedgerEntryDto } from 'src/modules/loyalty-points/dtos';
 import { PurchasedItemDto, TipActivatedDto, TipActivatedLedgerDto } from '../dtos';
@@ -24,6 +26,7 @@ import {
   PURCHASED_ITEM_SUCCESS_CHANNEL,
   PURCHASE_ITEM_STATUS,
   PURCHASE_ITEM_TYPE,
+  SETTLEMENT_STATUS,
   TIP_ACTIVATED_CHANNEL
 } from '../constants';
 
@@ -42,6 +45,7 @@ export class PaymentTokenListener {
     private readonly studioService: StudioService,
     private readonly conversationService: ConversationService,
     private readonly logger: DBLoggerService,
+    private readonly performanceQueueService: PerformanceQueueService,
     private readonly rrrApiClient: RRRApiClientService,
     private readonly tipActivatedEventLogService: TipActivatedEventLogService
   ) {
