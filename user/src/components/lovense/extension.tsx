@@ -132,19 +132,89 @@ export default function LovenseExtension({
           return;
         }
 
-        // Dispatch vibration via Cam Extension using receiveTip
-        // The receiveTip method expects token amount and sender name
-        // For now, we use this existing integration path
+        // PR7: Map canonical vibration spec to bounded synthetic tip amount
+        // and dispatch via CamExtension.receiveTip(amount, 'Lovense', cParameter)
+        
+        // Mapping constants - ship-hack formula parameters
+        // These values are temporary and will be replaced when command-level vibration API is available
+        const MAPPING_BASE = 5;
+        const MAPPING_STRENGTH_MULTIPLIER = 10;
+        const MAPPING_DURATION_MULTIPLIER = 2;
+        const DEFAULT_STRENGTH = 10;  // Default strength for PRESET/LEVEL when missing
+        const DEFAULT_DURATION_SEC = 5;  // Default duration for PRESET/LEVEL when missing
+        const MIN_STRENGTH = 0;
+        const MAX_STRENGTH = 20;
+        const MIN_DURATION = 0;
+        const MAX_DURATION = 30;
+        const MIN_AMOUNT = 1;
+        const MAX_AMOUNT = 500;
+        
+        // Handle PATTERN type - not supported, warn and no-op
+        if (vibration.type === 'PATTERN') {
+          console.warn('[Lovense] PATTERN vibration type not supported (no-op)', { 
+            tipId: envelope.tipId 
+          });
+          return;
+        }
+
+        // Extract strength and durationSec with defaults
+        // Both PRESET and LEVEL use the same defaults when values are missing
+        let strength: number;
+        let durationSec: number;
+
+        if (vibration.type === 'PRESET' || vibration.type === 'LEVEL') {
+          strength = vibration.strength ?? DEFAULT_STRENGTH;
+          durationSec = vibration.durationSec ?? DEFAULT_DURATION_SEC;
+        } else {
+          console.error('[Lovense] Unknown vibration type', { 
+            tipId: envelope.tipId, 
+            vibrationType: vibration.type 
+          });
+          return;
+        }
+
+        // Clamp strength to [MIN_STRENGTH..MAX_STRENGTH]
+        const clampedStrength = Math.max(MIN_STRENGTH, Math.min(MAX_STRENGTH, strength));
+        
+        // Clamp durationSec to [MIN_DURATION..MAX_DURATION]
+        const clampedDuration = Math.max(MIN_DURATION, Math.min(MAX_DURATION, durationSec));
+
+        // Calculate synthetic tip amount using ship-hack formula
+        // Formula: amount = round(base + strength*strengthMultiplier + durationSec*durationMultiplier)
+        const rawAmount = MAPPING_BASE + (clampedStrength * MAPPING_STRENGTH_MULTIPLIER) + (clampedDuration * MAPPING_DURATION_MULTIPLIER);
+        const roundedAmount = Math.round(rawAmount);
+        
+        // Clamp final amount to [MIN_AMOUNT..MAX_AMOUNT]
+        const syntheticTipAmount = Math.max(MIN_AMOUNT, Math.min(MAX_AMOUNT, roundedAmount));
+
+        // Prepare traceability parameter (cParameter)
+        const cParameter = {
+          tipId: envelope.tipId,
+          sourceRef: envelope.ledger.sourceRef,
+          vibration: {
+            type: vibration.type,
+            strength: clampedStrength,
+            durationSec: clampedDuration
+          },
+          mode: lovenseMode
+        };
+
+        // Dispatch via receiveTip with synthetic amount, 'Lovense' as username (no PII), and cParameter
         camExtension.current.receiveTip(
-          envelope.transaction.amount,
-          envelope.tipper.username
+          syntheticTipAmount,
+          'Lovense',
+          cParameter
         );
 
-        console.log('[Lovense] Vibration dispatched via EXTENSION', {
+        console.log('[Lovense] Vibration dispatched via EXTENSION (ship-hack mapping)', {
           tipId: envelope.tipId,
           vibrationType: vibration.type,
-          strength: vibration.strength,
-          durationSec: vibration.durationSec
+          originalStrength: strength,
+          originalDuration: durationSec,
+          clampedStrength,
+          clampedDuration,
+          syntheticTipAmount,
+          cParameter
         });
       } else if (lovenseMode === 'CAM_KIT') {
         console.log('[Lovense] CAM_KIT not implemented', { tipId: envelope.tipId });
