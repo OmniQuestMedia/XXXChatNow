@@ -7,6 +7,7 @@ import {
 } from 'src/modules/performer/services';
 import { EVENT, ROLE } from 'src/kernel/constants';
 import { ObjectId } from 'mongodb';
+import { Types } from 'mongoose';
 import { SocketUserService } from 'src/modules/socket/services/socket-user.service';
 import { SettingService } from 'src/modules/settings/services';
 import { CONVERSATION_TYPE, MESSAGE_TYPE } from 'src/modules/message/constants';
@@ -16,11 +17,13 @@ import { ConversationService } from 'src/modules/message/services';
 import { UserDto } from 'src/modules/user/dtos';
 import { generateUuid } from 'src/kernel/helpers/string.helper';
 import { DBLoggerService } from 'src/modules/logger';
+import { PerformanceQueueService } from 'src/modules/performance-queue/services';
 import { PurchasedItemDto } from '../dtos';
 import {
   PURCHASED_ITEM_SUCCESS_CHANNEL,
   PURCHASE_ITEM_STATUS,
-  PURCHASE_ITEM_TYPE
+  PURCHASE_ITEM_TYPE,
+  SETTLEMENT_STATUS
 } from '../constants';
 
 const HANDLE_PAYMENT_TOKEN = 'HANDLE_PAYMENT_TOKEN';
@@ -37,7 +40,8 @@ export class PaymentTokenListener {
     private readonly performerCommission: PerformerCommissionService,
     private readonly studioService: StudioService,
     private readonly conversationService: ConversationService,
-    private readonly logger: DBLoggerService
+    private readonly logger: DBLoggerService,
+    private readonly performanceQueueService: PerformanceQueueService
   ) {
     this.queueEventService.subscribe(
       PURCHASED_ITEM_SUCCESS_CHANNEL,
@@ -183,6 +187,19 @@ export class PaymentTokenListener {
           message
         )
       ]);
+      
+      // Emit TipActivated event if this is a tip transaction that has been settled
+      if (transaction.type === PURCHASE_ITEM_TYPE.TIP) {
+        await this.emitTipActivatedEvent(
+          transaction,
+          netPrice,
+          commission,
+          studioCommision,
+          owner,
+          performer
+        );
+      }
+      
       await this.notify(transaction, netPrice);
     } catch (e) {
       this.logger.error(e.stack || e, { context: 'PaymentTokenListener' });
@@ -264,6 +281,122 @@ export class PaymentTokenListener {
       }
     } catch (e) {
       this.logger.error(e.stack || e, { context: 'PaymentTokenListener' });
+    }
+  }
+
+  /**
+   * Emit TipActivated event for Lovense integration
+   * Only emits if settlement status is SETTLED and enforces idempotency using tipId
+   * 
+   * @param transaction The tip transaction
+   * @param netPrice Net amount after commissions
+   * @param commission Performer commission percentage
+   * @param studioCommission Studio commission percentage (if applicable)
+   * @param tipper The user who sent the tip
+   * @param performer The performer receiving the tip
+   */
+  async emitTipActivatedEvent(
+    transaction: PurchasedItemDto,
+    netPrice: number,
+    commission: number,
+    studioCommission: number,
+    tipper: any,
+    performer: any
+  ) {
+    try {
+      // Check if settlement status is SETTLED
+      // For backward compatibility, treat SUCCESS status as SETTLED if settlementStatus is not set
+      const settlementStatus = transaction.settlementStatus || SETTLEMENT_STATUS.SETTLED;
+      
+      if (settlementStatus !== SETTLEMENT_STATUS.SETTLED) {
+        this.logger.log(`Skipping TipActivated event emission - settlement status is ${settlementStatus}`, {
+          context: 'PaymentTokenListener',
+          tipId: transaction._id.toString()
+        });
+        return;
+      }
+
+      // Build TipActivated event payload according to specification
+      const tipActivatedPayload = {
+        // Idempotency & Identity
+        tipId: transaction._id.toString(),
+        idempotencyKey: transaction._id.toString(), // Use tipId as idempotency key
+        
+        // Event Metadata
+        eventType: 'TipActivated',
+        eventTimestamp: new Date(),
+        
+        // Financial Details
+        totalPrice: transaction.totalPrice,
+        netPrice,
+        commission,
+        studioCommission,
+        
+        // Participants
+        tipper: {
+          userId: transaction.sourceId,
+          username: tipper?.username || null,
+          role: transaction.source
+        },
+        
+        recipient: {
+          performerId: transaction.sellerId,
+          username: performer?.username || null,
+          studioId: performer?.studioId || null
+        },
+        
+        // Ledger References (Audit Trail)
+        ledger: {
+          transactionId: transaction._id,
+          conversationId: transaction.targetId || null
+        },
+        
+        // Settlement Details
+        settlement: {
+          status: SETTLEMENT_STATUS.SETTLED,
+          settledAt: transaction.updatedAt || new Date() // Use transaction update time or current time
+        },
+        
+        // Context & Metadata
+        context: {
+          conversationType: transaction.extraInfo?.conversationType || null,
+          customMessage: transaction.extraInfo?.customMessage || null
+        },
+        
+        // Processing Status
+        processed: false
+      };
+
+      // Submit to performance queue with idempotency enforcement
+      const userIdAsObjectId = transaction.sourceId instanceof Types.ObjectId 
+        ? transaction.sourceId 
+        : new Types.ObjectId(transaction.sourceId.toString());
+      
+      await this.performanceQueueService.submitRequest(
+        userIdAsObjectId,
+        {
+          type: 'TipActivated',
+          mode: 'fifo',
+          payload: tipActivatedPayload,
+          priority: 10, // Medium-high priority
+          idempotencyKey: transaction._id.toString() // Enforce once-only emission
+        }
+      );
+
+      this.logger.log('TipActivated event emitted successfully', {
+        context: 'PaymentTokenListener',
+        tipId: transaction._id.toString(),
+        totalPrice: transaction.totalPrice,
+        performerId: transaction.sellerId.toString()
+      });
+    } catch (e) {
+      // Log error but don't block the transaction
+      // Failed emissions can be retried via admin tools
+      this.logger.error('Failed to emit TipActivated event', {
+        context: 'PaymentTokenListener',
+        error: e.stack || e.message,
+        tipId: transaction._id.toString()
+      });
     }
   }
 
