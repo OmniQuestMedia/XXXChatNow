@@ -1,382 +1,220 @@
 # Lovense Canonical Payload and Routing Specification
 
-**Version:** 1.0  
-**Date:** 2026-01-03  
-**Status:** Draft
-
-## Purpose
-
-This document defines the canonical event payload structure and routing for Lovense toy integration events within the XXXChatNow platform. It ensures consistent event emission, persistence, and processing across all interactive features.
-
----
-
-## Event Types
-
-### TipActivated Event
-
-The `TipActivated` event is emitted when a tip transaction has been fully settled and is ready to trigger Lovense toy activation (if configured).
-
-#### Event Name
-```
-TipActivated
-```
-
-#### Trigger Conditions
-- Transaction `type` must be `PURCHASE_ITEM_TYPE.TIP`
-- Transaction `status` must be `PURCHASE_ITEM_STATUS.SUCCESS`
-- Transaction `settlementStatus` must be `SETTLED`
-- Event must be emitted exactly once per tip (idempotency enforced)
-
-#### Payload Structure
-
-```typescript
-{
-  // Idempotency & Identity
-  tipId: string;              // Unique identifier for this tip (from purchasedItem._id)
-  idempotencyKey: string;     // Same as tipId to enforce once-only emission
-  
-  // Event Metadata
-  eventType: 'TipActivated';
-  eventTimestamp: Date;       // When the event was emitted
-  
-  // Financial Details
-  totalPrice: number;         // Total tokens tipped
-  netPrice: number;           // Net amount after commissions
-  commission: number;         // Commission percentage applied
-  studioCommission: number;   // Studio commission percentage (if applicable)
-  
-  // Participants
-  tipper: {
-    userId: ObjectId;         // User who sent the tip
-    username: string;         // Tipper username
-    role: string;             // 'user' or 'performer'
-  };
-  
-  recipient: {
-    performerId: ObjectId;    // Performer receiving the tip
-    username: string;         // Performer username
-    studioId?: ObjectId;      // Studio ID if performer is studio-affiliated
-  };
-  
-  // Ledger References (Audit Trail)
-  ledger: {
-    transactionId: ObjectId;  // Reference to purchased_item document
-    conversationId?: ObjectId; // Conversation where tip occurred (if applicable)
-    sourceBalance: {
-      before: number;         // Tipper balance before transaction
-      after: number;          // Tipper balance after transaction
-      change: number;         // Amount deducted (negative value)
-    };
-    recipientBalance: {
-      before: number;         // Performer balance before transaction
-      after: number;          // Performer balance after transaction
-      change: number;         // Amount added (positive value)
-    };
-  };
-  
-  // Settlement Details
-  settlement: {
-    status: 'SETTLED';        // Must be SETTLED for TipActivated
-    settledAt: Date;          // When the settlement was finalized
-    settlementId?: string;    // Optional settlement batch ID
-  };
-  
-  // Context & Metadata
-  context: {
-    conversationType?: string; // 'private', 'group', 'performer_community', etc.
-    streamType?: string;      // 'private', 'group', 'public' if during stream
-    customMessage?: string;   // Optional tip message
-  };
-  
-  // Processing Status
-  processed: boolean;         // Whether event has been processed
-  processedAt?: Date;        // When event was processed
-  processingError?: string;  // Error message if processing failed
-}
-```
-
-#### Required Fields (Minimum Viable Event)
-- `tipId`
-- `idempotencyKey`
-- `eventType`
-- `eventTimestamp`
-- `totalPrice`
-- `tipper.userId`
-- `recipient.performerId`
-- `ledger.transactionId`
-- `settlement.status`
-- `settlement.settledAt`
-
-#### Optional Fields
-- `netPrice` (calculated if commissions exist)
-- `commission`
-- `studioCommission`
-- `tipper.username`
-- `recipient.username`
-- `recipient.studioId`
-- `ledger.conversationId`
-- `ledger.sourceBalance.*` (if balance tracking is available)
-- `ledger.recipientBalance.*` (if balance tracking is available)
-- `settlement.settlementId`
-- `context.*`
-- `processed`
-- `processedAt`
-- `processingError`
+> **Copilot Coding Agent Guardrails (Must Follow)**  
+> This document is the source of truth for all Lovense-related development and refactoring in this codebase.  
+> **If any existing repo code conflicts with this spec, the code must be changed to match the spec (not the other way around).**  
+>
+> **Non‑negotiable rules**:
+> - Do not invent alternate architectures. No "simpler approach," no direct-to-Lovense shortcuts, no bypassing the canonical event.
+> - Single canonical event only: All toy activation must be driven by exactly one post-settlement event: TipActivated.
+> - Emit only after settlement: TipActivated must only be emitted after the token ledger/wallet settlement is confirmed.
+> - Idempotency is mandatory: tipId is the idempotency key across all consumers. Duplicate tipId must be a no-op.
+> - Auditability is mandatory: Every TipActivated must be traceable to authoritative ledger references (ledgerId, debitRef, creditRef).
+> - Never couple settlement to device success: Lovense dispatch failures must not roll back settlement.
+> - Respect settings boundaries: Platform Admin Controlled Settings are global (kill-switch + site identity). Model Controlled Settings are per-model (lovenseMode + viewerSyncMode).
+> - No secrets client-side: No Lovense tokens/keys/secrets may be introduced into Next.js client code.
+> - Do not rename event names, fields, or enum values defined in this spec. Any change requires explicit approval.
+> - Do not dispatch Lovense toy commands directly from raw tipped/socket tip events. Toy dispatch must occur only as a consumer of the canonical TipActivated event.
+>
+> **Explicit non-goals (do not implement here):**
+> - Do not implement message content logic (public/private gratitude). Other systems consume the payload.
+> - Do not implement loyalty multiplier/expiry logic. Other systems consume the payload.
+> - Do not implement model performance queue logic. It consumes the payload if enabled.
+>
+> **Acceptance criteria (definition of done):**
+> - A change is "complete" only if:
+>     - TipActivated payload matches the schema in this spec (fields + naming).
+>     - Routing behavior matches the routing rules in this spec.
+>     - UI gating matches the viewer/model rules in this spec.
+>     - Idempotency is verified (duplicate tipId does not double-trigger).
+>     - Audit logs exist per tipId and include dispatch attempts per target.
+>
+> **If anything is unclear:**  
+> Stop and ask for clarification. Do not guess.
 
 ---
 
-## Persistence
+## Objective
 
-### Storage Location
-TipActivated events MUST be persisted to the performance queue system for reliable processing.
+Implement Lovense-powered reactions for model + viewers using a single canonical payload emitted after token settlement. The Lovense layer must not contain business logic for downstream systems (Model Mood Messaging, Loyalty, Model Performance Queue). It must only:
 
-### Schema
-Events are stored in the `queue_requests` collection with:
-- `type`: `'TipActivated'`
-- `mode`: `'fifo'` (First-In-First-Out processing)
-- `payload`: Full TipActivated event payload
-- `idempotencyKey`: Set to `tipId` to prevent duplicates
-- `status`: `'pending'` initially
-- `priority`: `10` (medium-high priority)
-
-### Idempotency
-The `idempotencyKey` field in `queue_requests` ensures that duplicate events are rejected:
-- Database unique index on `idempotencyKey` prevents duplicate inserts
-- Duplicate submission attempts return the existing event without error
-- This guarantees exactly-once emission semantics
+- Emit one auditable event per settled tip/purchase
+- Route toy commands to eligible targets (model, tipper, VIP viewers)
+- Make the same payload available to other internal consumers
+- Ensure idempotency and observability keyed to a ledger/transaction record
 
 ---
 
-## Settlement Status
+## Scope
 
-### Settlement Lifecycle
-```
-pending → processing → settled
-         ↓
-      cancelled/failed
-```
+**In scope:**
 
-#### Status Definitions
-- `pending`: Transaction authorized but not yet settled
-- `processing`: Settlement in progress
-- `settled`: Funds transferred, transaction complete (FINAL STATE)
-- `cancelled`: Transaction cancelled before settlement
-- `failed`: Settlement failed, transaction rolled back
+- Model toy control via Cam Extension (primary) or Cam Kit (fallback)
+- Viewer toy control via Lovense Basic JS SDK
+- Viewer Sync modes:
+    - OFF
+    - SHARED_MOMENT (model + tipper only)
+    - VIP_ROOM_SYNC (VIP viewers may opt-in to feel all tips)
+- Canonical event emission and routing
+- UI gating requirements (what toggles appear)
+- Idempotency + audit logging
 
-### Settlement Status Field
-Add to `PurchasedItem` schema:
-```typescript
-settlementStatus: {
-  type: String,
-  enum: ['pending', 'processing', 'settled', 'cancelled', 'failed'],
-  default: 'pending',
-  index: true
-}
-```
+**Out of scope (handled by other systems):**
 
-For the initial implementation:
-- Transactions with `status: 'success'` can be treated as `settlementStatus: 'settled'`
-- Future enhancements can add separate settlement processing
+- Any logic/content generation for public/private messages
+- Any loyalty multiplier/expiry logic
+- Any model performance queue logic
 
 ---
 
-## Event Emission Rules
+## High-level Flow (authoritative)
 
-### When to Emit
-1. Transaction must have `type === 'tip'`
-2. Transaction must have `status === 'success'`
-3. Transaction must have `settlementStatus === 'settled'`
-4. Event must NOT have been emitted previously for this `tipId`
-
-### Where to Emit
-Events are emitted in `api/src/modules/purchased-item/listeners/payment-token.listener.ts`:
-- After balance updates complete
-- Before socket notifications
-- Within the existing transaction handler
-
-### Error Handling
-- If event emission fails, log error but do NOT block the transaction
-- Failed emissions can be retried via admin tools
-- Dead Letter Queue (DLQ) captures permanently failed events
+1. User action occurs (tip or menu item purchase).
+2. Wallet settlement succeeds (tokens debited from user wallet and credited to model wallet).
+3. System emits one canonical event: TipActivated.  
+   Do not emit TipActivated for pending/authorized/initiated transactions. Emit only when ledger status is SETTLED.
+4. Consumers:
+    - Lovense Orchestrator (toy commands)
+    - Chat/Messaging system (reads payload)
+    - Loyalty engine (reads payload)
+    - Model Performance Queue (reads payload if enabled)
 
 ---
 
-## Routing (Future)
+## Settings
 
-### Event Consumers
-1. **Lovense Activation Service** (future implementation)
-   - Subscribes to TipActivated events
-   - Determines if toy activation is configured
-   - Dispatches toy commands via Lovense SDK
-   
-2. **Analytics Service** (future implementation)
-   - Tracks tip patterns
-   - Generates revenue reports
-   
-3. **Notification Service** (current implementation)
-   - Already handles tip notifications
-   - Can be enhanced to consume TipActivated events
+### Platform Admin Controlled Settings (global)
 
-### Event Flow (Future)
-```
-TipActivated Event
-    ↓
-Queue Request (persisted)
-    ↓
-Event Dispatcher
-    ↓
-    ├─→ Lovense Activation Service
-    ├─→ Analytics Service
-    └─→ Notification Service
-```
+These are platform-level controls managed in the admin settings panel.
+
+| Setting               | Type    | Purpose                                                   |
+|-----------------------|---------|-----------------------------------------------------------|
+| `enableLovense`       | boolean | Global kill-switch                                        |
+| `lovenseCamSiteName`  | string  | Constant for Lovense discovery/association (see below)    |
+
+**Notes:**
+
+- lovenseCamSiteName is hard-coded as the constant "XXXChatNow".
+- Platform Admin Controlled Settings apply to all rooms/models.
+
+### Model Controlled Settings (per model)
+
+These are model-level controls managed by the model (or by staff on behalf of the model).
+
+| Setting           | Type                               | Purpose                                      |
+|-------------------|------------------------------------|----------------------------------------------|
+| `lovenseMode`     | EXTENSION \| CAM_KIT              | Integration type (extension/cam kit for web) |
+| `viewerSyncMode`  | OFF \| SHARED_MOMENT \| VIP_ROOM_SYNC| Viewer sync mode selection                  |
 
 ---
 
-## Security & Compliance
+## Model Session Requirements
 
-### Audit Requirements
-- All TipActivated events MUST include complete ledger references
-- Events MUST be immutable once created
-- Event timestamps MUST be accurate (server-side only)
-- Sensitive data (balances) should be logged securely
+The model broadcast session must use exactly one integration path:
 
-### Data Retention
-- Events retained for 90 days in active queue
-- After 90 days, archived to long-term storage
-- Audit queries must access archived events when needed
+- EXTENSION (Cam Extension)
+- CAM_KIT (Cam Kit for Web)
 
-### Privacy Considerations
-- Do NOT include sensitive personal information beyond IDs
-- Usernames are acceptable for operational purposes
-- Balance information is for audit trail only
+Never initialize both simultaneously in the same broadcast session.
 
 ---
 
-## Validation Rules
+## Viewer Settings & UI Gating
 
-### Pre-Emission Checks
-1. Verify transaction exists and is valid
-2. Confirm settlement status is SETTLED
-3. Check idempotency (has event been emitted before?)
-4. Validate all required fields are present
-5. Ensure numeric fields are non-negative
+### Viewer settings (session + persisted preference)
 
-### Post-Emission Verification
-1. Confirm event persisted to queue
-2. Log event emission for audit trail
-3. Update transaction metadata (mark as event-emitted)
+| Setting             | Type     | Purpose                                              |
+|---------------------|----------|------------------------------------------------------|
+| `toyConnected`      | boolean  | Is viewer's toy connected                            |
+| `reactToMyTips`     | boolean  | Viewer wants toy reaction to their own tips          |
+| `feelAllTips`       | boolean  | VIP-only; when true, viewer's toy reacts to all tips |
+
+### Viewer UI gating
+
+- Always show: Connect Your Lovense button + connection state.
+- Show React to my tips toggle only when toyConnected=true and model viewerSyncMode != OFF.
+- Show Feel all tips toggle only when all are true:
+    - model viewerSyncMode == VIP_ROOM_SYNC
+    - viewer is VIP-eligible
+    - toyConnected=true
 
 ---
 
-## Examples
+## Canonical Event
 
-### Minimal TipActivated Event
+### Event name
+
+- TipActivated
+
+### Emission rule
+
+- Emit only after wallet settlement is confirmed.
+- Do not emit TipActivated for pending/authorized/initiated transactions. Emit only when ledger status is SETTLED.
+
+### Idempotency rule
+
+- tipId is the idempotency key.
+- All consumers must treat repeated tipId as a no-op.
+
+### Canonical payload schema (single payload used by multiple systems)
+
 ```json
 {
-  "tipId": "507f1f77bcf86cd799439011",
-  "idempotencyKey": "507f1f77bcf86cd799439011",
-  "eventType": "TipActivated",
-  "eventTimestamp": "2026-01-03T04:15:00.000Z",
-  "totalPrice": 100,
-  "tipper": {
-    "userId": "507f191e810c19729de860ea"
-  },
-  "recipient": {
-    "performerId": "507f191e810c19729de860eb"
-  },
+  "eventName": "TipActivated",
+  "eventId": "uuid",
+  "tipId": "string_unique",
+  "timestamp": "YYYY-MM-DDTHH:mm:ss-05:00",
   "ledger": {
-    "transactionId": "507f1f77bcf86cd799439011"
+    "ledgerId": "string",
+    "sourceRef": "string",
+    "debitRef": "string",
+    "creditRef": "string",
+    "status": "SETTLED"
   },
-  "settlement": {
-    "status": "SETTLED",
-    "settledAt": "2026-01-03T04:15:00.000Z"
+  "room": {
+    "roomId": "string",
+    "broadcastId": "string"
+  },
+  "model": {
+    "modelId": "string",
+    "modelDisplayName": "string",
+    "lovenseMode": "EXTENSION|CAM_KIT",
+    "viewerSyncMode": "OFF|SHARED_MOMENT|VIP_ROOM_SYNC"
+  },
+  "tipper": {
+    "userId": "string",
+    "username": "string",
+    "membershipTier": "FREE|VIP_SILVER|VIP_GOLD|VIP_PLATINUM|VIP_DIAMOND",
+    "isVip": true
+  },
+  "transaction": {
+    "currency": "TOKENS",
+    "amount": 150
+  },
+  "item": {
+    "itemType": "TIP|MENU_ITEM",
+    "itemId": "string",
+    "itemName": "string",
+    "descriptionPublic": "string",
+    "vibration": {
+      "type": "LEVEL|PRESET|PATTERN",
+      "strength": 16,
+      "durationSec": 5,
+      "presetName": "earthquake",
+      "pattern": null
+    },
+    "bonusPoints": 150
+  },
+  "viewerSync": {
+    "tipperToyConnected": true,
+    "tipperReactToMyTips": true,
+    "tipperFeelAllTips": false
+  },
+  "routing": {
+    "targets": [
+      { "type": "MODEL_TOY", "modelId": "string" },
+      { "type": "TIPPER_TOY", "userId": "string" },
+      { "type": "VIP_VIEWER_TOY", "userId": "string" }
+    ]
   }
 }
-```
-
-### Complete TipActivated Event
-```json
-{
-  "tipId": "507f1f77bcf86cd799439011",
-  "idempotencyKey": "507f1f77bcf86cd799439011",
-  "eventType": "TipActivated",
-  "eventTimestamp": "2026-01-03T04:15:00.000Z",
-  "totalPrice": 100,
-  "netPrice": 75,
-  "commission": 25,
-  "studioCommission": 10,
-  "tipper": {
-    "userId": "507f191e810c19729de860ea",
-    "username": "user123",
-    "role": "user"
-  },
-  "recipient": {
-    "performerId": "507f191e810c19729de860eb",
-    "username": "performer456",
-    "studioId": "507f191e810c19729de860ec"
-  },
-  "ledger": {
-    "transactionId": "507f1f77bcf86cd799439011",
-    "conversationId": "507f191e810c19729de860ed",
-    "sourceBalance": {
-      "before": 500,
-      "after": 400,
-      "change": -100
-    },
-    "recipientBalance": {
-      "before": 1000,
-      "after": 1075,
-      "change": 75
-    }
-  },
-  "settlement": {
-    "status": "SETTLED",
-    "settledAt": "2026-01-03T04:15:00.000Z",
-    "settlementId": "batch_20260103_001"
-  },
-  "context": {
-    "conversationType": "private",
-    "streamType": "private",
-    "customMessage": "Great performance!"
-  },
-  "processed": false
-}
-```
-
----
-
-## Migration Path
-
-### Phase 1: Event Emission (Current PR)
-- ✅ Create specification document
-- ✅ Add settlementStatus to schema (or use existing status)
-- ✅ Implement TipActivated event emission
-- ✅ Persist events to performance queue
-- ✅ Enforce idempotency
-- ❌ NO toy activation yet
-
-### Phase 2: Event Processing (Future PR)
-- Create Lovense Activation Service
-- Subscribe to TipActivated events
-- Implement toy command dispatch
-- Add configuration for per-tip activation rules
-
-### Phase 3: Advanced Features (Future)
-- Menu-driven activation patterns
-- Custom vibration sequences
-- Activation analytics
-- Admin monitoring dashboard
-
----
-
-## References
-
-- **Performance Queue Architecture**: `/PERFORMANCE_QUEUE_ARCHITECTURE.md`
-- **Lovense Integration Evaluation**: `/LOVENSE_INTEGRATION_EVALUATION.md`
-- **Security Policy**: `/SECURITY_AUDIT_POLICY_AND_CHECKLIST.md`
-- **Copilot Governance**: `/COPILOT_GOVERNANCE.md`
-
----
-
-**Document Status**: Approved for implementation  
-**Next Review**: After Phase 1 implementation complete
