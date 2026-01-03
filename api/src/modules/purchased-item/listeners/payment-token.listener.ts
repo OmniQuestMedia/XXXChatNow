@@ -309,7 +309,7 @@ export class PaymentTokenListener {
       const settlementStatus = transaction.settlementStatus || SETTLEMENT_STATUS.SETTLED;
       
       if (settlementStatus !== SETTLEMENT_STATUS.SETTLED) {
-        this.logger.info(`Skipping TipActivated event emission - settlement status is ${settlementStatus}`, {
+        this.logger.log(`Skipping TipActivated event emission - settlement status is ${settlementStatus}`, {
           context: 'PaymentTokenListener',
           tipId: transaction._id.toString()
         });
@@ -383,7 +383,7 @@ export class PaymentTokenListener {
         }
       );
 
-      this.logger.info('TipActivated event emitted successfully', {
+      this.logger.log('TipActivated event emitted successfully', {
         context: 'PaymentTokenListener',
         tipId: transaction._id.toString(),
         totalPrice: transaction.totalPrice,
