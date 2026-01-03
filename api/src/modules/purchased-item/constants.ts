@@ -30,6 +30,14 @@ export const PURCHASE_ITEM_STATUS = {
   CANCELLED: 'cancelled'
 };
 
+export const SETTLEMENT_STATUS = {
+  PENDING: 'pending',
+  PROCESSING: 'processing',
+  SETTLED: 'settled',
+  CANCELLED: 'cancelled',
+  FAILED: 'failed'
+};
+
 export const PURCHASE_ITEM_TARGET_TYPE = {
   PRODUCT: 'product',
   VIDEO: 'video',

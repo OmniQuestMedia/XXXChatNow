@@ -60,6 +60,9 @@ export class PurchasedItemDto {
   status: string;
 
   @Expose()
+  settlementStatus: string;
+
+  @Expose()
   @Transform(({ obj }) => obj.extraInfo)
   extraInfo: Record<string, any>;
 

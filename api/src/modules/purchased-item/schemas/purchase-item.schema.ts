@@ -66,6 +66,15 @@ export class PurchasedItem {
   })
   status: string;
 
+  // Settlement status: pending, processing, settled, cancelled, failed
+  @Prop({
+    type: String,
+    enum: ['pending', 'processing', 'settled', 'cancelled', 'failed'],
+    default: 'pending',
+    index: true
+  })
+  settlementStatus: string;
+
   @Prop({
     type: MongooseSchema.Types.Mixed
   })

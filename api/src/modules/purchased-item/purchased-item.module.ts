@@ -29,6 +29,7 @@ import { AcceptSpinWheelListener } from './listeners/accept-spin-wheel-request.l
 import { StatisticModule } from '../statistic/statistic.module';
 import { StreamModule } from '../stream/stream.module';
 import { PerformerScheduleModule } from '../performer-schedule/performer-schedule.module';
+import { PerformanceQueueModule } from '../performance-queue/performance-queue.module';
 
 @Module({
   imports: [
@@ -52,7 +53,8 @@ import { PerformerScheduleModule } from '../performer-schedule/performer-schedul
     forwardRef(() => PaymentModule),
     forwardRef(() => StatisticModule),
     forwardRef(() => StreamModule),
-    forwardRef(() => PerformerScheduleModule)
+    forwardRef(() => PerformerScheduleModule),
+    forwardRef(() => PerformanceQueueModule)
   ],
   providers: [
     PurchaseItemService,
