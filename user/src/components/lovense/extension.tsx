@@ -18,6 +18,10 @@ const EVENT = {
   LOVENSE_ACTIVATE: 'lovense.activate'
 };
 
+// Maximum number of tipIds to keep in memory for idempotency
+// After this limit, oldest entries will be removed (FIFO)
+const MAX_PROCESSED_TIP_IDS = 1000;
+
 interface LovenseExtensionProps {
   model: string;
   children: any;
@@ -67,6 +71,14 @@ export default function LovenseExtension({
       // Mark tipId as processed
       processedTipIds.current.add(envelope.tipId);
 
+      // Prevent unbounded memory growth - keep only the most recent tipIds
+      if (processedTipIds.current.size > MAX_PROCESSED_TIP_IDS) {
+        // Convert to array, remove oldest (first) entry, recreate Set
+        const entries = Array.from(processedTipIds.current);
+        entries.shift(); // Remove oldest
+        processedTipIds.current = new Set(entries);
+      }
+
       // Check if this model is a target for MODEL_TOY dispatch
       // Compare against the current performer's _id
       const currentModelId = performer?._id;
@@ -103,8 +115,18 @@ export default function LovenseExtension({
           return;
         }
 
-        // Check if toys are connected
-        const toys = (await camExtension.current.getToyStatus()) as ToyJson[];
+        // Check if toys are connected (wrapped in try-catch for safety)
+        let toys: ToyJson[];
+        try {
+          toys = (await camExtension.current.getToyStatus()) as ToyJson[];
+        } catch (toyStatusError) {
+          console.error('[Lovense] Failed to get toy status', { 
+            tipId: envelope.tipId,
+            error: toyStatusError instanceof Error ? toyStatusError.message : 'Unknown error'
+          });
+          return;
+        }
+
         if (!toys || toys.length === 0) {
           console.error('[Lovense] No toys connected', { tipId: envelope.tipId });
           return;
