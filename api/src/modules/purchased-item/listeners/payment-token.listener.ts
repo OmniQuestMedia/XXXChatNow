@@ -16,11 +16,15 @@ import { ConversationService } from 'src/modules/message/services';
 import { UserDto } from 'src/modules/user/dtos';
 import { generateUuid } from 'src/kernel/helpers/string.helper';
 import { DBLoggerService } from 'src/modules/logger';
-import { PurchasedItemDto } from '../dtos';
+import { RRRApiClientService } from 'src/modules/loyalty-points/services';
+import { RRRLedgerEntryDto } from 'src/modules/loyalty-points/dtos';
+import { PurchasedItemDto, TipActivatedDto, TipActivatedLedgerDto } from '../dtos';
+import { TipActivatedEventLogService } from '../services';
 import {
   PURCHASED_ITEM_SUCCESS_CHANNEL,
   PURCHASE_ITEM_STATUS,
-  PURCHASE_ITEM_TYPE
+  PURCHASE_ITEM_TYPE,
+  TIP_ACTIVATED_CHANNEL
 } from '../constants';
 
 const HANDLE_PAYMENT_TOKEN = 'HANDLE_PAYMENT_TOKEN';
@@ -37,7 +41,9 @@ export class PaymentTokenListener {
     private readonly performerCommission: PerformerCommissionService,
     private readonly studioService: StudioService,
     private readonly conversationService: ConversationService,
-    private readonly logger: DBLoggerService
+    private readonly logger: DBLoggerService,
+    private readonly rrrApiClient: RRRApiClientService,
+    private readonly tipActivatedEventLogService: TipActivatedEventLogService
   ) {
     this.queueEventService.subscribe(
       PURCHASED_ITEM_SUCCESS_CHANNEL,
@@ -232,6 +238,9 @@ export class PaymentTokenListener {
             netPrice
           })
         ]);
+
+        // Emit TipActivated event with RRR ledger as source of truth
+        await this.emitTipActivatedEvent(transaction);
       } else if ([PURCHASE_ITEM_TYPE.GROUP, PURCHASE_ITEM_TYPE.PRIVATE].includes(type)) {
         this.socketUserService.emitToUsers(performerId, RECEIVED_PAID_TOKEN, {
           conversationId: targetId,
@@ -281,5 +290,129 @@ export class PaymentTokenListener {
     // }
 
     return user;
+  }
+
+  /**
+   * Emit TipActivated event with RRR ledger as source of truth
+   * Only emits if RRR ledger entry has posted_at set (indicating SETTLED status)
+   * Implements idempotency via tip_activated_event_log collection
+   */
+  async emitTipActivatedEvent(transaction: PurchasedItemDto) {
+    try {
+      const tipId = transaction._id.toString();
+
+      // Check idempotency first - have we already emitted this event?
+      const alreadyEmitted = await this.tipActivatedEventLogService.hasEventBeenEmitted(tipId);
+      if (alreadyEmitted) {
+        this.logger.log(`TipActivated event already emitted for tipId: ${tipId}. Skipping (idempotent).`);
+        return;
+      }
+
+      // Get source_ref from transaction extraInfo or generate one
+      // In a real implementation, this should come from the transaction creation
+      const sourceRef = transaction.extraInfo?.rrrSourceRef || `TIP_${tipId}`;
+
+      // Query RRR API for ledger entries using source_ref
+      // Note: We need the performer's RRR member ID to query the ledger
+      // For now, we'll skip the RRR query if we don't have the member ID
+      // In production, this should be retrieved from the performer's RRR account link
+      
+      // TODO: Get performer's RRR member ID from RRRAccountLink
+      // const performerRRRMemberId = await this.rrrAccountLinkService.getMemberIdByUserId(transaction.sellerId);
+      
+      // For now, we'll create a mock ledger response to demonstrate the structure
+      // In production, this would be: const ledgerEntries = await this.rrrApiClient.getLedger(performerRRRMemberId, { source_ref: sourceRef });
+      
+      // Since we can't query RRR without a member ID, we'll log and skip for now
+      // This is a placeholder implementation that will be completed when RRR integration is fully set up
+      this.logger.log(
+        `TipActivated event emission requires RRR ledger query for tipId: ${tipId}, sourceRef: ${sourceRef}. ` +
+        `This will be implemented when RRR account linking is complete.`
+      );
+
+      // The following code demonstrates the intended flow once RRR integration is complete:
+      /*
+      const ledgerEntries = await this.rrrApiClient.getLedger(
+        performerRRRMemberId,
+        { source_ref: sourceRef }
+      );
+
+      if (!ledgerEntries || ledgerEntries.length === 0) {
+        this.logger.warn(`No RRR ledger entries found for tipId: ${tipId}, sourceRef: ${sourceRef}`);
+        return;
+      }
+
+      // Find entries with posted_at set (SETTLED status)
+      const settledEntries = ledgerEntries.filter(entry => entry.posted_at);
+
+      if (settledEntries.length === 0) {
+        this.logger.log(`No settled RRR ledger entries found for tipId: ${tipId}. Skipping TipActivated emission.`);
+        return;
+      }
+
+      // Determine debit/credit refs based on number of entries
+      let debitRef: string | null = null;
+      let creditRef: string | null = null;
+
+      if (settledEntries.length >= 2) {
+        // If we have two entries for the same source_ref (e.g., TRANSFER_OUT + TRANSFER_IN)
+        const debitEntry = settledEntries.find(e => e.points_delta < 0);
+        const creditEntry = settledEntries.find(e => e.points_delta > 0);
+        
+        if (debitEntry) debitRef = debitEntry.entry_id;
+        if (creditEntry) creditRef = creditEntry.entry_id;
+      }
+      // If only one entry exists, both debitRef and creditRef remain null (as required)
+
+      // Use the first settled entry as the primary ledger entry
+      const primaryEntry = settledEntries[0];
+
+      const ledger: TipActivatedLedgerDto = {
+        ledgerId: primaryEntry.entry_id,
+        sourceRef: primaryEntry.source_ref,
+        debitRef,
+        creditRef,
+        status: 'SETTLED',
+        postedAt: primaryEntry.posted_at
+      };
+
+      const tipActivatedPayload: TipActivatedDto = {
+        tipId,
+        userId: transaction.sourceId.toString(),
+        performerId: transaction.sellerId.toString(),
+        conversationId: transaction.targetId?.toString(),
+        amount: transaction.totalPrice,
+        ledger,
+        createdAt: transaction.createdAt.toISOString()
+      };
+
+      // Generate unique event ID
+      const eventId = generateUuid();
+
+      // Persist event (implements idempotency)
+      const persisted = await this.tipActivatedEventLogService.persistEvent(eventId, tipActivatedPayload);
+
+      if (persisted) {
+        // Emit the event to the queue
+        await this.queueEventService.publish(
+          new QueueEvent({
+            channel: TIP_ACTIVATED_CHANNEL,
+            eventName: 'TipActivated',
+            data: tipActivatedPayload
+          })
+        );
+
+        this.logger.log(
+          `TipActivated event emitted: tipId=${tipId}, eventId=${eventId}, ledgerId=${ledger.ledgerId}`
+        );
+      }
+      */
+    } catch (e) {
+      this.logger.error(
+        `Failed to emit TipActivated event for transaction ${transaction._id}`,
+        e.stack || e
+      );
+      // Don't throw - this is a secondary concern and shouldn't block the main tip processing
+    }
   }
 }

@@ -7,10 +7,12 @@ import { UserModule } from '../user/user.module';
 import { PerformerModule } from '../performer/performer.module';
 import { PerformerAssetsModule } from '../performer-assets/performer-assets.module';
 import { SettingModule } from '../settings/setting.module';
+import { LoyaltyPointsModule } from '../loyalty-points/loyalty-points.module';
 import {
   PurchaseItemService,
   PurchasedItemSearchService,
-  PaymentTokenService
+  PaymentTokenService,
+  TipActivatedEventLogService
 } from './services';
 import {
   PaymentTokenController,
@@ -21,7 +23,7 @@ import { TokenPackageModule } from '../token-package/token-package.module';
 import { PaymentTokenListener } from './listeners';
 import { SocketModule } from '../socket/socket.module';
 import {
-  PurchasedItem, PurchasedItemSchema
+  PurchasedItem, PurchasedItemSchema, TipActivatedEventLog, TipActivatedEventLogSchema
 } from './schemas';
 import { CrowdfundingModule } from '../crowdfunding/crowdfunding.module';
 import { PaymentModule } from '../payment/payment.module';
@@ -36,6 +38,10 @@ import { PerformerScheduleModule } from '../performer-schedule/performer-schedul
       {
         name: PurchasedItem.name,
         schema: PurchasedItemSchema
+      },
+      {
+        name: TipActivatedEventLog.name,
+        schema: TipActivatedEventLogSchema
       }
     ]),
     // inject user module because we request guard from auth, need to check and fix dependencies if not needed later
@@ -52,13 +58,15 @@ import { PerformerScheduleModule } from '../performer-schedule/performer-schedul
     forwardRef(() => PaymentModule),
     forwardRef(() => StatisticModule),
     forwardRef(() => StreamModule),
-    forwardRef(() => PerformerScheduleModule)
+    forwardRef(() => PerformerScheduleModule),
+    forwardRef(() => LoyaltyPointsModule)
   ],
   providers: [
     PurchaseItemService,
     PurchasedItemSearchService,
     PaymentTokenListener,
     PaymentTokenService,
+    TipActivatedEventLogService,
     // OrderService,
     AcceptSpinWheelListener
   ],
