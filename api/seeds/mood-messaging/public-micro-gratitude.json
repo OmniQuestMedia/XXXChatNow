@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "description": "Public micro-gratitude responses for all tiers with non-repetition tracking",
+  "responses": [
+    "Thanks babe 😘",
+    "You rock 💋",
+    "Much love 😘",
+    "You're the best! 💕",
+    "Thank you so much! 🌟",
+    "Appreciate you! 💖",
+    "You're amazing! ✨",
+    "Love this! 💗",
+    "You're awesome! 🔥",
+    "So grateful! 🙏",
+    "You made my day! 😊",
+    "Thanks darling! 💝",
+    "You're so sweet! 🌸",
+    "Appreciate it! 💫",
+    "Thank you hun! 😍",
+    "You're incredible! 🌹",
+    "Thanks love! 💓",
+    "You're a star! ⭐",
+    "So kind of you! 💜",
+    "Thanks gorgeous! 😘",
+    "You're wonderful! 🦋",
+    "Thank you angel! 👼",
+    "You're a gem! 💎",
+    "Much appreciated! 🎉"
+  ],
+  "rules": {
+    "non_repetition_cycle": 5,
+    "applies_to_all_tiers": true,
+    "context": "public_micro_gratitude"
+  }
+}
