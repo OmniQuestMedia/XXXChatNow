@@ -132,19 +132,81 @@ export default function LovenseExtension({
           return;
         }
 
-        // Dispatch vibration via Cam Extension using receiveTip
-        // The receiveTip method expects token amount and sender name
-        // For now, we use this existing integration path
+        // PR7: Map canonical vibration spec to bounded synthetic tip amount
+        // and dispatch via CamExtension.receiveTip(amount, 'Lovense', cParameter)
+        
+        // Handle PATTERN type - not supported, warn and no-op
+        if (vibration.type === 'PATTERN') {
+          console.warn('[Lovense] PATTERN vibration type not supported (no-op)', { 
+            tipId: envelope.tipId 
+          });
+          return;
+        }
+
+        // Extract strength and durationSec with defaults for PRESET type
+        let strength: number;
+        let durationSec: number;
+
+        if (vibration.type === 'PRESET') {
+          // For PRESET: apply defaults if missing
+          strength = vibration.strength ?? 10;
+          durationSec = vibration.durationSec ?? 5;
+        } else if (vibration.type === 'LEVEL') {
+          // For LEVEL: use provided values (should be present)
+          strength = vibration.strength ?? 10;
+          durationSec = vibration.durationSec ?? 5;
+        } else {
+          console.error('[Lovense] Unknown vibration type', { 
+            tipId: envelope.tipId, 
+            vibrationType: vibration.type 
+          });
+          return;
+        }
+
+        // Clamp strength to [0..20]
+        const clampedStrength = Math.max(0, Math.min(20, strength));
+        
+        // Clamp durationSec to [0..30]
+        const clampedDuration = Math.max(0, Math.min(30, durationSec));
+
+        // Calculate synthetic tip amount
+        // base = 5
+        // amount = round(base + strength*10 + durationSec*2)
+        const base = 5;
+        const rawAmount = base + (clampedStrength * 10) + (clampedDuration * 2);
+        const roundedAmount = Math.round(rawAmount);
+        
+        // Clamp final amount to [1..500]
+        const syntheticTipAmount = Math.max(1, Math.min(500, roundedAmount));
+
+        // Prepare traceability parameter (cParameter)
+        const cParameter = {
+          tipId: envelope.tipId,
+          sourceRef: envelope.ledger.sourceRef,
+          vibration: {
+            type: vibration.type,
+            strength: clampedStrength,
+            durationSec: clampedDuration
+          },
+          mode: lovenseMode
+        };
+
+        // Dispatch via receiveTip with synthetic amount, 'Lovense' as username (no PII), and cParameter
         camExtension.current.receiveTip(
-          envelope.transaction.amount,
-          envelope.tipper.username
+          syntheticTipAmount,
+          'Lovense',
+          cParameter
         );
 
-        console.log('[Lovense] Vibration dispatched via EXTENSION', {
+        console.log('[Lovense] Vibration dispatched via EXTENSION (ship-hack mapping)', {
           tipId: envelope.tipId,
           vibrationType: vibration.type,
-          strength: vibration.strength,
-          durationSec: vibration.durationSec
+          originalStrength: strength,
+          originalDuration: durationSec,
+          clampedStrength,
+          clampedDuration,
+          syntheticTipAmount,
+          cParameter
         });
       } else if (lovenseMode === 'CAM_KIT') {
         console.log('[Lovense] CAM_KIT not implemented', { tipId: envelope.tipId });
