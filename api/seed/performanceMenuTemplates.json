@@ -1,0 +1,322 @@
+{
+  "menuTemplates": [
+    {
+      "name": "Quick Fun Menu",
+      "description": "Fast, interactive experiences for immediate enjoyment",
+      "queue_mode": "OFF",
+      "visibility": "public",
+      "theme": {
+        "primary_color": "#FF6B9D",
+        "secondary_color": "#C44569",
+        "card_style": "modern"
+      },
+      "items": [
+        {
+          "name": "Blow Kiss",
+          "description": "A sweet kiss just for you!",
+          "token_value": 10,
+          "bonus_loyalty_points": 5,
+          "category": "gestures",
+          "icon_url": "/icons/kiss.png",
+          "display_order": 1,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Flash",
+          "description": "A quick peek at something special",
+          "token_value": 25,
+          "bonus_loyalty_points": 15,
+          "category": "tease",
+          "icon_url": "/icons/flash.png",
+          "display_order": 2,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Dance",
+          "description": "Watch me move to your favorite beat",
+          "token_value": 50,
+          "bonus_loyalty_points": 30,
+          "category": "performance",
+          "icon_url": "/icons/dance.png",
+          "display_order": 3,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Song Request",
+          "description": "I'll sing or dance to your song choice",
+          "token_value": 75,
+          "bonus_loyalty_points": 50,
+          "category": "performance",
+          "icon_url": "/icons/music.png",
+          "display_order": 4,
+          "is_active": true,
+          "max_daily_purchases": 5,
+          "lovense_activation": null
+        },
+        {
+          "name": "Lovense Tease - Low",
+          "description": "Gentle vibration for 10 seconds",
+          "token_value": 20,
+          "bonus_loyalty_points": 10,
+          "category": "interactive",
+          "icon_url": "/icons/lovense.png",
+          "display_order": 5,
+          "is_active": true,
+          "lovense_activation": {
+            "enabled": true,
+            "device_type": "vibrator",
+            "intensity": 5,
+            "duration_ms": 10000,
+            "timing_offset": 500,
+            "pattern": "steady"
+          }
+        },
+        {
+          "name": "Lovense Tease - Medium",
+          "description": "Moderate vibration for 15 seconds",
+          "token_value": 50,
+          "bonus_loyalty_points": 30,
+          "category": "interactive",
+          "icon_url": "/icons/lovense.png",
+          "display_order": 6,
+          "is_active": true,
+          "lovense_activation": {
+            "enabled": true,
+            "device_type": "vibrator",
+            "intensity": 10,
+            "duration_ms": 15000,
+            "timing_offset": 500,
+            "pattern": "pulse"
+          }
+        },
+        {
+          "name": "Lovense Tease - High",
+          "description": "Intense vibration for 20 seconds",
+          "token_value": 100,
+          "bonus_loyalty_points": 75,
+          "category": "interactive",
+          "icon_url": "/icons/lovense.png",
+          "display_order": 7,
+          "is_active": true,
+          "lovense_activation": {
+            "enabled": true,
+            "device_type": "vibrator",
+            "intensity": 18,
+            "duration_ms": 20000,
+            "timing_offset": 500,
+            "pattern": "wave"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Private Energy Menu",
+      "description": "Premium experiences with queue-based delivery",
+      "queue_mode": "ON",
+      "visibility": "public",
+      "theme": {
+        "primary_color": "#A29BFE",
+        "secondary_color": "#6C5CE7",
+        "card_style": "premium"
+      },
+      "items": [
+        {
+          "name": "Custom Photo",
+          "description": "A personalized photo just for you, delivered within 24 hours",
+          "token_value": 200,
+          "bonus_loyalty_points": 150,
+          "category": "content",
+          "icon_url": "/icons/photo.png",
+          "display_order": 1,
+          "is_active": true,
+          "max_daily_purchases": 3,
+          "lovense_activation": null
+        },
+        {
+          "name": "Custom Video - Short",
+          "description": "30-60 second personalized video, delivered within 48 hours",
+          "token_value": 500,
+          "bonus_loyalty_points": 400,
+          "category": "content",
+          "icon_url": "/icons/video.png",
+          "display_order": 2,
+          "is_active": true,
+          "max_daily_purchases": 2,
+          "lovense_activation": null
+        },
+        {
+          "name": "Custom Video - Long",
+          "description": "3-5 minute personalized video, delivered within 72 hours",
+          "token_value": 1000,
+          "bonus_loyalty_points": 900,
+          "category": "content",
+          "icon_url": "/icons/video-long.png",
+          "display_order": 3,
+          "is_active": true,
+          "max_daily_purchases": 1,
+          "lovense_activation": null
+        },
+        {
+          "name": "Voice Message",
+          "description": "Personalized audio message, delivered within 24 hours",
+          "token_value": 150,
+          "bonus_loyalty_points": 100,
+          "category": "content",
+          "icon_url": "/icons/voice.png",
+          "display_order": 4,
+          "is_active": true,
+          "max_daily_purchases": 5,
+          "lovense_activation": null
+        },
+        {
+          "name": "Rate My Photo",
+          "description": "Send me your photo and I'll give honest feedback",
+          "token_value": 100,
+          "bonus_loyalty_points": 75,
+          "category": "interactive",
+          "icon_url": "/icons/rate.png",
+          "display_order": 5,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Exclusive Snapchat Access - 1 Day",
+          "description": "24 hours of exclusive behind-the-scenes content",
+          "token_value": 300,
+          "bonus_loyalty_points": 250,
+          "category": "access",
+          "icon_url": "/icons/snapchat.png",
+          "display_order": 6,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Exclusive Snapchat Access - 1 Week",
+          "description": "7 days of exclusive behind-the-scenes content",
+          "token_value": 1500,
+          "bonus_loyalty_points": 1400,
+          "category": "access",
+          "icon_url": "/icons/snapchat.png",
+          "display_order": 7,
+          "is_active": true,
+          "lovense_activation": null
+        }
+      ]
+    },
+    {
+      "name": "VIP Experience Menu",
+      "description": "Ultra-premium experiences for subscribers only",
+      "queue_mode": "ON",
+      "visibility": "subscribers_only",
+      "theme": {
+        "primary_color": "#FDCB6E",
+        "secondary_color": "#E17055",
+        "card_style": "luxury"
+      },
+      "items": [
+        {
+          "name": "Private Video Call - 15 min",
+          "description": "One-on-one video call, scheduled at your convenience",
+          "token_value": 2000,
+          "bonus_loyalty_points": 2000,
+          "category": "private",
+          "icon_url": "/icons/video-call.png",
+          "display_order": 1,
+          "is_active": true,
+          "max_daily_purchases": 1,
+          "lovense_activation": null
+        },
+        {
+          "name": "Private Video Call - 30 min",
+          "description": "Extended one-on-one video call, scheduled at your convenience",
+          "token_value": 3500,
+          "bonus_loyalty_points": 3800,
+          "category": "private",
+          "icon_url": "/icons/video-call.png",
+          "display_order": 2,
+          "is_active": true,
+          "max_daily_purchases": 1,
+          "lovense_activation": null
+        },
+        {
+          "name": "Girlfriend Experience - 1 Day",
+          "description": "24 hours of personalized messaging and content",
+          "token_value": 5000,
+          "bonus_loyalty_points": 5500,
+          "category": "experience",
+          "icon_url": "/icons/gfe.png",
+          "display_order": 3,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Custom Fantasy Roleplay Video",
+          "description": "Professional quality custom video based on your fantasy, delivered within 1 week",
+          "token_value": 3000,
+          "bonus_loyalty_points": 3200,
+          "category": "content",
+          "icon_url": "/icons/roleplay.png",
+          "display_order": 4,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Sexting Session - 30 min",
+          "description": "Private, intimate text conversation with photos",
+          "token_value": 1500,
+          "bonus_loyalty_points": 1600,
+          "category": "interactive",
+          "icon_url": "/icons/sexting.png",
+          "display_order": 5,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Exclusive Content Package",
+          "description": "Bundle of 10 exclusive photos + 3 exclusive videos",
+          "token_value": 2500,
+          "bonus_loyalty_points": 2700,
+          "category": "content",
+          "icon_url": "/icons/package.png",
+          "display_order": 6,
+          "is_active": true,
+          "lovense_activation": null
+        },
+        {
+          "name": "Control My Lovense - 5 minutes",
+          "description": "Full control of my Lovense device for 5 minutes during show",
+          "token_value": 1000,
+          "bonus_loyalty_points": 1100,
+          "category": "interactive",
+          "icon_url": "/icons/lovense-control.png",
+          "display_order": 7,
+          "is_active": true,
+          "lovense_activation": {
+            "enabled": true,
+            "device_type": "all",
+            "intensity": 20,
+            "duration_ms": 300000,
+            "timing_offset": 1000,
+            "pattern": "custom"
+          }
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "created_at": "2026-01-02",
+    "description": "Performance menu templates for XXXChatNow platform",
+    "notes": [
+      "Token values are examples and should be adjusted based on market research",
+      "Loyalty point bonuses are typically 50-100% of token value for basic items",
+      "Premium items may offer higher loyalty point bonuses",
+      "Queue mode should match model availability and content delivery capability",
+      "All prices are server-side validated and cannot be modified by clients",
+      "Lovense integration requires proper device configuration and model consent"
+    ]
+  }
+}
