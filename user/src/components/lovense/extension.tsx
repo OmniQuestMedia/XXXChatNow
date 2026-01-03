@@ -35,6 +35,9 @@ export default function LovenseExtension({
   const camExtension = useRef<any>(null);
   const processedTipIds = useRef<Set<string>>(new Set());
 
+  const performer = useSelector(
+    (state: any) => state.performer.current
+  );
   const activeConversation = useSelector(
     (state: any) => state.streamMessage.activeConversation
   );
@@ -48,7 +51,7 @@ export default function LovenseExtension({
       if (toys.length) {
         camExtension.current.receiveTip(token, senderInfo?.username || '');
       } else {
-        message.error('Please connetct toy to Lovense Extension');
+        message.error('Please connect toy to Lovense Extension');
       }
     }
   };
@@ -65,12 +68,22 @@ export default function LovenseExtension({
       processedTipIds.current.add(envelope.tipId);
 
       // Check if this model is a target for MODEL_TOY dispatch
+      // Compare against the current performer's _id
+      const currentModelId = performer?._id;
+      if (!currentModelId) {
+        console.error('[Lovense] Current performer ID not available', { tipId: envelope.tipId });
+        return;
+      }
+
       const modelTarget = envelope.routing.targets.find(
-        (target) => target.type === 'MODEL_TOY' && target.modelId === envelope.model.modelId
+        (target) => target.type === 'MODEL_TOY' && target.modelId === currentModelId
       );
 
       if (!modelTarget) {
-        console.log('[Lovense] No MODEL_TOY target for this model', { tipId: envelope.tipId });
+        console.log('[Lovense] No MODEL_TOY target for this model', { 
+          tipId: envelope.tipId,
+          currentModelId
+        });
         return;
       }
 
