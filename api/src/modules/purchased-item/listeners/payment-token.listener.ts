@@ -354,7 +354,7 @@ export class PaymentTokenListener {
         // Settlement Details
         settlement: {
           status: SETTLEMENT_STATUS.SETTLED,
-          settledAt: new Date() // Using current time as settlement time
+          settledAt: transaction.updatedAt || new Date() // Use transaction update time or current time
         },
         
         // Context & Metadata
