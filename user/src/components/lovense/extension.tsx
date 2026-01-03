@@ -10,12 +10,17 @@ import {
   useState
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ToyJson } from 'src/interfaces';
+import { ToyJson, LovenseActivateEnvelope } from 'src/interfaces';
 import { SocketContext } from 'src/socket';
 
 const EVENT = {
-  TIPPED: 'tipped'
+  TIPPED: 'tipped',
+  LOVENSE_ACTIVATE: 'lovense.activate'
 };
+
+// Maximum number of tipIds to keep in memory for idempotency
+// After this limit, oldest entries will be removed (FIFO)
+const MAX_PROCESSED_TIP_IDS = 1000;
 
 interface LovenseExtensionProps {
   model: string;
@@ -32,7 +37,11 @@ export default function LovenseExtension({
   const { getSocket } = useContext(SocketContext);
   const toyJsons = useRef<ToyJson[]>([]);
   const camExtension = useRef<any>(null);
+  const processedTipIds = useRef<Set<string>>(new Set());
 
+  const performer = useSelector(
+    (state: any) => state.performer.current
+  );
   const activeConversation = useSelector(
     (state: any) => state.streamMessage.activeConversation
   );
@@ -46,8 +55,110 @@ export default function LovenseExtension({
       if (toys.length) {
         camExtension.current.receiveTip(token, senderInfo?.username || '');
       } else {
-        message.error('Please connetct toy to Lovense Extension');
+        message.error('Please connect toy to Lovense Extension');
       }
+    }
+  };
+
+  const handleLovenseActivate = async (envelope: LovenseActivateEnvelope) => {
+    try {
+      // Enforce idempotency - ignore duplicate tipIds
+      if (processedTipIds.current.has(envelope.tipId)) {
+        console.log('[Lovense] Duplicate tipId ignored (idempotency)', { tipId: envelope.tipId });
+        return;
+      }
+
+      // Mark tipId as processed
+      processedTipIds.current.add(envelope.tipId);
+
+      // Prevent unbounded memory growth - keep only the most recent tipIds
+      if (processedTipIds.current.size > MAX_PROCESSED_TIP_IDS) {
+        // Convert to array, remove oldest (first) entry, recreate Set
+        const entries = Array.from(processedTipIds.current);
+        entries.shift(); // Remove oldest
+        processedTipIds.current = new Set(entries);
+      }
+
+      // Check if this model is a target for MODEL_TOY dispatch
+      // Compare against the current performer's _id
+      const currentModelId = performer?._id;
+      if (!currentModelId) {
+        console.error('[Lovense] Current performer ID not available', { tipId: envelope.tipId });
+        return;
+      }
+
+      const modelTarget = envelope.routing.targets.find(
+        (target) => target.type === 'MODEL_TOY' && target.modelId === currentModelId
+      );
+
+      if (!modelTarget) {
+        console.log('[Lovense] No MODEL_TOY target for this model', { 
+          tipId: envelope.tipId,
+          currentModelId
+        });
+        return;
+      }
+
+      // Check if vibration spec exists
+      if (!envelope.item.vibration) {
+        console.log('[Lovense] No vibration spec in envelope', { tipId: envelope.tipId });
+        return;
+      }
+
+      const { vibration } = envelope.item;
+      const { lovenseMode } = envelope.model;
+
+      // Dispatch based on lovenseMode
+      if (lovenseMode === 'EXTENSION') {
+        if (!camExtension.current) {
+          console.error('[Lovense] Cam Extension not initialized', { tipId: envelope.tipId });
+          return;
+        }
+
+        // Check if toys are connected (wrapped in try-catch for safety)
+        let toys: ToyJson[];
+        try {
+          toys = (await camExtension.current.getToyStatus()) as ToyJson[];
+        } catch (toyStatusError) {
+          console.error('[Lovense] Failed to get toy status', { 
+            tipId: envelope.tipId,
+            error: toyStatusError instanceof Error ? toyStatusError.message : 'Unknown error'
+          });
+          return;
+        }
+
+        if (!toys || toys.length === 0) {
+          console.error('[Lovense] No toys connected', { tipId: envelope.tipId });
+          return;
+        }
+
+        // Dispatch vibration via Cam Extension using receiveTip
+        // The receiveTip method expects token amount and sender name
+        // For now, we use this existing integration path
+        camExtension.current.receiveTip(
+          envelope.transaction.amount,
+          envelope.tipper.username
+        );
+
+        console.log('[Lovense] Vibration dispatched via EXTENSION', {
+          tipId: envelope.tipId,
+          vibrationType: vibration.type,
+          strength: vibration.strength,
+          durationSec: vibration.durationSec
+        });
+      } else if (lovenseMode === 'CAM_KIT') {
+        console.log('[Lovense] CAM_KIT not implemented', { tipId: envelope.tipId });
+      } else {
+        console.error('[Lovense] Unknown lovenseMode', { 
+          tipId: envelope.tipId, 
+          lovenseMode 
+        });
+      }
+    } catch (error) {
+      console.error('[Lovense] Failed to dispatch vibration', { 
+        tipId: envelope.tipId,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
     }
   };
 
@@ -91,11 +202,13 @@ export default function LovenseExtension({
       const socket = getSocket();
       if (socket.connected) {
         socket && socket.on(EVENT.TIPPED, handleTip);
+        socket && socket.on(EVENT.LOVENSE_ACTIVATE, handleLovenseActivate);
         // stream_message_created_conversation
         socket && socket.on('stream_message_created_conversation', onMessage);
       } else {
         socket?.once('connect', () => {
           socket && socket.on(EVENT.TIPPED, handleTip);
+          socket && socket.on(EVENT.LOVENSE_ACTIVATE, handleLovenseActivate);
           socket && socket.on('stream_message_created_conversation', onMessage);
         });
       }
@@ -151,6 +264,7 @@ export default function LovenseExtension({
     return () => {
       const socket = getSocket();
       socket && socket.off(EVENT.TIPPED, handleTip);
+      socket && socket.off(EVENT.LOVENSE_ACTIVATE, handleLovenseActivate);
     };
   }, []);
 

@@ -102,3 +102,64 @@ export interface LovenseSetting {
 
   updatedAt?: Date;
 }
+
+// Lovense Activate Envelope - matches canonical payload from backend
+export interface LovenseActivateEnvelope {
+  eventName: 'TipActivated';
+  eventId: string;
+  tipId: string;
+  timestamp: string;
+  ledger: {
+    ledgerId: string;
+    sourceRef: string;
+    debitRef: string;
+    creditRef: string;
+    status: 'SETTLED';
+  };
+  room: {
+    roomId: string;
+    broadcastId: string;
+  };
+  model: {
+    modelId: string;
+    modelDisplayName: string;
+    lovenseMode: 'EXTENSION' | 'CAM_KIT';
+    viewerSyncMode: 'OFF' | 'SHARED_MOMENT' | 'VIP_ROOM_SYNC';
+  };
+  tipper: {
+    userId: string;
+    username: string;
+    membershipTier: 'FREE' | 'VIP_SILVER' | 'VIP_GOLD' | 'VIP_PLATINUM' | 'VIP_DIAMOND';
+    isVip: boolean;
+  };
+  transaction: {
+    currency: 'TOKENS';
+    amount: number;
+  };
+  item: {
+    itemType: 'TIP' | 'MENU_ITEM';
+    itemId: string;
+    itemName: string;
+    descriptionPublic: string;
+    vibration?: {
+      type: 'LEVEL' | 'PRESET' | 'PATTERN';
+      strength?: number;
+      durationSec?: number;
+      presetName?: string;
+      pattern?: any;
+    };
+    bonusPoints: number;
+  };
+  viewerSync: {
+    tipperToyConnected: boolean;
+    tipperReactToMyTips: boolean;
+    tipperFeelAllTips: boolean;
+  };
+  routing: {
+    targets: Array<
+      | { type: 'MODEL_TOY'; modelId: string }
+      | { type: 'TIPPER_TOY'; userId: string }
+      | { type: 'VIP_VIEWER_TOY'; userId: string }
+    >;
+  };
+}
