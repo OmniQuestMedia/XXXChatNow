@@ -7,7 +7,7 @@ import {
 } from 'src/modules/performer/services';
 import { EVENT, ROLE } from 'src/kernel/constants';
 import { ObjectId } from 'mongodb';
-import { Model, Types, ClientSession } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { SocketUserService } from 'src/modules/socket/services/socket-user.service';
 import { SettingService } from 'src/modules/settings/services';
 import { CONVERSATION_TYPE, MESSAGE_TYPE } from 'src/modules/message/constants';
@@ -62,10 +62,7 @@ export class PaymentTokenListener {
   async handler(event: QueueEvent) {
     const { eventName } = event;
     const transaction: PurchasedItemDto = event.data;
-    const {
-      sourceId, source, status, totalPrice
-    } = transaction;
-    const performerId = transaction.sellerId;
+    const { status } = transaction;
     
     try {
       if (
@@ -383,8 +380,12 @@ export class PaymentTokenListener {
       commission = defaultPerformerCommission;
     }
 
-    const grossPrice = performer.studioId ? transaction.totalPrice * (studioCommision / 100) : transaction.totalPrice;
-    const netPrice = grossPrice * (commission / 100);
+    const netPrice = performer.studioId 
+      ? (transaction.totalPrice * (studioCommision / 100)) * (commission / 100)
+      : transaction.totalPrice * (commission / 100);
+    const grossPrice = performer.studioId 
+      ? transaction.totalPrice * (studioCommision / 100) 
+      : transaction.totalPrice;
 
     return { commission, studioCommision, grossPrice, netPrice };
   }
