@@ -76,6 +76,11 @@ export class PurchasedItem {
   settlementStatus: string;
 
   @Prop({
+    type: String
+  })
+  idempotencyKey: string;
+
+  @Prop({
     type: MongooseSchema.Types.Mixed
   })
   extraInfo: Record<string, any>;
@@ -101,4 +106,12 @@ PurchasedItemSchema.index({
   sourceId: 1,
   targetId: 1,
   status: 1
+});
+
+PurchasedItemSchema.index({
+  sourceId: 1,
+  idempotencyKey: 1
+}, {
+  unique: true,
+  sparse: true
 });

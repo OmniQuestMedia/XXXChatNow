@@ -100,6 +100,7 @@ export class TransactionEarningListener {
             commission = performerCommission?.privateCallCommission || performerCommission?.memberCommission || defaultPerformerCommission;
             break;
           case PURCHASE_ITEM_TYPE.TIP:
+          case PURCHASE_ITEM_TYPE.TIP_GRID_ITEM:
             studioCommision = studio.tipCommission || defaultStudioCommission;
             commission = performerCommission?.tipCommission || performerCommission?.memberCommission || defaultPerformerCommission;
             break;
@@ -151,6 +152,7 @@ export class TransactionEarningListener {
             commission = performerCommission.privateCallCommission;
             break;
           case PURCHASE_ITEM_TYPE.TIP:
+          case PURCHASE_ITEM_TYPE.TIP_GRID_ITEM:
             commission = performerCommission.tipCommission;
             break;
           case PURCHASE_ITEM_TYPE.PRODUCT:

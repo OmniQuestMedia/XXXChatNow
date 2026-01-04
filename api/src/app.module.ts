@@ -49,6 +49,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
 import { MoodMessagingModule } from './modules/mood-messaging/mood-messaging.module';
 import { PerformanceMenuModule } from './modules/performance-menu/performance-menu.module';
 import { MoodMessageModule } from './modules/mood-message/mood-message.module';
+import { TipGridModule } from './modules/tip-grid/tip-grid.module';
 
 @Module({
   imports: [
@@ -99,7 +100,8 @@ import { MoodMessageModule } from './modules/mood-message/mood-message.module';
     WalletModule,
     MoodMessagingModule,
     PerformanceMenuModule,
-    MoodMessageModule
+    MoodMessageModule,
+    TipGridModule
   ],
   controllers: [AppController],
   providers: [AppService]
