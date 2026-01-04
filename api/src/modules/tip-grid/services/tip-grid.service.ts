@@ -148,7 +148,7 @@ export class TipGridService {
     const purchasedItemData: any = {
       source: ROLE.USER,
       sourceId: userId,
-      target: PURCHASE_ITEM_TARGET_TYPE.TIP_GRID_ITEM,
+      target: PURCHASE_ITEM_TARGET_TYPE.TIP,
       targetId: conversationId || performer._id,
       sellerId: performerId,
       type: PURCHASE_ITEM_TYPE.TIP_GRID_ITEM,
@@ -158,7 +158,7 @@ export class TipGridService {
       quantity: 1,
       totalPrice: tipMenuItem.price,
       originalPrice: tipMenuItem.price,
-      status: PURCHASE_ITEM_STATUS.SUCCESS,
+      status: PURCHASE_ITEM_STATUS.PENDING,
       extraInfo: {
         tipMenuItemId: (tipMenuItem as any)._id,
         conversationId: conversationId || null
