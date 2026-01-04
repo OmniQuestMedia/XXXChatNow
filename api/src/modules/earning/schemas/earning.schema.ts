@@ -64,6 +64,12 @@ export class Earning {
   targetId: ObjectId | MongooseObjectId | MongooseSchema.Types.ObjectId;
 
   @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    index: true
+  })
+  purchasedItemId: ObjectId | MongooseObjectId | MongooseSchema.Types.ObjectId;
+
+  @Prop({
     index: true
   })
   type: string;
@@ -139,3 +145,6 @@ export class Earning {
 export type EarningDocument = HydratedDocument<Earning>;
 
 export const EarningSchema = SchemaFactory.createForClass(Earning);
+
+// Unique sparse index to ensure one earning per purchased item
+EarningSchema.index({ purchasedItemId: 1 }, { unique: true, sparse: true });
