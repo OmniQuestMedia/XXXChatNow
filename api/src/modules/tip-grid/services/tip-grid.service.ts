@@ -167,7 +167,7 @@ export class TipGridService implements OnModuleInit {
   // IMMEDIATE mode - existing Phase 2 behavior
   private async purchaseTipGridItemImmediate(
     userId: string | ObjectId,
-    tipMenuItem: TipMenuItem,
+    tipMenuItem: any, // TipMenuItem with _id from Mongoose
     performerId: string | ObjectId,
     conversationId: string | undefined,
     idempotencyKey: string | undefined,
@@ -177,7 +177,7 @@ export class TipGridService implements OnModuleInit {
     const purchasedItemData: any = {
       source: ROLE.USER,
       sourceId: userId,
-      target: PURCHASE_ITEM_TARGET_TYPE.TIP,
+      target: PURCHASE_ITEM_TARGET_TYPE.TIP_GRID_ITEM,
       targetId: conversationId || performer._id,
       sellerId: performerId,
       type: PURCHASE_ITEM_TYPE.TIP_GRID_ITEM,
@@ -189,7 +189,7 @@ export class TipGridService implements OnModuleInit {
       originalPrice: tipMenuItem.price,
       status: PURCHASE_ITEM_STATUS.SUCCESS,
       extraInfo: {
-        tipMenuItemId: (tipMenuItem as any)._id,
+        tipMenuItemId: tipMenuItem._id,
         conversationId: conversationId || null
       },
       createdAt: new Date(),
@@ -230,7 +230,7 @@ export class TipGridService implements OnModuleInit {
   // QUEUED mode - new Phase 7 behavior
   private async purchaseTipGridItemQueued(
     userId: string | ObjectId,
-    tipMenuItem: TipMenuItem,
+    tipMenuItem: any, // TipMenuItem with _id from Mongoose
     performerId: string | ObjectId,
     conversationId: string | undefined,
     idempotencyKey: string | undefined,
@@ -240,7 +240,7 @@ export class TipGridService implements OnModuleInit {
     const purchasedItemData: any = {
       source: ROLE.USER,
       sourceId: userId,
-      target: PURCHASE_ITEM_TARGET_TYPE.TIP,
+      target: PURCHASE_ITEM_TARGET_TYPE.TIP_GRID_ITEM,
       targetId: conversationId || performer._id,
       sellerId: performerId,
       type: PURCHASE_ITEM_TYPE.TIP_GRID_ITEM,
@@ -252,8 +252,8 @@ export class TipGridService implements OnModuleInit {
       originalPrice: tipMenuItem.price,
       status: PURCHASE_ITEM_STATUS.PENDING,
       extraInfo: {
-        tipMenuItemId: (tipMenuItem as any)._id,
-        tipMenuId: (tipMenuItem as any).tipMenuId,
+        tipMenuItemId: tipMenuItem._id,
+        tipMenuId: tipMenuItem.tipMenuId,
         conversationId: conversationId || null,
         executionMode: 'QUEUED'
       },
@@ -275,8 +275,8 @@ export class TipGridService implements OnModuleInit {
         purchasedItemId: purchasedItem._id.toString(),
         performerId: performerId.toString(),
         userId: userId.toString(),
-        tipMenuId: (tipMenuItem as any).tipMenuId.toString(),
-        tipGridItemId: (tipMenuItem as any)._id.toString()
+        tipMenuId: tipMenuItem.tipMenuId.toString(),
+        tipGridItemId: tipMenuItem._id.toString()
       };
 
       const queueResponse = await this.performanceQueueService.submitRequest(
