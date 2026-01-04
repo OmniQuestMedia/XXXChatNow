@@ -30,6 +30,7 @@ import { StatisticModule } from '../statistic/statistic.module';
 import { StreamModule } from '../stream/stream.module';
 import { PerformerScheduleModule } from '../performer-schedule/performer-schedule.module';
 import { PerformanceQueueModule } from '../performance-queue/performance-queue.module';
+import { MoodMessagingModule } from '../mood-messaging/mood-messaging.module';
 import { User, UserSchema } from '../user/schemas/user.schema';
 import { Performer, PerformerSchema } from '../performer/schemas/performer.schema';
 import { Earning, EarningSchema } from '../earning/schemas/earning.schema';
@@ -69,7 +70,8 @@ import { Earning, EarningSchema } from '../earning/schemas/earning.schema';
     forwardRef(() => StatisticModule),
     forwardRef(() => StreamModule),
     forwardRef(() => PerformerScheduleModule),
-    forwardRef(() => PerformanceQueueModule)
+    forwardRef(() => PerformanceQueueModule),
+    MoodMessagingModule
   ],
   providers: [
     PurchaseItemService,
