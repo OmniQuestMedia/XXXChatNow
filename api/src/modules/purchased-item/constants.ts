@@ -10,7 +10,8 @@ export const PURCHASE_ITEM_TYPE = {
   SPIN_WHEEL: 'spin_wheel',
   FEATURED_CREATOR: 'featured_creator',
   PEEK_IN: 'peek_in',
-  EVENT_PASS: 'event_pass'
+  EVENT_PASS: 'event_pass',
+  TIP_GRID_ITEM: 'tip_grid_item'
 
 };
 
@@ -48,7 +49,8 @@ export const PURCHASE_ITEM_TARGET_TYPE = {
   CONTRIBUTE: 'contribute',
   SPIN_WHEEL: 'spin_wheel',
   FEATURED_CREATOR: 'featured_creator',
-  EVENT_PASS: 'event_pass'
+  EVENT_PASS: 'event_pass',
+  TIP_GRID_ITEM: 'tip_grid_item'
 
 };
 

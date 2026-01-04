@@ -30,6 +30,9 @@ import { StatisticModule } from '../statistic/statistic.module';
 import { StreamModule } from '../stream/stream.module';
 import { PerformerScheduleModule } from '../performer-schedule/performer-schedule.module';
 import { PerformanceQueueModule } from '../performance-queue/performance-queue.module';
+import { User, UserSchema } from '../user/schemas/user.schema';
+import { Performer, PerformerSchema } from '../performer/schemas/performer.schema';
+import { Earning, EarningSchema } from '../earning/schemas/earning.schema';
 
 @Module({
   imports: [
@@ -37,6 +40,18 @@ import { PerformanceQueueModule } from '../performance-queue/performance-queue.m
       {
         name: PurchasedItem.name,
         schema: PurchasedItemSchema
+      },
+      {
+        name: User.name,
+        schema: UserSchema
+      },
+      {
+        name: Performer.name,
+        schema: PerformerSchema
+      },
+      {
+        name: Earning.name,
+        schema: EarningSchema
       }
     ]),
     // inject user module because we request guard from auth, need to check and fix dependencies if not needed later
