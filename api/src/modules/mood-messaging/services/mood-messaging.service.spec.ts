@@ -255,8 +255,15 @@ describe('MoodMessagingService', () => {
 
   describe('Graceful Degradation', () => {
     it('should handle null performerId gracefully', async () => {
+      // Create a mock ObjectId for testing null scenario
+      const nullPerformerId = new Types.ObjectId('000000000000000000000000');
+      
+      jest.spyOn(moodStateModel, 'findOne').mockReturnValue({
+        lean: jest.fn().mockRejectedValue(new Error('Invalid performer ID'))
+      } as any);
+
       const result = await service.renderTemplate(
-        null as any,
+        nullPerformerId,
         TemplateType.TIP_THANK_YOU,
         TierLevel.FREE,
         { userName: 'TestUser', amount: 50 }

@@ -753,13 +753,19 @@ export class PaymentTokenListener {
     };
 
     // Check if user has a tier property
-    if (user.tier && tierMapping[user.tier.toLowerCase()]) {
-      return tierMapping[user.tier.toLowerCase()];
+    if (user.tier) {
+      const tierLower = user.tier.toLowerCase();
+      if (tierMapping[tierLower]) {
+        return tierMapping[tierLower];
+      }
     }
 
     // Check if user has subscription level
-    if (user.subscriptionLevel && tierMapping[user.subscriptionLevel.toLowerCase()]) {
-      return tierMapping[user.subscriptionLevel.toLowerCase()];
+    if (user.subscriptionLevel) {
+      const subscriptionLevelLower = user.subscriptionLevel.toLowerCase();
+      if (tierMapping[subscriptionLevelLower]) {
+        return tierMapping[subscriptionLevelLower];
+      }
     }
 
     // Default to free tier
