@@ -213,7 +213,7 @@ export class PaymentTokenListener {
         // Update user rank
         await this.userService.userRank(performerId, purchasedItem.totalPrice, purchasedItem.sourceId);
 
-        // 6. Create Earning record
+        // 6. Create Earning record with purchasedItemId for ledger integrity
         const earningType = purchasedItem.type === PURCHASE_ITEM_TYPE.TIP_GRID_ITEM 
           ? 'tip_grid_item' 
           : purchasedItem.type;
@@ -229,6 +229,7 @@ export class PaymentTokenListener {
           performerId: purchasedItem.sellerId,
           userId: purchasedItem.sourceId,
           transactionTokenId: purchasedItem._id,
+          purchasedItemId: purchasedItem._id,
           type: earningType,
           createdAt: purchasedItem.createdAt,
           transactionStatus: purchasedItem.status,
@@ -243,7 +244,22 @@ export class PaymentTokenListener {
           } : undefined
         };
 
-        await this.EarningModel.create([earningData], { session });
+        // Phase 12: Handle duplicate key errors for idempotency
+        try {
+          await this.EarningModel.create([earningData], { session });
+        } catch (earningError: any) {
+          // If duplicate key error on purchasedItemId, treat as already created
+          if (earningError.code === 11000 && earningError.message?.includes('purchasedItemId')) {
+            this.logger.log('Earning already exists for this PurchasedItem, continuing settlement', {
+              context: 'PaymentTokenListener',
+              transactionId: transaction._id,
+              purchasedItemId: purchasedItem._id
+            });
+          } else {
+            // Re-throw other errors
+            throw earningError;
+          }
+        }
 
         // 7. Mark PurchasedItem as settled
         await this.PurchasedItemModel.updateOne(
