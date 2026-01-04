@@ -10,8 +10,7 @@ import {
   HttpCode,
   HttpStatus
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { RoleGuard } from 'src/modules/auth/guards';
+import { AuthGuard, RoleGuard } from 'src/modules/auth/guards';
 import { CurrentUser, Roles } from 'src/modules/auth/decorators';
 import { UserDto } from 'src/modules/user/dtos';
 import { TipGridService } from '../services';
@@ -30,7 +29,7 @@ export class TipGridController {
   // Performer endpoints - manage their own tip menu
   @Post('menu')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('performer')
   async createMyTipMenu(
     @CurrentUser() currentUser: UserDto,
@@ -45,7 +44,7 @@ export class TipGridController {
 
   @Get('menu/me')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('performer')
   async getMyTipMenu(@CurrentUser() currentUser: UserDto) {
     const tipMenu = await this.tipGridService.getTipMenuByPerformerId(currentUser._id);
@@ -57,7 +56,7 @@ export class TipGridController {
 
   @Put('menu')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('performer')
   async updateMyTipMenu(
     @CurrentUser() currentUser: UserDto,
@@ -72,7 +71,7 @@ export class TipGridController {
 
   @Delete('menu')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('performer')
   async deleteMyTipMenu(@CurrentUser() currentUser: UserDto) {
     await this.tipGridService.deleteTipMenu(currentUser._id);
@@ -85,7 +84,7 @@ export class TipGridController {
   // TipMenuItem endpoints
   @Post('items')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('performer')
   async createTipMenuItem(
     @CurrentUser() currentUser: UserDto,
@@ -100,7 +99,7 @@ export class TipGridController {
 
   @Get('items/me')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('performer')
   async getMyTipMenuItems(@CurrentUser() currentUser: UserDto) {
     const items = await this.tipGridService.getTipMenuItems(currentUser._id);
@@ -112,7 +111,7 @@ export class TipGridController {
 
   @Put('items/:id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('performer')
   async updateTipMenuItem(
     @Param('id') id: string,
@@ -127,7 +126,7 @@ export class TipGridController {
 
   @Delete('items/:id')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('performer')
   async deleteTipMenuItem(@Param('id') id: string) {
     await this.tipGridService.deleteTipMenuItem(id);
@@ -161,7 +160,7 @@ export class TipGridController {
   // Purchase endpoint - users can purchase tip grid items
   @Post('purchase')
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard('jwt'), RoleGuard)
+  @UseGuards(AuthGuard, RoleGuard)
   @Roles('user')
   async purchaseTipGridItem(
     @CurrentUser() currentUser: UserDto,

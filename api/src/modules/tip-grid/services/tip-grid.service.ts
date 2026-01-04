@@ -80,7 +80,7 @@ export class TipGridService {
     const tipMenu = await this.getTipMenuByPerformerId(performerId);
 
     const tipMenuItem = await this.TipMenuItemModel.create({
-      tipMenuId: tipMenu._id,
+      tipMenuId: (tipMenu as any)._id,
       performerId,
       ...data,
       createdAt: new Date(),
@@ -160,7 +160,7 @@ export class TipGridService {
       originalPrice: tipMenuItem.price,
       status: PURCHASE_ITEM_STATUS.SUCCESS,
       extraInfo: {
-        tipMenuItemId: tipMenuItem._id,
+        tipMenuItemId: (tipMenuItem as any)._id,
         conversationId: conversationId || null
       },
       createdAt: new Date(),
