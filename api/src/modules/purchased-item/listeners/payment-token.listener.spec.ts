@@ -12,6 +12,7 @@ import { StudioService } from 'src/modules/studio/services';
 import { ConversationService } from 'src/modules/message/services';
 import { DBLoggerService } from 'src/modules/logger';
 import { PerformanceQueueService } from 'src/modules/performance-queue/services';
+import { MoodMessagingService } from 'src/modules/mood-messaging/services';
 import { PaymentTokenListener } from './payment-token.listener';
 import {
   PURCHASE_ITEM_STATUS,
@@ -129,6 +130,13 @@ describe('PaymentTokenListener - TipActivated Event', () => {
               requestId: 'test-request-id',
               status: 'pending'
             })
+          }
+        },
+        {
+          provide: MoodMessagingService,
+          useValue: {
+            getMoodState: jest.fn().mockResolvedValue('neutral'),
+            renderTemplate: jest.fn().mockResolvedValue('Thank you for the tip!')
           }
         }
       ]
@@ -453,6 +461,117 @@ describe('PaymentTokenListener - TipActivated Event', () => {
       // Should only emit once for SETTLED status (from other tests)
       // These calls should be skipped
       expect(logger.log).toHaveBeenCalledTimes(statuses.length);
+    });
+  });
+
+  describe('TIP_GRID_ITEM Mood Messaging - Phase 6', () => {
+    let moodMessagingService: any;
+
+    beforeEach(() => {
+      // Get reference to moodMessagingService for mocking
+      moodMessagingService = {
+        renderTemplate: jest.fn().mockResolvedValue('Thank you TestUser for the 50 token tip! 😊')
+      };
+      
+      // Replace the service in the listener
+      (listener as any).moodMessagingService = moodMessagingService;
+    });
+
+    it('should use mood messaging service for TIP_GRID_ITEM transactions', async () => {
+      const tipGridTransaction = {
+        ...mockTransaction,
+        type: PURCHASE_ITEM_TYPE.TIP_GRID_ITEM,
+        totalPrice: 50
+      };
+
+      await (listener as any).notify(tipGridTransaction, 40);
+
+      expect(moodMessagingService.renderTemplate).toHaveBeenCalledWith(
+        mockPerformer._id,
+        'tip_thank_you',
+        expect.any(String), // tier level
+        expect.objectContaining({
+          userName: mockUser.username,
+          amount: 50
+        })
+      );
+    });
+
+    it('should fall back to generic message if mood service fails', async () => {
+      moodMessagingService.renderTemplate.mockRejectedValue(new Error('Service unavailable'));
+
+      const tipGridTransaction = {
+        ...mockTransaction,
+        type: PURCHASE_ITEM_TYPE.TIP_GRID_ITEM,
+        totalPrice: 50
+      };
+
+      await (listener as any).notify(tipGridTransaction, 40);
+
+      // Should log error and use fallback
+      expect(logger.error).toHaveBeenCalledWith(
+        'Failed to render mood message, using fallback',
+        expect.objectContaining({
+          context: 'PaymentTokenListener'
+        })
+      );
+    });
+
+    it('should render different messages based on user tier', async () => {
+      moodMessagingService.renderTemplate.mockImplementation(
+        (_performerId, _templateType, tier, _variables) => {
+          if (tier === 'platinum') {
+            return Promise.resolve('WOW! 🌟 Thank you SO much TestUser!');
+          }
+          return Promise.resolve('Thank you TestUser!');
+        }
+      );
+
+      const tipGridTransaction = {
+        ...mockTransaction,
+        type: PURCHASE_ITEM_TYPE.TIP_GRID_ITEM,
+        totalPrice: 100
+      };
+
+      await (listener as any).notify(tipGridTransaction, 80);
+
+      expect(moodMessagingService.renderTemplate).toHaveBeenCalled();
+    });
+
+    it('should handle TIP transactions without mood messaging', async () => {
+      const regularTipTransaction = {
+        ...mockTransaction,
+        type: PURCHASE_ITEM_TYPE.TIP,
+        totalPrice: 50
+      };
+
+      await (listener as any).notify(regularTipTransaction, 40);
+
+      // Regular tips should NOT use mood messaging service
+      expect(moodMessagingService.renderTemplate).not.toHaveBeenCalled();
+    });
+
+    it('should extract user tier correctly for mood personalization', () => {
+      const getUserTier = (listener as any).getUserTier.bind(listener);
+
+      // Test with free tier user
+      const freeUser = { tier: 'free' };
+      expect(getUserTier(freeUser)).toBe('free');
+
+      // Test with gold tier user
+      const goldUser = { tier: 'gold' };
+      expect(getUserTier(goldUser)).toBe('gold');
+
+      // Test with subscription level
+      const subscribedUser = { subscriptionLevel: 'platinum' };
+      expect(getUserTier(subscribedUser)).toBe('platinum');
+
+      // Test with null user
+      expect(getUserTier(null)).toBeNull();
+
+      // Test with user without tier
+      const noTierUser = {};
+      expect(getUserTier(noTierUser)).toBe('free');
     });
   });
 });

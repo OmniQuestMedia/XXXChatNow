@@ -18,6 +18,8 @@ import { UserDto } from 'src/modules/user/dtos';
 import { generateUuid } from 'src/kernel/helpers/string.helper';
 import { DBLoggerService } from 'src/modules/logger';
 import { PerformanceQueueService } from 'src/modules/performance-queue/services';
+import { MoodMessagingService } from 'src/modules/mood-messaging/services';
+import { TemplateType, TierLevel } from 'src/modules/mood-messaging/constants';
 import { InjectModel } from '@nestjs/mongoose';
 import { PurchasedItemDto } from '../dtos';
 import {
@@ -50,7 +52,8 @@ export class PaymentTokenListener {
     private readonly studioService: StudioService,
     private readonly conversationService: ConversationService,
     private readonly logger: DBLoggerService,
-    private readonly performanceQueueService: PerformanceQueueService
+    private readonly performanceQueueService: PerformanceQueueService,
+    private readonly moodMessagingService: MoodMessagingService
   ) {
     this.queueEventService.subscribe(
       PURCHASED_ITEM_SUCCESS_CHANNEL,
@@ -500,9 +503,37 @@ export class PaymentTokenListener {
           targetId && this.conversationService.findById(targetId)
         ]);
         const senderInfo = user && new UserDto(user).toResponse(true);
-        const messageText = type === PURCHASE_ITEM_TYPE.TIP_GRID_ITEM
-          ? `has sent a tip from the tip grid: ${totalPrice} tokens`
-          : `has tipped ${totalPrice} tokens`;
+        
+        // Phase 6: Mood Messaging for TIP_GRID_ITEM settlements
+        // Generate mood-appropriate message for TIP_GRID_ITEM transactions
+        let messageText: string;
+        if (type === PURCHASE_ITEM_TYPE.TIP_GRID_ITEM) {
+          try {
+            // Get user tier for personalized messaging
+            const userTier = this.getUserTier(user);
+            
+            // Render mood-based template
+            messageText = await this.moodMessagingService.renderTemplate(
+              performerId,
+              TemplateType.TIP_THANK_YOU,
+              userTier,
+              {
+                userName: user?.username || 'Anonymous',
+                amount: totalPrice
+              }
+            );
+          } catch (error) {
+            // Graceful degradation - fallback to generic message
+            this.logger.error('Failed to render mood message, using fallback', {
+              context: 'PaymentTokenListener',
+              error: error.stack || error.message
+            });
+            messageText = `has sent a tip from the tip grid: ${totalPrice} tokens`;
+          }
+        } else {
+          messageText = `has tipped ${totalPrice} tokens`;
+        }
+        
         const message = {
           conversationId: conversation._id,
           _id: generateUuid(),
@@ -699,5 +730,45 @@ export class PaymentTokenListener {
     // }
 
     return user;
+  }
+
+  /**
+   * Get user tier for mood message personalization
+   * Returns null if tier cannot be determined (defaults to free tier template)
+   * 
+   * @param user User object
+   * @returns TierLevel or null
+   */
+  private getUserTier(user: any): TierLevel | null {
+    if (!user) return null;
+    
+    // Map user tier/subscription to TierLevel enum
+    // This is a simplified mapping - adjust based on actual user tier structure
+    const tierMapping: Record<string, TierLevel> = {
+      free: TierLevel.FREE,
+      bronze: TierLevel.BRONZE,
+      silver: TierLevel.SILVER,
+      gold: TierLevel.GOLD,
+      platinum: TierLevel.PLATINUM
+    };
+
+    // Check if user has a tier property
+    if (user.tier) {
+      const tierLower = user.tier.toLowerCase();
+      if (tierMapping[tierLower]) {
+        return tierMapping[tierLower];
+      }
+    }
+
+    // Check if user has subscription level
+    if (user.subscriptionLevel) {
+      const subscriptionLevelLower = user.subscriptionLevel.toLowerCase();
+      if (tierMapping[subscriptionLevelLower]) {
+        return tierMapping[subscriptionLevelLower];
+      }
+    }
+
+    // Default to free tier
+    return TierLevel.FREE;
   }
 }
