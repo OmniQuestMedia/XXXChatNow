@@ -1,5 +1,5 @@
 import {
-  IsString, IsOptional
+  IsString, IsOptional, IsEnum
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -21,4 +21,14 @@ export class PurchaseTipGridItemDto {
   @IsString()
   @IsOptional()
   idempotencyKey?: string;
+
+  @ApiProperty({ 
+    required: false,
+    enum: ['IMMEDIATE', 'QUEUED'],
+    default: 'IMMEDIATE',
+    description: 'Execution mode: IMMEDIATE for instant processing, QUEUED for deferred processing'
+  })
+  @IsEnum(['IMMEDIATE', 'QUEUED'])
+  @IsOptional()
+  executionMode?: 'IMMEDIATE' | 'QUEUED';
 }

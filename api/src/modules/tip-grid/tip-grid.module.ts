@@ -6,6 +6,7 @@ import { TipGridController } from './controllers';
 import { AuthModule } from '../auth/auth.module';
 import { PerformerModule } from '../performer/performer.module';
 import { PurchasedItemModule } from '../purchased-item/purchased-item.module';
+import { PerformanceQueueModule } from '../performance-queue/performance-queue.module';
 import { PurchasedItem, PurchasedItemSchema } from '../purchased-item/schemas/purchase-item.schema';
 
 @Module({
@@ -26,7 +27,8 @@ import { PurchasedItem, PurchasedItemSchema } from '../purchased-item/schemas/pu
     ]),
     forwardRef(() => AuthModule),
     forwardRef(() => PerformerModule),
-    forwardRef(() => PurchasedItemModule)
+    forwardRef(() => PurchasedItemModule),
+    forwardRef(() => PerformanceQueueModule)
   ],
   providers: [TipGridService],
   controllers: [TipGridController],
